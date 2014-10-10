@@ -43,7 +43,11 @@
   <ItemGroup>
     <Compile Include="ClientCommunicationManager.cs" />
     <Compile Include="ClientServerCommunicationManager.cs" />
+    <Compile Include="Input.cs" />
+    <Compile Include="InputFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProtocolUtils.cs" />
+    <Compile Include="XMLFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
