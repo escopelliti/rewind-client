@@ -54,7 +54,7 @@ namespace pdsproject_client
         public struct KEYBDINPUT
         {
             public VirtualKeyCode wVk;
-            public short wScan;
+            public int wScan;
             public KeyboardFlag dwFlags;
             public int time;
             public IntPtr dwExtraInfo;
@@ -460,6 +460,19 @@ namespace pdsproject_client
         Unicode = 0x0004,
         // KEYEVENTF_SCANCODE = 0x0008 (Windows 2000/XP: If specified, the system synthesizes a VK_PACKET keystroke. The wVk parameter must be zero. This flag can only be combined with the KEYEVENTF_KEYUP flag. For more information, see the Remarks section.)
         ScanCode = 0x0008,
+    }
+
+    // The mouse button
+    public enum MouseButton
+    {
+        // Left mouse button
+        LeftButton,
+
+        // Middle mouse button
+        MiddleButton,
+
+        // Right moust button
+        RightButton,
     }
 
     [Flags]
