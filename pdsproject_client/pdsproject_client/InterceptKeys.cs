@@ -24,6 +24,13 @@ class InterceptKeys
 
     private static IntPtr _hookID_ = IntPtr.Zero;
     private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+    private static LowLevelMouseProc _proc_ = HookCallbackMouse;
+    //private static LowLevelKeyboardProc _proc = HookCallback;
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr LoadLibrary(string lpFileName);
+
     
     
     private static ClientCommunicationManager ccm;
@@ -33,15 +40,16 @@ class InterceptKeys
     {
         ccm = new ClientCommunicationManager();
         socket = ccm.CreateSocket(ProtocolType.Tcp);
-        socket = ccm.Connect("INSIDEMYHEAD", 12001, socket);
+        socket = ccm.Connect("NEW_PC_PORTABLE", 12001, socket);
 
-
-        _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, HookCallbackMouse, IntPtr.Zero, 0);
+        IntPtr hInstance = LoadLibrary("User32");
+        //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
+        //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, HookCallbackMouse, hInstance.Zero, 0);
         hookID = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, IntPtr.Zero, 0);
         
         Application.Run();
 
-        UnhookWindowsHookEx(_hookID_);
+        //UnhookWindowsHookEx(_hookID_);
         UnhookWindowsHookEx(hookID);
     }
 
@@ -61,19 +69,31 @@ class InterceptKeys
     {
 
 
-        if (nCode >= 0 && (MouseMessages)wParam == MouseMessages.WM_MOUSEMOVE)
+        if (nCode >= 0)
         {
-            Console.WriteLine("Mouse");
+            if ((MouseMessages)wParam == MouseMessages.WM_MOUSEMOVE)
+            {
+                Console.WriteLine("Mouse");
 
-            INPUT input_move = new INPUT();
-            input_move.type = 0;
-            input_move.mi = (MOUSEINPUT)Marshal.PtrToStructure(lParam, typeof(MOUSEINPUT));
-            input_move.mi.dwFlags = (int)(MouseFlag.Move | MouseFlag.Absolute);
-            string json = JsonConvert.SerializeObject(input_move);
-            byte[] toSend = Encoding.Unicode.GetBytes(json);
-            ccm.Send(toSend, socket);
-            //ccm.Receive(new byte[5], socket);
+                INPUT input_move = new INPUT();
+                input_move.type = 0;
+                input_move.mi = (MOUSEINPUT)Marshal.PtrToStructure(lParam, typeof(MOUSEINPUT));
+                input_move.mi.dwFlags = (int)(MouseFlag.Move | MouseFlag.Absolute);
+                string json = JsonConvert.SerializeObject(input_move);
+                byte[] toSend = Encoding.Unicode.GetBytes(json);
+                ccm.Send(toSend, socket);
+                ccm.Receive(new byte[5], socket);
 
+                //input_move.type = 0;
+                //input_move.mi = (MOUSEINPUT)Marshal.PtrToStructure(lParam, typeof(MOUSEINPUT));
+                //input_move.mi.dwFlags = (int)(MouseFlag.LeftUp);
+                //json = JsonConvert.SerializeObject(input_move);
+                //toSend = Encoding.Unicode.GetBytes(json);
+                //ccm.Send(toSend, socket);
+                //ccm.Receive(new byte[5], socket);
+            }
+            //if ((MouseMessages)wParam == MouseMessages.WM_LBUTTONDOWN)
+            
             
         }
 
@@ -108,7 +128,6 @@ class InterceptKeys
             byte[] ks = new byte[256];
             for (int x = 0; x < 256; x++)
                 ks[x] = (byte)GetKeyState(x);
-            string keyc;
             string s = "";
 
             INPUT input_move = new INPUT();
@@ -212,6 +231,10 @@ class InterceptKeys
     
     [DllImport("user32.dll")]
     private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    //[DllImport("user32.dll")]
+    //private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+
     [DllImport("user32.dll")]
     private static extern bool UnhookWindowsHookEx(IntPtr hhk);
     [DllImport("user32.dll")]
