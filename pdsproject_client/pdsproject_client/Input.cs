@@ -33,18 +33,18 @@ struct INPUT
     public MOUSEINPUT mi;
     [FieldOffset(4)]
     public KEYBDINPUT ki;
-    //[FieldOffset(4)]
-    //public HARDWAREINPUT hi;
+    [FieldOffset(4)]
+    public HARDWAREINPUT hi;
 }
 
 [StructLayout(LayoutKind.Sequential)]
 struct MOUSEINPUT
 {
-    public int dx;
-    public int dy;
-    public uint mouseData;
-    public int dwFlags;
-    public int time;
+    public UInt32 dx;
+    public UInt32 dy;
+    public UInt32 mouseData;
+    public MouseFlag dwFlags;
+    public UInt32 time;
     public IntPtr dwExtraInfo;
 }
 
@@ -58,13 +58,13 @@ struct KEYBDINPUT
     public IntPtr dwExtraInfo;
 }
 
-//[StructLayout(LayoutKind.Sequential)]
-//public struct HARDWAREINPUT
-//{
-//    public int uMsg;
-//    public short wParamL;
-//    public short wParamH;
-//}
+[StructLayout(LayoutKind.Sequential)]
+public struct HARDWAREINPUT
+{
+    public UInt32 uMsg;
+    public UInt16 wParamL;
+    public UInt16 wParamH;
+}
 
 
 
@@ -497,10 +497,23 @@ internal enum MouseFlag : uint // UInt32
     // Windows NT/2000/XP: Specifies that the wheel was moved, if the mouse has a wheel. The amount of movement is specified in mouseData. 
     VerticalWheel = 0x0800,
     // Specifies that the wheel was moved horizontally, if the mouse has a wheel. The amount of movement is specified in mouseData. Windows 2000/XP:  Not supported.
-    HorizontalWheel = 0x1000,
+    HorizontalWheel = 0x01000,
     // Windows 2000/XP: Maps coordinates to the entire desktop. Must be used with MOUSEEVENTF_ABSOLUTE.
     VirtualDesk = 0x4000,
     // Specifies that the dx and dy members contain normalized absolute coordinates. If the flag is not set, dxand dy contain relative data (the change in position since the last reported position). This flag can be set, or not set, regardless of what kind of mouse or other pointing device, if any, is connected to the system. For further information about relative mouse motion, see the following Remarks section.
     Absolute = 0x8000,
 }
 
+public enum MouseMessages
+{
+    WM_LBUTTONDOWN = 0x0201,
+    WM_LBUTTONUP = 0x0202,
+    WM_MOUSEMOVE = 0x0200,
+    WM_MOUSE_VERTICAL_WHEEL = 0x020A,
+    WM_MOUSE_HORIZONTAL_WHEEL = 0x020E,
+    WM_RBUTTONDOWN = 0x0204,
+    WM_RBUTTONUP = 0x0205,
+    WM_MBUTTONDOWN = 0x0207,
+    WM_MBUTTONUP=0x0208
+
+}
