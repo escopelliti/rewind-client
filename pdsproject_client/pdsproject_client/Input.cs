@@ -58,6 +58,7 @@ struct KEYBDINPUT
     public IntPtr dwExtraInfo;
 }
 
+
 [StructLayout(LayoutKind.Sequential)]
 public struct HARDWAREINPUT
 {

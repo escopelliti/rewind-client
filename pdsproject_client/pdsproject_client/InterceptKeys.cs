@@ -38,13 +38,19 @@ class InterceptKeys
 
     static void Main()
     {
+       
+        
         ccm = new ClientCommunicationManager();
         socket = ccm.CreateSocket(ProtocolType.Tcp);
         socket = ccm.Connect("INSIDEMYHEAD", 12001, socket);
 
+       
+
+
         IntPtr hInstance = LoadLibrary("User32");
         _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
         //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, HookCallbackMouse, hInstance.Zero, 0);
+        
         //hookID = SetWindowsHookEx(WH_KEYBOARD_LL, HookCallback, IntPtr.Zero, 0);
         hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
 
@@ -112,6 +118,17 @@ class InterceptKeys
                     Console.WriteLine("WM_RBUTTONUP");
                     input_move.mi.dwFlags = MouseFlag.RightUp;
                     break;
+
+                case MouseMessages.WM_MBUTTONDOWN:
+                    Console.WriteLine("MBUTTONDOWN");
+                    input_move.mi.dwFlags = MouseFlag.MiddleDown;
+                    break;
+
+                case MouseMessages.WM_MBUTTONUP:
+                    Console.WriteLine("MBUTTONUP");
+                    input_move.mi.dwFlags = MouseFlag.MiddleUp;
+                    break;
+
 
                 default:
                     // POSSIBILE ERRORE SE ENTRA NELLA SCELTA DI DEFAULT
