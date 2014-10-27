@@ -23,5 +23,20 @@ namespace WpfApplication1
         {
             InitializeComponent();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string computerName = this.computerNameTextBox.Text;
+            if (computerName != null && !String.IsNullOrEmpty(computerName) && !string.IsNullOrWhiteSpace(computerName))
+            {
+                MessageBox.Show(computerName);
+                //routine di creazione grafica del server nella GUI e scrittura in una file di configurazione;
+            }
+            else
+            {
+                //TO BE ADDED IN PROP FILES
+                MessageBox.Show("Inserisci un nome del computer valido.");
+            }
+        }
     }
 }

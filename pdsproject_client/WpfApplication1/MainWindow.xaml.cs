@@ -23,11 +23,10 @@ namespace WpfApplication1
         public MainWindow()
         {
             InitializeComponent();
-        }
+            List<ComputerItem> items = new List<ComputerItem>();
+            items.Add(new ComputerItem() { Name = "TEST_PC", Shortcut = "CTRL + 1", ComputerStateImage = "plus.png" });            
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
+            computerList.ItemsSource = items;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
