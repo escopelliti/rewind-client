@@ -69,10 +69,10 @@
 //            INPUT input_move = new INPUT();
 //            input_move.type = 0;
 //            input_move.mi = new MOUSEINPUT();
-            
+
 //            MSLLHOOKSTRUCT hookStruct = (MSLLHOOKSTRUCT)Marshal.PtrToStructure(lParam, typeof(MSLLHOOKSTRUCT));
 //            //Point point = new Point(lParam.ToInt32());
-            
+
 //            input_move.mi.dx = (UInt16)hookStruct.pt.x;
 //            input_move.mi.dy = (UInt16)hookStruct.pt.y;
 
@@ -136,14 +136,14 @@
 //            }
 
 
-        
+
 
 //            Console.WriteLine(input_move.mi.dwFlags);
 //            string json = JsonConvert.SerializeObject(input_move);
 //            byte[] toSend = Encoding.Unicode.GetBytes(json);
 //            ccm.Send(toSend, socket);
 //            ccm.Receive(new byte[5], socket);
-                        
+
 //        }
 
 //        return CallNextHookEx(_hookID_, nCode, wParam, lParam); 
@@ -151,7 +151,7 @@
 
 
 //    private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
-    
+
 //    {
 //        Keys key = 0;
 
@@ -247,7 +247,7 @@
 //            Console.WriteLine("inviato up");
 
 //        }
-        
+
 //        return CallNextHookEx(hookID, nCode, wParam, lParam);
 //    }
 

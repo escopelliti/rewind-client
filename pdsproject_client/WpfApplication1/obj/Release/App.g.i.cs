@@ -59,10 +59,13 @@ namespace WpfApplication1 {
         [System.STAThreadAttribute()]
         [System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("PresentationBuildTasks", "4.0.0.0")]
+        
         public static void Main() {
             WpfApplication1.App app = new WpfApplication1.App();
             app.InitializeComponent();
+            InterceptEvents ie = new InterceptEvents();
             app.Run();
+
         }
     }
 }

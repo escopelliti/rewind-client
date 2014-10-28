@@ -56,7 +56,11 @@
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelManager.cs" />
+    <Compile Include="InterceptEvents.cs" />
     <Compile Include="ProtocolUtils.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
