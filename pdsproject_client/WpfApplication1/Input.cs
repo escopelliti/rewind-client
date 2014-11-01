@@ -33,7 +33,7 @@ namespace NativeInput
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    private struct POINT
+    public struct POINT
     {
         public int x;
         public int y;
@@ -48,6 +48,7 @@ namespace NativeInput
         public uint time;
         public IntPtr dwExtraInfo;
     }
+
 
     [StructLayout(LayoutKind.Sequential)]
     struct KEYBDINPUT
@@ -520,6 +521,9 @@ namespace NativeInput
     public enum KeyboardMessages
     {
         WM_KEYDOWN = 0x0100,
-        WM_KEYUP = 0x0101
+        WM_KEYUP = 0x0101,
+        WM_HOTKEY = 0x312
     }
+
+
 }

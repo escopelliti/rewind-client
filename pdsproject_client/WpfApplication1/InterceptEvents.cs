@@ -7,9 +7,13 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 
+//HOTkey
+using System.Windows.Forms;
+
 
 using CommunicationLibrary;
 using NativeInput;
+using System.Windows.Interop;
 
 namespace WpfApplication1
 {
@@ -23,25 +27,32 @@ namespace WpfApplication1
         private static IntPtr hookID = IntPtr.Zero;
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
         private static LowLevelKeyboardProc _proc = HookCallback;
-        
+
 
         private static IntPtr _hookID_ = IntPtr.Zero;
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
         private static LowLevelMouseProc _proc_ = HookCallbackMouse;
 
-        private static ClientCommunicationManager ccm;
-        private static Socket socket;
-
         private static InputFactory inputFactory;
         private static ChannelManager chManager;
-  
-        public InterceptEvents(ChannelManager channelManager)
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+        private static HotkeyManager hotkey;
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        public InterceptEvents(/*ChannelManager channelManager, */IntPtr windowHandle)
         {
-            chManager = channelManager;
+            //chManager = channelManager;
             inputFactory = new InputFactory();
             IntPtr hInstance = LoadLibrary("User32");
             _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
-            hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);   
+            hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
+
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            hotkey = new HotkeyManager(windowHandle);
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            
         }
 
         public void closeInterceptEvents()
@@ -52,36 +63,75 @@ namespace WpfApplication1
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
         {
-            //Cattura la shortcut per lo switch del server
-            if ((Key)Marshal.ReadInt32(lParam) == Key.LeftCtrl &&
-                ((Key)Marshal.ReadInt32(lParam) >= Key.D0 && (Key)Marshal.ReadInt32(lParam) <= Key.D9)) 
-            {
-                chManager.switchServer((Key)Marshal.ReadInt32(lParam));
-            }
-
+            
             if (nCode >= 0)
             {
+                Message msg = new Message();
+                if (GetMessage(ref msg, IntPtr.Zero, 0, 0))
+                {
+                    if (msg.Msg == (int)KeyboardMessages.WM_HOTKEY)
+                    {
+                        Console.WriteLine("Hotkey has been pressed!");
+
+                        int id = msg.WParam.ToInt32();
+                        Console.WriteLine(id);
+
+
+                        if (id == 0)
+                        {
+                            Console.WriteLine("T Pressed");
+                            hotkey.ChangeSwitchHotkey(HotkeyManager.KeyModifier.Control,Keys.Q,2);
+                        }
+                        if (id == 1)
+                        {
+                            Console.WriteLine("Y Pressed");
+                        }
+
+                        if (id == 2)
+                        {
+                            Console.WriteLine("Q Pressed");
+                        }
+                            
+                    }
+
+                }
                 INPUT inputToSend = inputFactory.CreateKeyboardInput(wParam, lParam);
-                chManager.sendInputToSever(inputToSend);
-            }
-           
-            if ((Key)Marshal.ReadInt32(lParam) == Key.LWin || (Key)Marshal.ReadInt32(lParam) == Key.RWin)
-                return (IntPtr)1;
+                //chManager.sendInputToSever(inputToSend);
+                
+                if ((Key)Marshal.ReadInt32(lParam) == Key.LWin || (Key)Marshal.ReadInt32(lParam) == Key.RWin)
+                    return (IntPtr)1;
+            }           
 
             return CallNextHookEx(hookID, nCode, wParam, lParam);
-
         }
-         
         
         private static IntPtr HookCallbackMouse(int nCode, IntPtr wParam, IntPtr lParam)
         {
+
+           
+
             if (nCode >= 0)
             {
                 INPUT inputToSend = inputFactory.CreateMouseInput(wParam, lParam);
-                chManager.sendInputToSever(inputToSend);
+                //chManager.sendInputToSever(inputToSend);
             }
             return CallNextHookEx(hookID, nCode, wParam, lParam);
         }
+
+
+        //public class Message
+        //{
+        //    public int message { get; set; }
+        //}
+
+        //enum KeyModifier
+        //{
+        //    None = 0,
+        //    Alt = 1,
+        //    Control = 2,
+        //    Shift = 4,
+        //    WinKey = 8
+        //}
 
 
         [DllImport("user32.dll")]
@@ -107,5 +157,17 @@ namespace WpfApplication1
 
         [DllImport("user32.dll")]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+
+        public const int WM_HOTKEY = 0x312;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        [DllImport("user32.dll")]
+        private static extern bool GetMessage(ref Message lpMsg, IntPtr handle, uint mMsgFilterMain, uint mMsgFilerMax);
+    
     }
 }

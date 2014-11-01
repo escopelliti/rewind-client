@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CommunicationLibrary;
+using System.Windows.Interop;
 
 namespace WpfApplication1
 {
@@ -23,7 +25,16 @@ namespace WpfApplication1
         public MainWindow()
         {
             InitializeComponent();
+            Server s = new Server();
+            s.ComputerName = "INSIDEMYHEAD";
+            //ChannelManager cm = new ChannelManager();
+            //cm.addServer(s);
+            //cm.setCurrentServer(s);
+            IntPtr windowHandle = new WindowInteropHelper(this).Handle;
+            InterceptEvents ie = new InterceptEvents(/*cm,*/windowHandle);
+           
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {

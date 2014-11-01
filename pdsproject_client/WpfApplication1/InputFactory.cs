@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.Text;
 using System.Collections.Generic;
-
+using System.Windows.Forms;
 
 
 
@@ -46,11 +46,11 @@ namespace NativeInput
         }
 
         //Verifichiamo che il codice del carattere è tra quelli che possiamo inviare usando la codifica Unicode
-        private Boolean IsUnicodeChar(Key key)
+        private Boolean IsUnicodeChar(Keys key)
         {
-            if((key >= Key.D0 && key <= Key.Z) ||
-                (key >= Key.NumPad0 && key <= Key.NumPad9 && Keyboard.GetKeyStates(Key.CapsLock) == KeyStates.Toggled) ||
-                (key >= Key.Oem1 && key <= Key.Oem102))
+            if((key >= Keys.D0 && key <= Keys.Z) ||
+                (key >= Keys.NumPad0 && key <= Keys.NumPad9 && Keyboard.GetKeyStates(Key.CapsLock) == KeyStates.Toggled) ||
+                (key >= Keys.Oem1 && key <= Keys.Oem102))
             {
                     return true;
             }
@@ -58,10 +58,18 @@ namespace NativeInput
             else return false;
         }
 
+        public static Keys GetKeyFromLparam(IntPtr lParam){
+            Keys key = (Keys)Marshal.ReadInt32(lParam);
+            return key;
+
+        }
+
         public INPUT CreateKeyboardInput(IntPtr wParam, IntPtr lParam)
         {
-            Key key = (Key)Marshal.ReadInt32(lParam);
+            Keys key = (Keys)Marshal.ReadInt32(lParam);
             string s = "";
+
+            
 
             INPUT keyboard_input = new INPUT();
             keyboard_input.type = TYPE.INPUT_KEYBOARD;
@@ -108,18 +116,19 @@ namespace NativeInput
             INPUT mouse_input = new INPUT();
             mouse_input.type = TYPE.INPUT_MOUSE;
             mouse_input.mi = (MOUSEINPUT)Marshal.PtrToStructure(lParam, typeof(MOUSEINPUT));
-            //Coordinate prese direttamente con PtrToStruct()
+            mouse_input.mi.time = 0;
+
+
             mouse_input.mi.dwFlags = mouseFlagDictionary[(MouseMessages)wParam];
             if ((MouseMessages)wParam == MouseMessages.WM_MOUSE_HORIZONTAL_WHEEL || 
                 (MouseMessages)wParam == MouseMessages.WM_MOUSE_VERTICAL_WHEEL)
             {
-                //Quantità del movimento della rotellina fisso
-                mouse_input.mi.mouseData = 10;
+                mouse_input.mi.mouseData = (uint)-(mouse_input.mi.mouseData >> 16);
             }
             return mouse_input;
 
         }
-        
+
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         internal static extern short GetKeyState(int virtualKeyCode);
@@ -130,5 +139,5 @@ namespace NativeInput
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
     }
-    
+
 }

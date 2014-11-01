@@ -17,15 +17,15 @@ namespace CommunicationLibrary
         private UInt16 lastServerId;
         private static ClientCommunicationManager ccm;
         
-        public ChannelManager(Server s) 
+        public ChannelManager() 
         {
-            lastServerId = 1;            
-            InitilizeDictionary();            
+            lastServerId = 0;            
+            InitilizeDictionary();
+            ccm = new ClientCommunicationManager();
         }
 
-        private void InitilizeChannel(Server s)
+        public void AssignChannel(Server s)
         {
-            ccm = new ClientCommunicationManager();
             Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
             dataSocket = ccm.Connect(s.ComputerName, 12001, dataSocket);
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
@@ -33,6 +33,7 @@ namespace CommunicationLibrary
             Channel ch = new Channel();
             ch.SetCmdSocket(cmdSocket);
             ch.SetDataSocket(dataSocket);
+            s.SetChannel(ch);
         }
 
         private void InitilizeDictionary()
@@ -42,10 +43,10 @@ namespace CommunicationLibrary
 
         public void sendInputToSever(NativeInput.INPUT inputToSend)
         {
-            string json = JsonConvert.SerializeObject(inputToSend);
+            string json = JsonConvert.SerializeObject(inputToSend);            
             byte[] toSend = Encoding.Unicode.GetBytes(json);
-            ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
-            ccm.Receive(new byte[5], currentServer.GetChannel().GetCmdSocket());
+            ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
+            ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
         }
         
         public Server getCurrentServer()
@@ -60,8 +61,11 @@ namespace CommunicationLibrary
 
         public int addServer(Server s) 
         {
-            serverDictionary.Add(lastServerId,s);
             lastServerId++;
+            if (s.GetChannel() == null) {
+                AssignChannel(s);
+            }
+            serverDictionary.Add(lastServerId,s);
             return lastServerId;
         }
 
