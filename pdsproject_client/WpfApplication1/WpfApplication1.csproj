@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,12 +58,8 @@
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
-    <Compile Include="Channel.cs" />
-    <Compile Include="ChannelManager.cs" />
-    <Compile Include="HotkeyManager.cs" />
-    <Compile Include="InterceptEvents.cs" />
+    <Compile Include="ComputerItem.cs" />
     <Compile Include="ProtocolUtils.cs" />
-    <Compile Include="Server.cs" />
     <Compile Include="Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
@@ -118,6 +115,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Computers.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
