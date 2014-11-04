@@ -15,22 +15,26 @@ using System.Windows.Shapes;
 namespace WpfApplication1
 {
     /// <summary>
-    /// Logica di interazione per Window1.xaml
+    /// Logica di interazione per AddComputerWindow.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class AddComputerWindow : Window
     {
-        public Window1()
+        public AddComputerWindow()
         {
             InitializeComponent();
         }
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void OKButton_Click(object sender, RoutedEventArgs e)
         {
             string computerName = this.computerNameTextBox.Text;
             if (computerName != null && !String.IsNullOrEmpty(computerName) && !string.IsNullOrWhiteSpace(computerName))
             {
                 MessageBox.Show(computerName);
-                //routine di creazione grafica del server nella GUI e scrittura in una file di configurazione;
+                //Setta un item in piu nella itemlist nella GUI e scrittura in una file di configurazione;
             }
             else
             {

@@ -59,10 +59,20 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Compile Include="ComputerItem.cs" />
-    <Compile Include="ProtocolUtils.cs" />
-    <Compile Include="Window1.xaml.cs">
-      <DependentUpon>Window1.xaml</DependentUpon>
+    <Compile Include="FullScreenRemoteServerControl.xaml.cs">
+      <DependentUpon>FullScreenRemoteServerControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ProtocolUtils.cs" />
+    <Compile Include="AddComputerWindow.xaml.cs">
+      <DependentUpon>AddComputerWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WorkareaWindow.xaml.cs">
+      <DependentUpon>WorkareaWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="FullScreenRemoteServerControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,7 +90,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Window1.xaml">
+    <Page Include="AddComputerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WorkareaWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -118,6 +132,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Computers.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="connComputer.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="tick.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
