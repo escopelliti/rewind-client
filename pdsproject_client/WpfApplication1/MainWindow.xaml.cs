@@ -16,7 +16,9 @@ using CommunicationLibrary;
 using System.Windows.Interop;
 
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace WpfApplication1
 {
@@ -40,8 +42,7 @@ namespace WpfApplication1
             this.menuItem1 = new System.Windows.Forms.MenuItem();
 
             // Initialize contextMenu1 
-            this.contextMenu1.MenuItems.AddRange(
-                        new System.Windows.Forms.MenuItem[] { this.menuItem1 });
+            this.contextMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem1 });
 
             // Initialize menuItem1 
             this.menuItem1.Index = 0;
@@ -52,29 +53,21 @@ namespace WpfApplication1
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
             MyNotifyIcon.Icon = new System.Drawing.Icon("..\\..\\Computers.ico");
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
-            //MyNotifyIcon.MouseClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseClick);
 
             MyNotifyIcon.ContextMenu = this.contextMenu1;
 
             List<ComputerItem> items = new List<ComputerItem>();
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
+            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1", focusedImage = "tick.png" });
+            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
+            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
+            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
+            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
+            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
+            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
+            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
+            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
 
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "plus.png" });
+            
             computerList.ItemsSource = items;
             Server s = new Server();
             s.ComputerName = "INSIDEMYHEAD";
@@ -86,6 +79,20 @@ namespace WpfApplication1
            
         }
 
+
+        //public void StartTimer()
+        //{
+        //    System.Windows.Threading.DispatcherTimer myDispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        //    myDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); 
+        //    myDispatcherTimer.Tick += new EventHandler(Each_Tick);            
+        //    myDispatcherTimer.Start();
+        //}
+
+        //public void Each_Tick(object o, EventArgs sender)
+        //{
+        //    MyNotifyIcon.Visible = !MyNotifyIcon.Visible;         
+        //}
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // TO BE CHANGED BUT IT WORKS
@@ -93,19 +100,19 @@ namespace WpfApplication1
 
             foreach (Window win in System.Windows.Application.Current.Windows)
             {
-                if (win is Window1)
+                if (win is AddComputerWindow)
                 {
                     isWindowOpen = true;
                     win.Activate();
                 }
-        }
+            }
 
             if (!isWindowOpen)
-        {
-            Window1 w = new Window1();
-            w.Show();
+            {
+                AddComputerWindow w = new AddComputerWindow();
+                w.Show();
+            }
         }
-    }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -126,9 +133,6 @@ namespace WpfApplication1
         private void MyNotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             this.WindowState = WindowState.Normal;
-            //CODE TO FULL SCREEN A WINDOW
-            //this.WindowState = WindowState.Maximized;
-            //this.WindowStyle = WindowStyle.None;
         }
 
         //TO BE CHANGED
@@ -147,6 +151,12 @@ namespace WpfApplication1
                 MyNotifyIcon.Visible = false;
                 this.ShowInTaskbar = true;
             }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            // AT FIRST IT ASKS YOU A PSW
+            //CODE TO SWITCH SERVER OR MAKE CURRENT THAT SPECIFIC SERVER
         }
     }
 }

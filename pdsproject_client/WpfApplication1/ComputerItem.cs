@@ -10,5 +10,15 @@ namespace WpfApplication1
     {
         public String Name { get; set; }
         public String ComputerStateImage { get; set; }
+        public String focusedImage { get; set; }
+        public State computerState { get; set; }
+        public string computerNum { get; set; }
+    }
+
+    class State
+    {
+        public const string ACTIVE = "ACTIVE";
+        public const string CONNECTED = "CONNECTED";
+        public const string DISCONNECTED = "DISCONNECTED";
     }
 }
