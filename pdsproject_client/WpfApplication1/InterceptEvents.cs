@@ -36,23 +36,28 @@ namespace WpfApplication1
         private static InputFactory inputFactory;
         private static ChannelManager chManager;
 
-        ///////////////////////////////////////////////////////////////////////////////////////////////
         private static HotkeyManager hotkey;
-        ///////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        public InterceptEvents(/*ChannelManager channelManager, */IntPtr windowHandle)
+        public InterceptEvents(ChannelManager channelManager, IntPtr windowHandle)
         {
-            //chManager = channelManager;
+            chManager = channelManager;
             inputFactory = new InputFactory();
             IntPtr hInstance = LoadLibrary("User32");
             _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
             hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
 
-            ///////////////////////////////////////////////////////////////////////////////////////////////
-            hotkey = new HotkeyManager(windowHandle);
-            ///////////////////////////////////////////////////////////////////////////////////////////////
+            //  TO DO ... Apre il file di configurazione e leggere le hotkey impostate dall'utente
+            Hotkey hot = new Hotkey(0, HotkeyManager.KeyModifier.Control, Keys.A, "switchServer");
+            Hotkey hot2 = new Hotkey(0, HotkeyManager.KeyModifier.Control, Keys.B, "openPanel");
+            //NON FUNZIONANO CTRL + ESCAPE, CTRL + NumLock, ALt + tab,
+
+            List<Hotkey> hotkeyList = new List<Hotkey>();
+            hotkeyList.Add(hot);
+            hotkeyList.Add(hot2);
             
+            hotkey = new HotkeyManager(windowHandle,hotkeyList,chManager);
+                      
         }
 
         public void closeInterceptEvents()
@@ -76,22 +81,7 @@ namespace WpfApplication1
                         int id = msg.WParam.ToInt32();
                         Console.WriteLine(id);
 
-
-                        if (id == 0)
-                        {
-                            Console.WriteLine("T Pressed");
-                            hotkey.ChangeSwitchHotkey(HotkeyManager.KeyModifier.Control,Keys.Q,2);
-                        }
-                        if (id == 1)
-                        {
-                            Console.WriteLine("Y Pressed");
-                        }
-
-                        if (id == 2)
-                        {
-                            Console.WriteLine("Q Pressed");
-                        }
-                            
+                        hotkey.HotkeyPressed(id);         
                     }
 
                 }
@@ -117,21 +107,6 @@ namespace WpfApplication1
             }
             return CallNextHookEx(hookID, nCode, wParam, lParam);
         }
-
-
-        //public class Message
-        //{
-        //    public int message { get; set; }
-        //}
-
-        //enum KeyModifier
-        //{
-        //    None = 0,
-        //    Alt = 1,
-        //    Control = 2,
-        //    Shift = 4,
-        //    WinKey = 8
-        //}
 
 
         [DllImport("user32.dll")]

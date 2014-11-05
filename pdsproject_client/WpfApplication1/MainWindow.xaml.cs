@@ -78,11 +78,11 @@ namespace WpfApplication1
             computerList.ItemsSource = items;
             Server s = new Server();
             s.ComputerName = "INSIDEMYHEAD";
-            //ChannelManager cm = new ChannelManager();
+            ChannelManager cm = new ChannelManager();
             //cm.addServer(s);
             //cm.setCurrentServer(s);
             IntPtr windowHandle = new WindowInteropHelper(this).Handle;
-            InterceptEvents ie = new InterceptEvents(/*cm,*/windowHandle);
+            InterceptEvents ie = new InterceptEvents(cm,windowHandle);
            
         }
 

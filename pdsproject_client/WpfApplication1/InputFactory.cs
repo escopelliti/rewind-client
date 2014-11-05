@@ -19,7 +19,8 @@ namespace NativeInput
 
         private Dictionary<MouseMessages, MouseFlag> mouseFlagDictionary;
 
-        public InputFactory() {
+        public InputFactory() 
+        {
             InitilizeDictionary();
         }
         

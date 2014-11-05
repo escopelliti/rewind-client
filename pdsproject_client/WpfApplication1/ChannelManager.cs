@@ -16,9 +16,11 @@ namespace CommunicationLibrary
         private Dictionary<UInt16,Server> serverDictionary;
         private UInt16 lastServerId;
         private static ClientCommunicationManager ccm;
+        bool flag;
         
         public ChannelManager() 
         {
+            flag = true;
             lastServerId = 0;            
             InitilizeDictionary();
             ccm = new ClientCommunicationManager();
@@ -43,10 +45,13 @@ namespace CommunicationLibrary
 
         public void sendInputToSever(NativeInput.INPUT inputToSend)
         {
-            string json = JsonConvert.SerializeObject(inputToSend);            
-            byte[] toSend = Encoding.Unicode.GetBytes(json);
-            ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
-            ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
+            if (flag)
+            {
+                string json = JsonConvert.SerializeObject(inputToSend);
+                byte[] toSend = Encoding.Unicode.GetBytes(json);
+                ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
+                ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
+            }
         }
         
         public Server getCurrentServer()
@@ -74,14 +79,21 @@ namespace CommunicationLibrary
             serverDictionary.Remove(s.ServerID);
         }
 
-        public void switchServer(int n)
+        public void switchServer()
         {
 
         }
 
-        internal void switchServer(System.Windows.Input.Key key)
+        internal void OnSwitch(object sender, object param)
         {
+            Console.WriteLine("Switch requested");
+            flag = false;
+        }
 
+        internal void OnSwitchEnd(object sender, object param)
+        {
+            Console.WriteLine("Switch end");
+            flag = true;
         }
     }
 }
