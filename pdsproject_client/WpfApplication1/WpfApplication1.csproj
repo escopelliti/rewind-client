@@ -59,6 +59,11 @@
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
     <Compile Include="ComputerItem.cs" />
+    <Compile Include="ConfigurationManager.cs" />
+    <Compile Include="ConnectionWindow.xaml.cs">
+      <DependentUpon>ConnectionWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CryptoManager.cs" />
     <Compile Include="FullScreenRemoteServerControl.xaml.cs">
       <DependentUpon>FullScreenRemoteServerControl.xaml</DependentUpon>
     </Compile>
@@ -69,6 +74,10 @@
     <Compile Include="WorkareaWindow.xaml.cs">
       <DependentUpon>WorkareaWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="ConnectionWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FullScreenRemoteServerControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

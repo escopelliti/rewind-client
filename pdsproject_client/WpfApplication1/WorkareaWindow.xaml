@@ -1,7 +1,7 @@
 ﻿<Window x:Class="WpfApplication1.WorkareaWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DIGITA UN NUMERO" Height="350" Width="450" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+        Title="DIGITA UN NUMERO" Height="350" Width="450" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" ResizeMode="NoResize" >
 
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
         <ItemsControl Name="computerList">

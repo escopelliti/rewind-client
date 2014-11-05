@@ -68,9 +68,13 @@ namespace WpfApplication1
             
             computerList.ItemsSource = items;
 
-            WorkareaWindow w = new WorkareaWindow();            
+            WorkareaWindow w = new WorkareaWindow();
             w.computerList.ItemsSource = items;
             w.Show();
+            
+
+            ConnectionWindow c = new ConnectionWindow("INSIDEMYHEAD");
+            c.Show();
             
 
             //FullScreenRemoteServerControl f = new FullScreenRemoteServerControl();
