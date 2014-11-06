@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WpfApplication1;
 using System.Net.Sockets;
-
+using Protocol;
 
 namespace CommunicationLibrary
 {
-    class ChannelManager
+    public class ChannelManager
     {
-        protected Server currentServer;
-        protected List<Server> serverConnected;
-        protected static ClientCommunicationManager ccm;
-
+        private Server currentServer;
+        private List<Server> serverConnected;
+        private ClientCommunicationManager ccm;        
 
         public ChannelManager()
-        {
+        {            
             ccm = new ClientCommunicationManager();
-            serverConnected = new List<Server>();
+            serverConnected = new List<Server>();         
+        }
+
+        public long GetClipboardDimension()
+        {
+            byte[] dimension = new byte[5];
+            ccm.Receive(dimension, currentServer.GetChannel().GetDataSocket());
+            return Convert.ToInt64(dimension);
         }
 
         public void sendInputToSever(NativeInput.INPUT inputToSend)
@@ -94,6 +100,36 @@ namespace CommunicationLibrary
             }
                 return computerNames;
         }
-   
+
+        public byte[] ReceiveData()
+        {
+            byte[] buffer = new byte[1024];
+            int bytesRead = ccm.Receive(buffer, currentServer.GetChannel().GetCmdSocket());
+            return bytesRead > 0 ? buffer : null;
+        }
+
+        public void EndConnectionToCurrentServer()
+        {
+            SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_OFF);
+            currentServer = null;
+        }
+
+        public void SendRequest(string requestType, string content)
+        {
+            StandardRequest stdReq = new StandardRequest();
+            stdReq.type = requestType;
+            stdReq.content = content;
+            string jsonTosend = JsonConvert.SerializeObject(stdReq);
+            byte[] toSend = Encoding.Unicode.GetBytes(jsonTosend);
+            //attacca 16 byte univoci
+            ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
+        }
+
+        public void StartNewConnection(int p)
+        {
+            ///*id computer per prendersi da dictionary server e quindi settare currentServer*/
+            SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);
+            
+        }
     }
 }

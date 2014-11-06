@@ -88,6 +88,7 @@
     <Compile Include="InterceptEvents.cs" />
     <Compile Include="ProtocolUtils.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="StandardRequest.cs" />
     <Compile Include="WorkareaWindow.xaml.cs">
       <DependentUpon>WorkareaWindow.xaml</DependentUpon>
     </Compile>

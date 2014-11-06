@@ -14,7 +14,7 @@ using System.Windows.Forms;
 
 namespace NativeInput
 {
-    class InputFactory
+    public class InputFactory
     {
 
         private Dictionary<MouseMessages, MouseFlag> mouseFlagDictionary;

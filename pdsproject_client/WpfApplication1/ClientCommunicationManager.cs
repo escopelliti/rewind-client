@@ -10,7 +10,7 @@ using System.IO;
 
 namespace CommunicationLibrary
 {
-    class ClientCommunicationManager : ClientServerCommunicationManager
+    public class ClientCommunicationManager : ClientServerCommunicationManager
     {
         public Socket Connect(string host, int port, Socket socket)
         {

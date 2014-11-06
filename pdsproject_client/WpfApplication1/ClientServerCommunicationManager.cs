@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace CommunicationLibrary
 {
-    class ClientServerCommunicationManager
+    public class ClientServerCommunicationManager
     {
         public Socket CreateSocket(ProtocolType protocolType)
         {

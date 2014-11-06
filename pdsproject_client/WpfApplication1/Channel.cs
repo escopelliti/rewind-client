@@ -7,7 +7,7 @@ using System.Net.Sockets;
 
 namespace CommunicationLibrary
 {
-    class Channel
+    public class Channel
     {
 
         private Socket dataSocket;

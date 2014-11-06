@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WpfApplication1
 {
-    class ComputerItem
+    public class ComputerItem
     {
         public String Name { get; set; }
         public String ComputerStateImage { get; set; }
@@ -15,7 +15,7 @@ namespace WpfApplication1
         public string computerNum { get; set; }
     }
 
-    class State
+    public class State
     {
         public const string ACTIVE = "ACTIVE";
         public const string CONNECTED = "CONNECTED";

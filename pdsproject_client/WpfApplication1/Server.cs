@@ -10,7 +10,7 @@ using CommunicationLibrary;
 
 namespace WpfApplication1
 {
-    class Server
+    public class Server
     {
         private ushort serverID;
         private Channel channel;

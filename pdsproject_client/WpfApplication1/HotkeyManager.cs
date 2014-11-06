@@ -11,7 +11,7 @@ using System.Windows;
 
 namespace WpfApplication1
 {
-    class HotkeyManager
+    public class HotkeyManager
     {
         IntPtr windowHandle;
         List<Hotkey> registeredHotkey;

@@ -17,7 +17,7 @@ using System.Windows.Interop;
 
 namespace WpfApplication1
 {
-    class InterceptEvents
+    public class InterceptEvents
     {
 
         private const int WH_KEYBOARD_LL = 13;
@@ -34,7 +34,7 @@ namespace WpfApplication1
         private static LowLevelMouseProc _proc_ = HookCallbackMouse;
 
         private static InputFactory inputFactory;
-        private static ChannelManager ChManager;
+        private ChannelManager channelMgr;
 
         private static HotkeyManager hotkey;
         
@@ -43,7 +43,7 @@ namespace WpfApplication1
 
         public InterceptEvents(ChannelManager ChannelManager, IntPtr windowHandle)
         {
-            ChManager = ChannelManager;
+            channelMgr = ChannelManager;
             inputFactory = new InputFactory();
             IntPtr hInstance = LoadLibrary("User32");
             _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
@@ -110,13 +110,13 @@ namespace WpfApplication1
         internal void OnSwitch(object sender, object param)
         {
             closeInterceptEvents();
-            openWorkareaWindow();
+            OpenWorkareaWindow();
         }
 
-        private void openWorkareaWindow()
+        private void OpenWorkareaWindow()
         {
-            WorkareaWindow wk = new WorkareaWindow();
-            List<string> computerNames = ChManager.GetComputerNames();
+            WorkareaWindow wk = new WorkareaWindow(this.channelMgr);
+            List<string> computerNames = channelMgr.GetComputerNames();
             wk.computerList.ItemsSource = CreateComputerItemList(computerNames);
             wk.Show();
         }

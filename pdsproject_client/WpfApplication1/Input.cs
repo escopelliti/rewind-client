@@ -12,7 +12,7 @@ namespace NativeInput
 {
 
     [StructLayout(LayoutKind.Explicit)]
-    struct INPUT
+    public struct INPUT
     {
         [FieldOffset(0)]
         public TYPE type;
@@ -40,7 +40,7 @@ namespace NativeInput
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    struct MOUSEINPUT
+    public struct MOUSEINPUT
     {
         public POINT pt;
         public uint mouseData;
@@ -51,7 +51,7 @@ namespace NativeInput
 
 
     [StructLayout(LayoutKind.Sequential)]
-    struct KEYBDINPUT
+    public struct KEYBDINPUT
     {
         public VirtualKeyCode wVk;
         public UInt16 wScan;
@@ -448,7 +448,7 @@ namespace NativeInput
     }
 
     [Flags]
-    internal enum KeyboardFlag : uint
+    public enum KeyboardFlag : uint
     {
         // KEYEVENTF_EXTENDEDKEY = 0x0001 (If specified, the scan code was preceded by a prefix byte that has the value 0xE0 (224).)
         ExtendedKey = 0x0001,
@@ -474,7 +474,7 @@ namespace NativeInput
     }
 
     [Flags]
-    internal enum MouseFlag : uint // UInt32
+    public enum MouseFlag : uint // UInt32
     {
         // Specifies that movement occurred.
         Move = 0x0001,

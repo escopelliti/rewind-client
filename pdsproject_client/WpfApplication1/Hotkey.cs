@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace WpfApplication1
 {
-    class Hotkey
+    public class Hotkey
     {
         private int idHotkey;
         HotkeyManager.KeyModifier kModifier;
