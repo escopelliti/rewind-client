@@ -66,14 +66,17 @@ namespace WpfApplication1
             items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
             items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
             items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
+            computerList.ItemsSource = items;
 
             
-            computerList.ItemsSource = items;
             Server s = new Server();
             s.ComputerName = "INSIDEMYHEAD";
+
             ChannelManager cm = new ChannelManager();
+            // TO DO ... Creazione dei server dal file di configurazione del client
             //cm.addServer(s);
             //cm.setCurrentServer(s);
+
             IntPtr windowHandle = new WindowInteropHelper(this).Handle;
             InterceptEvents ie = new InterceptEvents(cm,windowHandle);
            

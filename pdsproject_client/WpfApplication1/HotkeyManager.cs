@@ -16,23 +16,21 @@ namespace WpfApplication1
         IntPtr windowHandle;
         List<Hotkey> registeredHotkey;
         private static Dictionary<string, Delegate> commandActionDictionary;
-
-        ChannelManager cm;
-        
-        
+   
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
 
         //public delegate void OpenPanelEventHandler(Object sender, Object param);
         //public event OpenPanelEventHandler OpnePanelHandler;
 
+        private InterceptEvents ie;
 
-        public HotkeyManager(IntPtr Handle, List<Hotkey> hotkeys,ChannelManager channelManager )
+        public HotkeyManager(IntPtr Handle, List<Hotkey> hotkeys,InterceptEvents interceptEvent )
         {
             windowHandle = Handle;
-            cm = channelManager;
             registeredHotkey = new List<Hotkey>();
             commandActionDictionary = new Dictionary<string,Delegate>();
+            ie = interceptEvent;
 
             foreach (Hotkey h in hotkeys)
             {
@@ -113,7 +111,7 @@ namespace WpfApplication1
                 {
                     case "switchServer":
                         // Istanzio il delegato dell'evento
-                        SwitchServeHandler = new SwitchServerEventHandler(cm.OnSwitch);
+                        SwitchServeHandler = new SwitchServerEventHandler(ie.OnSwitch);
                         // Inserisco il comando nel Dictionary 
                         commandActionDictionary[h.Command] = new Action<Object>(obj => OnSwitch(new EventArgs()));
                         break;
