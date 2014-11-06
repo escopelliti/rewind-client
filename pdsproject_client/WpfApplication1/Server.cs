@@ -12,9 +12,16 @@ namespace WpfApplication1
 {
     class Server
     {
-        private UInt16 serverID;
+        private ushort serverID;
         private Channel channel;
         private string computerName;
+        private ushort dataPort;
+        private ushort cmdPort;
+
+        public Server()
+        {
+            serverID = 0;
+        }
 
         public UInt16 ServerID
         {
@@ -38,6 +45,17 @@ namespace WpfApplication1
             channel = ch;
         }
 
+        public UInt16 DataPort
+        {
+            get { return dataPort; }
+            set { dataPort = value; }
+        }
+
+        public UInt16 CmdPort
+        {
+            get { return cmdPort; }
+            set { cmdPort = value; }
+        }
     }
 }
 

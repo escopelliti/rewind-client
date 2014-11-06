@@ -12,48 +12,37 @@ namespace CommunicationLibrary
 {
     class ChannelManager
     {
-        private Server currentServer;
-        private Dictionary<UInt16,Server> serverDictionary;
-        private UInt16 lastServerId;
-        private static ClientCommunicationManager ccm;
-        bool flag;
-        
-        public ChannelManager() 
+        protected Server currentServer;
+        protected List<Server> serverConnected;
+        protected static ClientCommunicationManager ccm;
+
+
+        public ChannelManager()
         {
-            flag = true;
-            lastServerId = 0;            
-            InitilizeDictionary();
             ccm = new ClientCommunicationManager();
+            serverConnected = new List<Server>();
         }
 
+        public void sendInputToSever(NativeInput.INPUT inputToSend)
+        {
+            string json = JsonConvert.SerializeObject(inputToSend);
+            byte[] toSend = Encoding.Unicode.GetBytes(json);
+            ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
+            ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
+        }
+        
         public void AssignChannel(Server s)
         {
             Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            dataSocket = ccm.Connect(s.ComputerName, 12001, dataSocket);
+            dataSocket = ccm.Connect(s.ComputerName, s.DataPort, dataSocket);
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            cmdSocket = ccm.Connect(s.ComputerName, 12000, cmdSocket);
+            cmdSocket = ccm.Connect(s.ComputerName, s.CmdPort, cmdSocket);
             Channel ch = new Channel();
             ch.SetCmdSocket(cmdSocket);
             ch.SetDataSocket(dataSocket);
             s.SetChannel(ch);
         }
-
-        private void InitilizeDictionary()
-        {
-            serverDictionary = new Dictionary<ushort, Server>();
-        }
-
-        public void sendInputToSever(NativeInput.INPUT inputToSend)
-        {
-            if (flag)
-            {
-                string json = JsonConvert.SerializeObject(inputToSend);
-                byte[] toSend = Encoding.Unicode.GetBytes(json);
-                ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
-                ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
-            }
-        }
-        
+ 
         public Server getCurrentServer()
         {
             return currentServer;
@@ -64,36 +53,47 @@ namespace CommunicationLibrary
             currentServer = cs;
         }
 
-        public int addServer(Server s) 
+        public ushort FindFreeIdServer()
         {
-            lastServerId++;
+            ushort id = 0;
+            bool found = false;
+            
+            while (!found)
+            {
+                if (serverConnected.Exists(x => x.ServerID == id))
+                    id++;
+                else
+                    found = true;
+            }
+            return id;
+        }
+
+        public void addServer(Server s) 
+        {
+            s.ServerID = FindFreeIdServer(); 
             if (s.GetChannel() == null) {
                 AssignChannel(s);
             }
-            serverDictionary.Add(lastServerId,s);
-            return lastServerId;
+            serverConnected.Add(s);
         }
 
         public void deleteServer(Server s)
         {
-            serverDictionary.Remove(s.ServerID);
+            serverConnected.Remove(s);
         }
 
-        public void switchServer()
+        public List<string> GetComputerNames()
         {
-
+            List<string> computerNames = new List<string>();
+            foreach (Server s in serverConnected)
+            {
+                if (s != currentServer)
+                {
+                    computerNames.Add(s.ComputerName);
+                }
+            }
+                return computerNames;
         }
-
-        internal void OnSwitch(object sender, object param)
-        {
-            Console.WriteLine("Switch requested");
-            flag = false;
-        }
-
-        internal void OnSwitchEnd(object sender, object param)
-        {
-            Console.WriteLine("Switch end");
-            flag = true;
-        }
+   
     }
 }

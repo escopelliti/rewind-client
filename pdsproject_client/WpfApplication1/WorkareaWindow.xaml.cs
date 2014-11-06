@@ -41,7 +41,8 @@ namespace WpfApplication1
                 {
                     fixedDisplacement += fixedDisplacement;
                 }
-                int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);                
+                int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
+                
             }
         }
     }
