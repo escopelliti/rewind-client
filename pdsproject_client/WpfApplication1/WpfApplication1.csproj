@@ -78,6 +78,7 @@
     </Compile>
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelManager.cs" />
+    <Compile Include="ClipboardMgr.cs" />
     <Compile Include="ComputerItem.cs" />
     <Compile Include="FullScreenRemoteServerControl.xaml.cs">
       <DependentUpon>FullScreenRemoteServerControl.xaml</DependentUpon>
