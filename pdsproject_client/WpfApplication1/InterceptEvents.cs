@@ -73,10 +73,11 @@ namespace WpfApplication1
         {
             
             if (nCode >= 0)
-            {
+            {                
                 Message msg = new Message();
                 if (GetMessage(ref msg, IntPtr.Zero, 0, 0))
                 {
+                    Console.WriteLine(msg.Msg);
                     if (msg.Msg == (int)KeyboardMessages.WM_HOTKEY)
                     {
                         int id = msg.WParam.ToInt32();

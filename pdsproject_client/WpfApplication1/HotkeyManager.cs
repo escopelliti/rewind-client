@@ -156,7 +156,7 @@ namespace WpfApplication1
         
         public void HotkeyPressed(int id)
         {
-            string command = " ";
+            string command = null;
             foreach (Hotkey hotkeyElement in registeredHotkey)
             {
                 if (hotkeyElement.IdHotkey == id)
