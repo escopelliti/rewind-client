@@ -57,15 +57,8 @@ namespace WpfApplication1
             MyNotifyIcon.ContextMenu = this.contextMenu1;
 
             List<ComputerItem> items = new List<ComputerItem>();
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1", focusedImage = "tick.png" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "2" });
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "1" });
+            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "0", focusedImage = "tick.png" , computerID = 1});
+            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "1", computerID = 2 });
             computerList.ItemsSource = items;
 
             
@@ -77,8 +70,12 @@ namespace WpfApplication1
             //cm.addServer(s);
             //cm.setCurrentServer(s);
 
-            IntPtr windowHandle = new WindowInteropHelper(this).Handle;
-            InterceptEvents ie = new InterceptEvents(cm,windowHandle);
+            WorkareaWindow w = new WorkareaWindow(cm);
+            w.Show();
+            w.computerList.ItemsSource = items;
+
+            //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
+            //InterceptEvents ie = new InterceptEvents(cm,windowHandle);
            
         }
 
@@ -160,6 +157,13 @@ namespace WpfApplication1
         {
             // AT FIRST IT ASKS YOU A PSW
             //CODE TO SWITCH SERVER OR MAKE CURRENT THAT SPECIFIC SERVER
+        }
+
+        public static void OnSetNewServer(Object obj, Object ea)
+        {
+            ServerEventArgs sea = (ServerEventArgs)ea;
+            Server server = sea.Server;
+            //illuminami o dammi feedback su questo nuovo server 
         }
     }
 }

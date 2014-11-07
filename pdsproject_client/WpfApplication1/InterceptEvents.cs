@@ -45,11 +45,12 @@ namespace WpfApplication1
         {
             channelMgr = ChannelManager;
             inputFactory = new InputFactory();
-            IntPtr hInstance = LoadLibrary("User32");
-            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
-            hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
+            StartCapture();
+            CreateHotKeys(windowHandle);                   
+        }
 
-
+        private void CreateHotKeys(IntPtr windowHandle)
+        {
             //  TO DO ... Apre il file di configurazione e leggere le hotkey impostate dall'utente
             Hotkey hot = new Hotkey(0, HotkeyManager.KeyModifier.Control, Keys.A, "switchServer");
             Hotkey hot2 = new Hotkey(0, HotkeyManager.KeyModifier.Control, Keys.B, "openPanel");
@@ -58,12 +59,19 @@ namespace WpfApplication1
             List<Hotkey> hotkeyList = new List<Hotkey>();
             hotkeyList.Add(hot);
             hotkeyList.Add(hot2);
-            
-            hotkey = new HotkeyManager(windowHandle,hotkeyList,this);
-                      
+
+            hotkey = new HotkeyManager(windowHandle, hotkeyList, this);
         }
 
-        public void closeInterceptEvents()
+        private static void StartCapture()
+        {
+            IntPtr hInstance = LoadLibrary("User32");
+            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
+            hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
+        }
+
+
+        public void StopCapture()
         {
             UnhookWindowsHookEx(_hookID_);
             UnhookWindowsHookEx(hookID);
@@ -109,7 +117,7 @@ namespace WpfApplication1
 
         internal void OnSwitch(object sender, object param)
         {
-            closeInterceptEvents();
+            StopCapture();
             OpenWorkareaWindow();
         }
 
@@ -163,6 +171,11 @@ namespace WpfApplication1
 
         [DllImport("user32.dll")]
         private static extern bool GetMessage(ref Message lpMsg, IntPtr handle, uint mMsgFilterMain, uint mMsgFilerMax);
-    
+
+
+        public static void OnSetNewServer(object sender, object param)
+        {
+            StartCapture();
+        }
     }
 }

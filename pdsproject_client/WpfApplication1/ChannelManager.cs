@@ -14,12 +14,15 @@ namespace CommunicationLibrary
     {
         private Server currentServer;
         private List<Server> serverConnected;
-        private ClientCommunicationManager ccm;        
+        private ClientCommunicationManager ccm;
+        public byte[] CurrentToken { get; set; }
+        private TokenGenerator tokenGen;
 
         public ChannelManager()
         {            
             ccm = new ClientCommunicationManager();
-            serverConnected = new List<Server>();         
+            serverConnected = new List<Server>();
+            tokenGen = new TokenGenerator();
         }
 
         public long GetClipboardDimension()
@@ -27,6 +30,16 @@ namespace CommunicationLibrary
             byte[] dimension = new byte[5];
             ccm.Receive(dimension, currentServer.GetChannel().GetDataSocket());
             return Convert.ToInt64(dimension);
+        }
+
+        public void SendBytes(byte[] toSend)
+        {
+            ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
+        }
+
+        public void ReceiveAck()
+        {
+            ccm.Receive(new byte[4], currentServer.GetChannel().GetCmdSocket());
         }
 
         public void sendInputToSever(NativeInput.INPUT inputToSend)
@@ -114,22 +127,27 @@ namespace CommunicationLibrary
             currentServer = null;
         }
 
-        public void SendRequest(string requestType, string content)
+
+
+        public void SendRequest(string requestType, Object content)
         {
             StandardRequest stdReq = new StandardRequest();
             stdReq.type = requestType;
             stdReq.content = content;
             string jsonTosend = JsonConvert.SerializeObject(stdReq);
-            byte[] toSend = Encoding.Unicode.GetBytes(jsonTosend);
-            //attacca 16 byte univoci
+            byte[] requestToSend = Encoding.Unicode.GetBytes(jsonTosend);
+            byte[] toSend = new byte[requestToSend.Length + TokenGenerator.TOKEN_DIM];
+            CurrentToken = tokenGen.GetNewToken();
+            System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
+            System.Buffer.BlockCopy(requestToSend, 0, toSend, TokenGenerator.TOKEN_DIM, requestToSend.Length);
             ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
         }
 
-        public void StartNewConnection(int p)
+        public void StartNewConnection(int id)
         {
-            ///*id computer per prendersi da dictionary server e quindi settare currentServer*/
-            SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);
-            
+            Server newServer = this.serverConnected.Find(server => server.ServerID == id);
+            currentServer = newServer;
+            SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);            
         }
     }
 }

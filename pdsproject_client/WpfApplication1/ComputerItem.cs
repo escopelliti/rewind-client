@@ -13,6 +13,7 @@ namespace WpfApplication1
         public String focusedImage { get; set; }
         public State computerState { get; set; }
         public string computerNum { get; set; }
+        public int computerID { get; set; }
     }
 
     public class State

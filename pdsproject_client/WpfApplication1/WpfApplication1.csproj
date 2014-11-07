@@ -80,21 +80,31 @@
     <Compile Include="ChannelManager.cs" />
     <Compile Include="ClipboardMgr.cs" />
     <Compile Include="ComputerItem.cs" />
+    <Compile Include="ConfirmDataTransferWindow.xaml.cs">
+      <DependentUpon>ConfirmDataTransferWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FullScreenRemoteServerControl.xaml.cs">
       <DependentUpon>FullScreenRemoteServerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Hotkey.cs" />
     <Compile Include="HotkeyManager.cs" />
     <Compile Include="InterceptEvents.cs" />
+    <Compile Include="JSONFactory.cs" />
     <Compile Include="ProtocolUtils.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="ServerEventArgs.cs" />
     <Compile Include="StandardRequest.cs" />
+    <Compile Include="TokenGenerator.cs" />
     <Compile Include="WorkareaWindow.xaml.cs">
       <DependentUpon>WorkareaWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="AddComputerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ConfirmDataTransferWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FullScreenRemoteServerControl.xaml">
       <Generator>MSBuild:Compile</Generator>

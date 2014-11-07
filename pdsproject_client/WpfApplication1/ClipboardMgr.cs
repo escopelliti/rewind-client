@@ -10,6 +10,8 @@ using Protocol;
 using CommunicationLibrary;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.IO;
+using System.Collections.Specialized;
 
 namespace WpfApplication1
 {
@@ -19,13 +21,14 @@ namespace WpfApplication1
         public Stream audio { get; set; }
         public List<ProtocolUtils.FileStruct> filesToReceive { get; set; }
         public JObject receivedJson { get; set; }
-        
-        public ChannelManager ChannelMgr {get; set;}
+
+        public ChannelManager ChannelMgr { get; set; }
 
         private int currentFileNum;
+        private String currentContent;
 
         public ClipboardMgr()
-        {            
+        {
             currentFileNum = 0;
         }
 
@@ -144,6 +147,7 @@ namespace WpfApplication1
 
         //}
 
+        //
         private void CreateClipboardContent(JObject contentJson, string dir)
         {
             List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
@@ -179,14 +183,14 @@ namespace WpfApplication1
 
             List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
             files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
-            filesToReceive.AddRange(files);            
+            filesToReceive.AddRange(files);
 
             foreach (var prop in contentJson)
             {
                 if (prop.Key != ProtocolUtils.FILE)
                 {
                     Directory.CreateDirectory(ProtocolUtils.TMP_DIR + prop.Key);
-                    CreateClipboardContent((JObject)contentJson[prop.Key], prop.Key);                    
+                    CreateClipboardContent((JObject)contentJson[prop.Key], prop.Key);
                 }
             }
         }
@@ -204,12 +208,13 @@ namespace WpfApplication1
                 switch (type)
                 {
                     case ProtocolUtils.SET_CLIPBOARD_FILES:
-                        NewClipboardFileToPaste((JObject) receivedJson[ProtocolUtils.CONTENT]);
+                        NewClipboardFileToPaste((JObject)receivedJson[ProtocolUtils.CONTENT]);
                         MoveByteToFiles();
+                        currentContent = ProtocolUtils.SET_CLIPBOARD_FILES;
                         break;
                 }
 
-            } 
+            }
         }
 
         public bool GetClipboardDimensionOverFlow()
@@ -218,7 +223,6 @@ namespace WpfApplication1
             long dimension = this.ChannelMgr.GetClipboardDimension();
             if (dimension >= ProtocolUtils.CLIBPOARD_DIM_THRESHOLD)
             {
-                //apri finestra
                 return false;
             }
             else
@@ -226,13 +230,55 @@ namespace WpfApplication1
                 return true;
             }
         }
+
+        public void SendClipboard()
+        {
+            String[] fileDropListArray = RetrieveFileDropListArray();
+            string toSend = JSON.JSONFactory.CreateFileTransferJSONRequest(Protocol.ProtocolUtils.SET_CLIPBOARD_FILES, fileDropListArray);
+            this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
+
+            byte[] token = this.ChannelMgr.CurrentToken;
+            foreach (ProtocolUtils.FileStruct fileStruct in filesToReceive)
+            {
+                string currenFilePath = ProtocolUtils.TMP_DIR + fileStruct.dir + "\\" + fileStruct.name;
+                byte[] bytesFileToSend = new byte[1024];
+                if (File.Exists(currenFilePath))
+                {
+                    byte[] bytesFile = new byte[1024 - TokenGenerator.TOKEN_DIM];
+                    using (var stream = new FileStream(currenFilePath, FileMode.Open))
+                    {
+                        int bytesRead;
+                        while ((bytesRead = stream.Read(bytesFile, 0, bytesFile.Length)) > 0)
+                        {
+                            byte[] byteToSend = new byte[bytesRead + TokenGenerator.TOKEN_DIM];
+                            System.Buffer.BlockCopy(token, 0, byteToSend, 0, TokenGenerator.TOKEN_DIM);
+                            System.Buffer.BlockCopy(bytesFile, 0, byteToSend, TokenGenerator.TOKEN_DIM, bytesRead);
+
+                            this.ChannelMgr.SendBytes(byteToSend);
+                            this.ChannelMgr.ReceiveAck();
+                        }
+
+                    }
+                }
+            }
+        }
+
+        private string[] RetrieveFileDropListArray()
+        {
+            StringCollection strColl = new StringCollection();            
+            foreach (String fullNameFiles in Directory.GetFiles(ProtocolUtils.TMP_DIR))
+            {
+                FileInfo fileInfo = new FileInfo(fullNameFiles);
+                strColl.Add(fileInfo.Name);
+            }
+            foreach (String fullNameDir in Directory.GetDirectories(ProtocolUtils.TMP_DIR)) 
+            {
+                DirectoryInfo dir = new DirectoryInfo(fullNameDir);
+                strColl.Add(dir.Name);
+            }
+            String[] fileDropList = new String[strColl.Count];
+            strColl.CopyTo(fileDropList, 0);
+            return fileDropList;
+        }
     }
-    //struct RequestState
-    //{
-    //    public Client client;
-    //    public byte[] data;
-    //    public JObject stdRequest;
-    //    public string type;
-    //    public string token;
-    //}
 }

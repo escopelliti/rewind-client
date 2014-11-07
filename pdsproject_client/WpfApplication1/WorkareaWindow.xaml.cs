@@ -21,12 +21,17 @@ namespace WpfApplication1
     /// </summary>
     public partial class WorkareaWindow : Window
     {
-        public ChannelManager channelMgr;
+        public ChannelManager channelMgr { get; set; }
+        public delegate void SetNewServerOnGUIEventHandler(Object sender, Object param);
+        public event SetNewServerOnGUIEventHandler setNewServerOnGUIHandler; 
+
 
         public WorkareaWindow(ChannelManager channelMgr) 
         {
             this.channelMgr = channelMgr;
-            InitializeComponent();
+            InitializeComponent();            
+            this.setNewServerOnGUIHandler += MainWindow.OnSetNewServer;
+            this.setNewServerOnGUIHandler += InterceptEvents.OnSetNewServer;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -34,48 +39,53 @@ namespace WpfApplication1
             this.KeyDown += WorkareaWindow_KeyDown;            
         }
 
-        public void Show(ChannelManager channelMgr)
+        public void OnSetNewServer(ServerEventArgs sea)
         {
-            this.channelMgr = channelMgr;
-            this.Show();
-        }
+            SetNewServerOnGUIEventHandler handler = setNewServerOnGUIHandler;
+            if (handler != null)
+            {
+                handler(this, sea);
+            }
 
+        }
+        
         private void WorkareaWindow_KeyDown(object sender, KeyEventArgs e)
         {
+            this.Close();
             string pattern = @"[0-9]";
-            string input = e.Key.ToString();
+            string input = e.Key.ToString();            
             int fixedDisplacement = 48;
             if (Regex.IsMatch(input, pattern))
             {
                 if (e.Key >= Key.NumPad0)
                 {
                     fixedDisplacement += fixedDisplacement;
-                }
+                }                
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
-                //prendersi il nome del computer dalla lista
-                Thread switchThread = new Thread(new ThreadStart(beginSwitchOperations));
-                switchThread.Start();
+                ItemCollection items = this.computerList.Items;
+                ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
+                Thread switchThread = new Thread(() => beginSwitchOperations(ci.computerID));
+                switchThread.Start();                
             }
         }
 
-        private void beginSwitchOperations()
+        private void beginSwitchOperations(int serverNum)
         {
             ClipboardMgr clipboardMgr = new ClipboardMgr();
             clipboardMgr.ChannelMgr = channelMgr;
-            if (clipboardMgr.GetClipboardDimensionOverFlow())
+            if (!clipboardMgr.GetClipboardDimensionOverFlow())
             {
                 clipboardMgr.ReceiveClipboard();                
                 this.channelMgr.EndConnectionToCurrentServer();
-                this.channelMgr.StartNewConnection(0);//FAKE e OCCHIO GESTIONE EXCEPTIONS
-                //invia clipboard
-                //eventi per
-                //          cambio feddback visivo in GUI control panel
-                //          sblocco interceptevents : delegato piu evento che sblocca hook
+                this.channelMgr.StartNewConnection(serverNum);//OCCHIO GESTIONE EXCEPTIONS
+                OnSetNewServer(new ServerEventArgs(this.channelMgr.getCurrentServer()));
+                clipboardMgr.SendClipboard();
+                                              
             }
             else
             {
-                //open window con callback si che fa receiveclipboard e invia clibpoard
-                //invia struttura received files + ciclo come in form1 di invio del contenuto della cartella tmp
+                ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(serverNum, clipboardMgr, this, channelMgr);
+                confirmWin.Show();               
             }
             
         }
