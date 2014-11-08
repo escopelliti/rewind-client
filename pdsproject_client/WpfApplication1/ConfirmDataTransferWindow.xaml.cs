@@ -22,12 +22,13 @@ namespace WpfApplication1
     {
         private WorkareaWindow win;
         private ChannelManager channelMgr;
-        private int dimension;
+        private int computerID;
         private ClipboardMgr clipboardMgr;
 
-        public ConfirmDataTransferWindow(int serverNum, ClipboardMgr clipboardMgr, WorkareaWindow win, ChannelManager channelMgr)
+        public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, WorkareaWindow win, ChannelManager channelMgr)
         {
             InitializeComponent();
+            this.computerID = computerID;
             this.clipboardMgr = clipboardMgr;
             this.channelMgr = channelMgr;
             this.win = win;            
@@ -37,7 +38,7 @@ namespace WpfApplication1
         {
             clipboardMgr.ReceiveClipboard();
             this.channelMgr.EndConnectionToCurrentServer();
-            this.channelMgr.StartNewConnection(0);//FAKE e OCCHIO GESTIONE EXCEPTIONS
+            this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
             win.OnSetNewServer(new ServerEventArgs(this.channelMgr.getCurrentServer()));
             clipboardMgr.SendClipboard();
         }

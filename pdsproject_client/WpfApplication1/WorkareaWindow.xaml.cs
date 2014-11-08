@@ -32,11 +32,12 @@ namespace WpfApplication1
             InitializeComponent();            
             this.setNewServerOnGUIHandler += MainWindow.OnSetNewServer;
             this.setNewServerOnGUIHandler += InterceptEvents.OnSetNewServer;
+            this.KeyDown += WorkareaWindow_KeyDown;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.KeyDown += WorkareaWindow_KeyDown;            
+                   
         }
 
         public void OnSetNewServer(ServerEventArgs sea)
@@ -46,12 +47,11 @@ namespace WpfApplication1
             {
                 handler(this, sea);
             }
-
         }
         
         private void WorkareaWindow_KeyDown(object sender, KeyEventArgs e)
         {
-            this.Close();
+            this.Close();           
             string pattern = @"[0-9]";
             string input = e.Key.ToString();            
             int fixedDisplacement = 48;
@@ -69,7 +69,7 @@ namespace WpfApplication1
             }
         }
 
-        private void beginSwitchOperations(int serverNum)
+        private void beginSwitchOperations(int computerID)
         {
             ClipboardMgr clipboardMgr = new ClipboardMgr();
             clipboardMgr.ChannelMgr = channelMgr;
@@ -77,17 +77,16 @@ namespace WpfApplication1
             {
                 clipboardMgr.ReceiveClipboard();                
                 this.channelMgr.EndConnectionToCurrentServer();
-                this.channelMgr.StartNewConnection(serverNum);//OCCHIO GESTIONE EXCEPTIONS
+                this.channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
                 OnSetNewServer(new ServerEventArgs(this.channelMgr.getCurrentServer()));
                 clipboardMgr.SendClipboard();
-                                              
+                this.channelMgr.ResetTokenGen();                         
             }
             else
             {
-                ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(serverNum, clipboardMgr, this, channelMgr);
+                ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(computerID, clipboardMgr, this, channelMgr);
                 confirmWin.Show();               
-            }
-            
+            }            
         }
     }
 }

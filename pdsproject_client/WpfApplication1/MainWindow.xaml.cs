@@ -56,43 +56,38 @@ namespace WpfApplication1
 
             MyNotifyIcon.ContextMenu = this.contextMenu1;
 
+            //leggi da file di conf i server;
+            //capisci quali sono quelli accesi;
+            //quelli accesi li passi a channelmgr (gli assegnerà un id);
+            //assegno l'id a computerItem per quelli accesi solamente (con immagine differente);
+            //do la lista di computer item al form;
+
             List<ComputerItem> items = new List<ComputerItem>();
-            items.Add(new ComputerItem() { Name = "TEST_PC", ComputerStateImage = "connComputer.png", computerNum = "0", focusedImage = "tick.png" , computerID = 1});
-            items.Add(new ComputerItem() { Name = "poppo", ComputerStateImage = "connComputer.png", computerNum = "1", computerID = 2 });
+            items.Add(new ComputerItem() { Name = "TEST_PC", computerNum = "0"});
+            items.Add(new ComputerItem() { Name = "INSIDEMYHEAD", ComputerStateImage = "connComputer.png", focusedImage = "tick.png", computerNum = "1", computerID = 0 });
+            items.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
             computerList.ItemsSource = items;
 
             
-            Server s = new Server();
-            s.ComputerName = "INSIDEMYHEAD";
+            Server alessandra = new Server();
+            alessandra.ComputerName = "bernoulli";
+            alessandra.CmdPort = 12000;
+            alessandra.DataPort = 12001;
+            Server alberto = new Server();
+            alberto.CmdPort = 12000;
+            alberto.DataPort = 12001;
+            alberto.ComputerName = "NEW_PC_PORTABLE";
 
             ChannelManager cm = new ChannelManager();
             // TO DO ... Creazione dei server dal file di configurazione del client
-            //cm.addServer(s);
-            //cm.setCurrentServer(s);
-
-            WorkareaWindow w = new WorkareaWindow(cm);
-            w.Show();
-            w.computerList.ItemsSource = items;
-
-            //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
-            //InterceptEvents ie = new InterceptEvents(cm,windowHandle);
+            cm.addServer(alessandra);
+            cm.addServer(alberto);
+            cm.setCurrentServer(alessandra);            
+            IntPtr windowHandle = new WindowInteropHelper(this).Handle;
+            InterceptEvents ie = new InterceptEvents(cm, windowHandle);
            
         }
-
-
-        //public void StartTimer()
-        //{
-        //    System.Windows.Threading.DispatcherTimer myDispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-        //    myDispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 500); 
-        //    myDispatcherTimer.Tick += new EventHandler(Each_Tick);            
-        //    myDispatcherTimer.Start();
-        //}
-
-        //public void Each_Tick(object o, EventArgs sender)
-        //{
-        //    MyNotifyIcon.Visible = !MyNotifyIcon.Visible;         
-        //}
-
+        
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // TO BE CHANGED BUT IT WORKS
@@ -129,7 +124,6 @@ namespace WpfApplication1
             this.Close();
         }
 
-
         private void MyNotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             this.WindowState = WindowState.Normal;
@@ -141,6 +135,8 @@ namespace WpfApplication1
             if (this.WindowState == WindowState.Minimized)
             {
                 this.ShowInTaskbar = false;
+
+                //TO BE CHANGED
                 MyNotifyIcon.BalloonTipTitle = "Minimize Sucessful";
                 MyNotifyIcon.BalloonTipText = "Minimized the app ";
                 MyNotifyIcon.ShowBalloonTip(400);
@@ -163,6 +159,7 @@ namespace WpfApplication1
         {
             ServerEventArgs sea = (ServerEventArgs)ea;
             Server server = sea.Server;
+
             //illuminami o dammi feedback su questo nuovo server 
         }
     }

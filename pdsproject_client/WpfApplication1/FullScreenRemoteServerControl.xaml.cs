@@ -19,9 +19,45 @@ namespace WpfApplication1
     /// </summary>
     public partial class FullScreenRemoteServerControl : Window
     {
-        public FullScreenRemoteServerControl()
+        private List<Hotkey> hotkeyList;
+        private Server currentServer;
+        private List<Server> computerList;
+
+        public FullScreenRemoteServerControl(List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList)
         {
+            this.hotkeyList = hotkeyList;
+            this.currentServer = currentServer;
+            this.computerList = computerList;
             InitializeComponent();
+            InitGUI();
+        }
+
+        private void InitGUI()
+        {
+            foreach (Hotkey hotkey in hotkeyList)
+            {
+                switch (hotkey.Command)
+                {
+                    case HotkeyManager.SWITCH_SERVER_CMD:
+                        this.switchServerShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                    case HotkeyManager.OPEN_PANEL_CMD:
+                        this.controlPanelShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                }
+            }
+            this.currentServerNameLabel.Content = currentServer;
+            this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+        }
+
+        private List<String> GetComputerNameArrayFromServer()
+        {
+            List<String> connComputers = new List<string>();
+            foreach (Server s in computerList)
+            {
+                connComputers.Add(s.ComputerName);
+            }
+            return connComputers;
         }
     }
 }

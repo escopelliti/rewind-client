@@ -10,7 +10,6 @@ using Protocol;
 using CommunicationLibrary;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using System.IO;
 using System.Collections.Specialized;
 
 namespace WpfApplication1
@@ -30,6 +29,8 @@ namespace WpfApplication1
         public ClipboardMgr()
         {
             currentFileNum = 0;
+            currentContent = String.Empty;
+            filesToReceive = new List<ProtocolUtils.FileStruct>();
         }
 
         //private void ReceiveDataForClipboard(Object source, Object param)
@@ -75,9 +76,10 @@ namespace WpfApplication1
 
         private void MoveByteToFiles()
         {
-            byte[] bufferData = this.ChannelMgr.ReceiveData();
-            while (bufferData != null)
+            
+            while (true)            
             {
+                byte[] bufferData = this.ChannelMgr.ReceiveData();
                 if (currentFileNum < filesToReceive.Count)
                 {
                     ProtocolUtils.FileStruct currentFile = filesToReceive.ElementAt(currentFileNum);
@@ -88,12 +90,14 @@ namespace WpfApplication1
                         stream.Close();
                         //ACK
                         this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
-                    }
+                   } 
                     if (new FileInfo(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name).Length == currentFile.size)
                     {
                         currentFileNum++;
                         if (currentFileNum == filesToReceive.Count)
                         {
+                            currentFileNum = 0;
+                            //filesToReceive.Clear();
                             break;
                         }
                     }
@@ -152,7 +156,7 @@ namespace WpfApplication1
         {
             List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
             files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
-            filesToReceive.Concat(files);
+            filesToReceive.AddRange(files);
             foreach (var prop in contentJson)
             {
                 if (prop.Key != ProtocolUtils.FILE)
@@ -197,7 +201,6 @@ namespace WpfApplication1
 
         public void ReceiveClipboard()
         {
-
             this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_CONTENT, String.Empty);
             byte[] buffer = this.ChannelMgr.ReceiveData();
             if (buffer != null)
@@ -223,20 +226,22 @@ namespace WpfApplication1
             long dimension = this.ChannelMgr.GetClipboardDimension();
             if (dimension >= ProtocolUtils.CLIBPOARD_DIM_THRESHOLD)
             {
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
         }
 
         public void SendClipboard()
         {
+            
             String[] fileDropListArray = RetrieveFileDropListArray();
+            this.ChannelMgr.AssignNewToken();
             string toSend = JSON.JSONFactory.CreateFileTransferJSONRequest(Protocol.ProtocolUtils.SET_CLIPBOARD_FILES, fileDropListArray);
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
-
+            this.ChannelMgr.ReceiveAck();
             byte[] token = this.ChannelMgr.CurrentToken;
             foreach (ProtocolUtils.FileStruct fileStruct in filesToReceive)
             {
@@ -259,7 +264,7 @@ namespace WpfApplication1
                         }
 
                     }
-                }
+                }                
             }
         }
 
@@ -268,13 +273,13 @@ namespace WpfApplication1
             StringCollection strColl = new StringCollection();            
             foreach (String fullNameFiles in Directory.GetFiles(ProtocolUtils.TMP_DIR))
             {
-                FileInfo fileInfo = new FileInfo(fullNameFiles);
-                strColl.Add(fileInfo.Name);
+                //FileInfo fileInfo = new FileInfo(fullNameFiles);
+                strColl.Add(fullNameFiles);
             }
             foreach (String fullNameDir in Directory.GetDirectories(ProtocolUtils.TMP_DIR)) 
             {
-                DirectoryInfo dir = new DirectoryInfo(fullNameDir);
-                strColl.Add(dir.Name);
+                //DirectoryInfo dir = new DirectoryInfo(fullNameDir);
+                strColl.Add(fullNameDir);
             }
             String[] fileDropList = new String[strColl.Count];
             strColl.CopyTo(fileDropList, 0);

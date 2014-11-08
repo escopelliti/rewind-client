@@ -130,7 +130,6 @@ namespace NativeInput
 
         }
 
-
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         internal static extern short GetKeyState(int virtualKeyCode);
 

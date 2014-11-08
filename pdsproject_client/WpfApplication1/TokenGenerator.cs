@@ -15,6 +15,11 @@ namespace WpfApplication1
             this.tokenList = new List<Guid>();
         }
 
+        public void Reset()
+        {
+            this.tokenList.Clear();
+        }
+
         public byte[] GetNewToken()
         {
             byte[] token;
@@ -25,7 +30,6 @@ namespace WpfApplication1
             }
             token = guid.ToByteArray();
             return token;
-        } 
-
+        }
     }
 }

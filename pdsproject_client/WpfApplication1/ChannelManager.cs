@@ -13,7 +13,7 @@ namespace CommunicationLibrary
     public class ChannelManager
     {
         private Server currentServer;
-        private List<Server> serverConnected;
+        public List<Server> ConnectedServer { get; set; }
         private ClientCommunicationManager ccm;
         public byte[] CurrentToken { get; set; }
         private TokenGenerator tokenGen;
@@ -21,25 +21,30 @@ namespace CommunicationLibrary
         public ChannelManager()
         {            
             ccm = new ClientCommunicationManager();
-            serverConnected = new List<Server>();
+            ConnectedServer = new List<Server>();
             tokenGen = new TokenGenerator();
         }
 
         public long GetClipboardDimension()
         {
-            byte[] dimension = new byte[5];
-            ccm.Receive(dimension, currentServer.GetChannel().GetDataSocket());
-            return Convert.ToInt64(dimension);
+            byte[] data = new byte[16];
+            int bytesRead = ccm.Receive(data, currentServer.GetChannel().GetCmdSocket());
+            byte[] dimension = new byte[bytesRead];
+            System.Buffer.BlockCopy(data, 0, dimension, 0, bytesRead);
+            return BitConverter.ToInt64(dimension, 0);
         }
 
-        public void SendBytes(byte[] toSend)
+        public void SendBytes(byte[] jsonToSend)
         {
+            byte[] toSend = new byte[jsonToSend.Length + TokenGenerator.TOKEN_DIM];            
+            System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
+            System.Buffer.BlockCopy(jsonToSend, 0, toSend, TokenGenerator.TOKEN_DIM, jsonToSend.Length);
             ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
         }
 
         public void ReceiveAck()
         {
-            ccm.Receive(new byte[4], currentServer.GetChannel().GetCmdSocket());
+            ccm.Receive(new byte[16], currentServer.GetChannel().GetCmdSocket());
         }
 
         public void sendInputToSever(NativeInput.INPUT inputToSend)
@@ -79,7 +84,7 @@ namespace CommunicationLibrary
             
             while (!found)
             {
-                if (serverConnected.Exists(x => x.ServerID == id))
+                if (ConnectedServer.Exists(x => x.ServerID == id))
                     id++;
                 else
                     found = true;
@@ -93,32 +98,37 @@ namespace CommunicationLibrary
             if (s.GetChannel() == null) {
                 AssignChannel(s);
             }
-            serverConnected.Add(s);
+            ConnectedServer.Add(s);
         }
 
         public void deleteServer(Server s)
         {
-            serverConnected.Remove(s);
+            ConnectedServer.Remove(s);
         }
 
-        public List<string> GetComputerNames()
+        public List<ComputerItem> GetComputerItemList()
         {
-            List<string> computerNames = new List<string>();
-            foreach (Server s in serverConnected)
+            List<ComputerItem> connectedComputers = new List<ComputerItem>();
+            ushort idItem = 0;
+            foreach (Server s in ConnectedServer)
             {
                 if (s != currentServer)
                 {
-                    computerNames.Add(s.ComputerName);
+                    connectedComputers.Add(new ComputerItem()
+                    { Name = s.ComputerName, ComputerStateImage = "connComputer.png", computerNum = idItem.ToString(), computerID = s.ServerID });
+                    idItem++;
                 }
             }
-                return computerNames;
+            return connectedComputers;
         }
 
         public byte[] ReceiveData()
         {
             byte[] buffer = new byte[1024];
             int bytesRead = ccm.Receive(buffer, currentServer.GetChannel().GetCmdSocket());
-            return bytesRead > 0 ? buffer : null;
+            byte[] data = new byte[bytesRead];
+            System.Buffer.BlockCopy(buffer, 0, data, 0, bytesRead);            
+            return bytesRead > 0 ? data : null;
         }
 
         public void EndConnectionToCurrentServer()
@@ -143,11 +153,20 @@ namespace CommunicationLibrary
             ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
         }
 
+        public void AssignNewToken() {
+            CurrentToken = tokenGen.GetNewToken();
+        }
+
         public void StartNewConnection(int id)
         {
-            Server newServer = this.serverConnected.Find(server => server.ServerID == id);
+            Server newServer = this.ConnectedServer.Find(server => server.ServerID == id);
             currentServer = newServer;
             SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);            
+        }
+
+        public void ResetTokenGen()
+        {
+            this.tokenGen.Reset();
         }
     }
 }

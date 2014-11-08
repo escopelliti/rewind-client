@@ -13,8 +13,8 @@ namespace WpfApplication1
 {
     public class HotkeyManager
     {
-        IntPtr windowHandle;
-        List<Hotkey> registeredHotkey;
+        private IntPtr windowHandle;
+        public List<Hotkey> RegisteredHotkey {get;set;}
         private static Dictionary<string, Delegate> commandActionDictionary;
    
         public delegate void SwitchServerEventHandler(Object sender, Object param);
@@ -23,13 +23,16 @@ namespace WpfApplication1
         //public delegate void OpenPanelEventHandler(Object sender, Object param);
         //public event OpenPanelEventHandler OpnePanelHandler;
 
+        public const string SWITCH_SERVER_CMD = "SWITCH_SERVER";
+        public const string OPEN_PANEL_CMD = "OPEN_PANEL";
+
         private InterceptEvents ie;
 
         public HotkeyManager(IntPtr Handle, List<Hotkey> hotkeys,InterceptEvents interceptEvent )
         {
             windowHandle = Handle;
-            registeredHotkey = new List<Hotkey>();
-            commandActionDictionary = new Dictionary<string,Delegate>();
+            RegisteredHotkey = new List<Hotkey>();
+            commandActionDictionary = new Dictionary<string, Delegate>();
             ie = interceptEvent;
 
             foreach (Hotkey h in hotkeys)
@@ -52,9 +55,9 @@ namespace WpfApplication1
 
         public void DeleteHotekey(Hotkey h)
         {
-            if (registeredHotkey.Contains(h))
+            if (RegisteredHotkey.Contains(h))
             {
-                registeredHotkey.Remove(h);
+                RegisteredHotkey.Remove(h);
                 if (!UnregisterHotKey(windowHandle, h.IdHotkey))
                 {
                     throw new InvalidOperationException("unable to unregister hotkey");
@@ -71,25 +74,25 @@ namespace WpfApplication1
 
         public void AddHotkey(Hotkey h)
         {
-            if (registeredHotkey.Exists(x => x.Command == h.Command))
+            if (RegisteredHotkey.Exists(x => x.Command == h.Command))
             {
-                List<Hotkey> toCancelHotkeys = registeredHotkey.FindAll(x => x.Command == h.Command);
+                List<Hotkey> toCancelHotkeys = RegisteredHotkey.FindAll(x => x.Command == h.Command);
                 foreach (Hotkey hotkeyElement in toCancelHotkeys)
                 {
                     if (UnregisterHotKey(windowHandle, hotkeyElement.IdHotkey))
                     {
-                        registeredHotkey.Remove(hotkeyElement);
+                        RegisteredHotkey.Remove(hotkeyElement);
                     }
                 }
             }
 
-            if (registeredHotkey.Exists(x => (x.KModifier == h.KModifier && x.Key == h.Key)))
+            if (RegisteredHotkey.Exists(x => (x.KModifier == h.KModifier && x.Key == h.Key)))
             {
                 MessageBox.Show("Non puoi inserire due combinazioni di tasti uguali",
                     "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
             
-            if (registeredHotkey.Exists(x => x.IdHotkey == h.IdHotkey))
+            if (RegisteredHotkey.Exists(x => x.IdHotkey == h.IdHotkey))
                 h.IdHotkey = FindFreeIdHotkey();
 
             try
@@ -100,6 +103,7 @@ namespace WpfApplication1
             {
                 MessageBox.Show("Errore durante la registrazione della hotkey",
                     "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Error);
+                //scrivi log
             }
         }
         
@@ -109,21 +113,21 @@ namespace WpfApplication1
             {
                 switch (h.Command)
                 {
-                    case "switchServer":
+                    case SWITCH_SERVER_CMD:
                         // Istanzio il delegato dell'evento
                         SwitchServeHandler = new SwitchServerEventHandler(ie.OnSwitch);
                         // Inserisco il comando nel Dictionary 
                         commandActionDictionary[h.Command] = new Action<Object>(obj => OnSwitch(new EventArgs()));
                         break;
 
-                    case "openPanel":
+                    case OPEN_PANEL_CMD:
                         break;
 
                     default:
                         break;
                 }
 
-                registeredHotkey.Add(h);
+                RegisteredHotkey.Add(h);
             }
             else
             {
@@ -137,7 +141,7 @@ namespace WpfApplication1
             bool found = false;
             while (!found)
             {
-                if (registeredHotkey.Exists(x => x.IdHotkey == id))
+                if (RegisteredHotkey.Exists(x => x.IdHotkey == id))
                     id++;
                 else
                     found = true;
@@ -157,7 +161,7 @@ namespace WpfApplication1
         public void HotkeyPressed(int id)
         {
             string command = null;
-            foreach (Hotkey hotkeyElement in registeredHotkey)
+            foreach (Hotkey hotkeyElement in RegisteredHotkey)
             {
                 if (hotkeyElement.IdHotkey == id)
                 {
@@ -167,14 +171,13 @@ namespace WpfApplication1
             }
         }
 
-
         public enum KeyModifier
         {
             None = 0,
             Alt = 1,
             Control = 2,
             Shift = 4,
-            WinKey = 8
+            WinKey = 8            
         }
 
 
