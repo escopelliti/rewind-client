@@ -73,20 +73,20 @@ namespace WpfApplication1
             //alessandra.ComputerName = "bernoulli";
             //alessandra.CmdPort = 12000;
             //alessandra.DataPort = 12001;
-            Server alberto = new Server();
-            alberto.CmdPort = 12000;
-            alberto.DataPort = 12001;
-            alberto.ComputerName = "NEW_PC_PORTABLE";
+            //Server alberto = new Server();
+            //alberto.CmdPort = 12000;
+            //alberto.DataPort = 12001;
+            //alberto.ComputerName = "NEW_PC_PORTABLE";
 
-            ChannelManager cm = new ChannelManager();
-            // TO DO ... Creazione dei server dal file di configurazione del client
-            //cm.addServer(alessandra);
-            cm.addServer(alberto);
-            cm.setCurrentServer(alberto);            
-            IntPtr windowHandle = new WindowInteropHelper(this).Handle;
-            InterceptEvents ie = new InterceptEvents(cm, windowHandle);
-           
+            //ChannelManager cm = new ChannelManager();
+            //// TO DO ... Creazione dei server dal file di configurazione del client
+            ////cm.addServer(alessandra);
+            //cm.addServer(alberto);
+            //cm.setCurrentServer(alberto);            
+            //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
+            //InterceptEvents ie = new InterceptEvents(cm, windowHandle);
 
+            Discovery.ServiceDiscovery sd = new Discovery.ServiceDiscovery();
            
         }
         
