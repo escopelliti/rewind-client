@@ -69,10 +69,10 @@ namespace WpfApplication1
             computerList.ItemsSource = items;
 
             
-            Server alessandra = new Server();
-            alessandra.ComputerName = "bernoulli";
-            alessandra.CmdPort = 12000;
-            alessandra.DataPort = 12001;
+            //Server alessandra = new Server();
+            //alessandra.ComputerName = "bernoulli";
+            //alessandra.CmdPort = 12000;
+            //alessandra.DataPort = 12001;
             Server alberto = new Server();
             alberto.CmdPort = 12000;
             alberto.DataPort = 12001;
@@ -80,11 +80,13 @@ namespace WpfApplication1
 
             ChannelManager cm = new ChannelManager();
             // TO DO ... Creazione dei server dal file di configurazione del client
-            cm.addServer(alessandra);
+            //cm.addServer(alessandra);
             cm.addServer(alberto);
-            cm.setCurrentServer(alessandra);            
+            cm.setCurrentServer(alberto);            
             IntPtr windowHandle = new WindowInteropHelper(this).Handle;
             InterceptEvents ie = new InterceptEvents(cm, windowHandle);
+           
+
            
         }
         

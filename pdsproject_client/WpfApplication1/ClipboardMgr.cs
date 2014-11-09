@@ -22,13 +22,11 @@ namespace WpfApplication1
         public JObject receivedJson { get; set; }
 
         public ChannelManager ChannelMgr { get; set; }
-
-        private int currentFileNum;
+        
         private String currentContent;
 
         public ClipboardMgr()
-        {
-            currentFileNum = 0;
+        {            
             currentContent = String.Empty;
             filesToReceive = new List<ProtocolUtils.FileStruct>();
         }
@@ -76,34 +74,40 @@ namespace WpfApplication1
 
         private void MoveByteToFiles()
         {
-            
-            while (true)            
+            int currentFileNum = 0;
+            this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
+            long dim = 0;
+            ProtocolUtils.FileStruct currentFile = filesToReceive.ElementAt(currentFileNum);
+            //stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append);
+            while (currentFileNum < filesToReceive.Count)
             {
-                byte[] bufferData = this.ChannelMgr.ReceiveData();
-                if (currentFileNum < filesToReceive.Count)
-                {
-                    ProtocolUtils.FileStruct currentFile = filesToReceive.ElementAt(currentFileNum);
 
-                    using (var stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append))
-                    {
-                        stream.Write(bufferData, 0, bufferData.Length);
-                        stream.Close();
-                        //ACK
-                        this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
-                   } 
-                    if (new FileInfo(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name).Length == currentFile.size)
+                byte[] bufferData = this.ChannelMgr.ReceiveData();
+                using (var stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append))
+                {
+                    stream.Write(bufferData, 0, bufferData.Length);
+                    dim += bufferData.Length;
+                    //ACK
+                    this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
+
+                    if (dim == currentFile.size)
                     {
                         currentFileNum++;
+                        dim = 0;
+                        stream.Close();
                         if (currentFileNum == filesToReceive.Count)
                         {
-                            currentFileNum = 0;
-                            //filesToReceive.Clear();
                             break;
                         }
+                        currentFile = filesToReceive.ElementAt(currentFileNum);
+                        
+
                     }
-                }
+
+                }    
             }
         }
+
 
         private static void DeleteFileDirContent(string toRemove)
         {
@@ -154,15 +158,22 @@ namespace WpfApplication1
         //
         private void CreateClipboardContent(JObject contentJson, string dir)
         {
+            string path = dir;
             List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
-            files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
-            filesToReceive.AddRange(files);
+            try {
+                files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
+                filesToReceive.AddRange(files);
+            }
+            catch (NullReferenceException ex)
+            {
+                ;
+            }
             foreach (var prop in contentJson)
             {
                 if (prop.Key != ProtocolUtils.FILE)
                 {
-                    Directory.CreateDirectory(ProtocolUtils.TMP_DIR + dir + "\\" + prop.Key);
-                    CreateClipboardContent((JObject)contentJson[prop.Key], prop.Key);
+                    Directory.CreateDirectory(ProtocolUtils.TMP_DIR + path + "\\" + prop.Key);
+                    CreateClipboardContent((JObject)contentJson[prop.Key], path + "\\" + prop.Key);
                 }
             }
         }
@@ -186,8 +197,14 @@ namespace WpfApplication1
             DeleteFileDirContent(ProtocolUtils.TMP_DIR);
 
             List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
-            files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
-            filesToReceive.AddRange(files);
+            try
+            {
+                files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
+                filesToReceive.AddRange(files);
+            } catch (NullReferenceException ex)
+            {
+                ;
+            }
 
             foreach (var prop in contentJson)
             {
@@ -236,7 +253,7 @@ namespace WpfApplication1
 
         public void SendClipboard()
         {
-            
+            //this.ChannelMgr.ReceiveAck();
             String[] fileDropListArray = RetrieveFileDropListArray();
             this.ChannelMgr.AssignNewToken();
             string toSend = JSON.JSONFactory.CreateFileTransferJSONRequest(Protocol.ProtocolUtils.SET_CLIPBOARD_FILES, fileDropListArray);

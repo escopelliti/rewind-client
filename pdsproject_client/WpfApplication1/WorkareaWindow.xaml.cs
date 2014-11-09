@@ -64,12 +64,14 @@ namespace WpfApplication1
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
                 ItemCollection items = this.computerList.Items;
                 ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
-                Thread switchThread = new Thread(() => beginSwitchOperations(ci.computerID));
+                Thread switchThread = new Thread(() => SwitchOperations(ci.computerID));
+                switchThread.SetApartmentState(ApartmentState.STA);
+                switchThread.IsBackground = true;
                 switchThread.Start();                
             }
         }
 
-        private void beginSwitchOperations(int computerID)
+        private void SwitchOperations(int computerID)
         {
             ClipboardMgr clipboardMgr = new ClipboardMgr();
             clipboardMgr.ChannelMgr = channelMgr;
@@ -85,7 +87,8 @@ namespace WpfApplication1
             else
             {
                 ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(computerID, clipboardMgr, this, channelMgr);
-                confirmWin.Show();               
+                confirmWin.Show();
+                System.Windows.Threading.Dispatcher.Run();
             }            
         }
     }

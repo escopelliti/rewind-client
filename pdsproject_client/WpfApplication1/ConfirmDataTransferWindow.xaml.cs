@@ -18,6 +18,7 @@ namespace WpfApplication1
     /// <summary>
     /// Logica di interazione per ConfirmDataTransferWindow.xaml
     /// </summary>
+ 
     public partial class ConfirmDataTransferWindow : Window
     {
         private WorkareaWindow win;

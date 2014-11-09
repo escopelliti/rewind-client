@@ -124,16 +124,19 @@ namespace CommunicationLibrary
 
         public byte[] ReceiveData()
         {
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[64 * 1024];
             int bytesRead = ccm.Receive(buffer, currentServer.GetChannel().GetCmdSocket());
             byte[] data = new byte[bytesRead];
-            System.Buffer.BlockCopy(buffer, 0, data, 0, bytesRead);            
+            System.Buffer.BlockCopy(buffer, 0, data, 0, bytesRead);
+            buffer = null;
             return bytesRead > 0 ? data : null;
         }
 
         public void EndConnectionToCurrentServer()
         {
+            ReceiveAck();
             SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_OFF);
+            ReceiveAck();
             currentServer = null;
         }
 
@@ -161,7 +164,8 @@ namespace CommunicationLibrary
         {
             Server newServer = this.ConnectedServer.Find(server => server.ServerID == id);
             currentServer = newServer;
-            SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);            
+            SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);
+            ReceiveAck();
         }
 
         public void ResetTokenGen()
