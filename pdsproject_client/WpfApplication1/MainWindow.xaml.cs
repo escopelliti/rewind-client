@@ -68,6 +68,11 @@ namespace WpfApplication1
             items.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
             computerList.ItemsSource = items;
 
+            /////////////////////////////////////////////////////////////
+            //Server enrico = new Server();
+            //enrico.ComputerName = "INSIDEMYHEAD";
+            //enrico.DataPort = 12001;
+            //enrico.CmdPort = 12000;
             
             //Server alessandra = new Server();
             //alessandra.ComputerName = "bernoulli";
@@ -81,13 +86,27 @@ namespace WpfApplication1
             //ChannelManager cm = new ChannelManager();
             //// TO DO ... Creazione dei server dal file di configurazione del client
             ////cm.addServer(alessandra);
+            //cm.addServer(enrico);
             //cm.addServer(alberto);
-            //cm.setCurrentServer(alberto);            
-            //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
-            //InterceptEvents ie = new InterceptEvents(cm, windowHandle);
+            //cm.setCurrentServer(enrico);            
+            
+            InterceptEvents ie = new InterceptEvents(/*cm*/);
+            // TO DO ... Aprire il file di cinfigurazione e ricavare la lista di hotkey da registrare!!!!!
+            
+            List <Hotkey> l = new List<Hotkey>();
+            l.Add(new Hotkey(ModifierKeys.Alt, Key.A, Hotkey.SWITCH_SERVER_CMD));
+            l.Add(new Hotkey(ModifierKeys.Alt, Key.B, Hotkey.OPEN_PANEL_CMD));
+            OpenFullScreenWondows(ie, l);
 
-            Discovery.ServiceDiscovery sd = new Discovery.ServiceDiscovery();
+            //Discovery.ServiceDiscovery sd = new Discovery.ServiceDiscovery();
            
+        }
+
+        private void OpenFullScreenWondows(InterceptEvents ie, List<Hotkey> hotkeyList)
+        {
+            FullScreenRemoteServerControl fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList/*, channelMgr.getCurrentServer(), channelMgr.ConnectedServer*/);
+            fullScreenWin.Show();
+            
         }
         
         private void Button_Click_1(object sender, RoutedEventArgs e)

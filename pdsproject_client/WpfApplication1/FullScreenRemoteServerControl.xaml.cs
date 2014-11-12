@@ -19,45 +19,104 @@ namespace WpfApplication1
     /// </summary>
     public partial class FullScreenRemoteServerControl : Window
     {
-        private List<Hotkey> hotkeyList;
         private Server currentServer;
         private List<Server> computerList;
+        private InterceptEvents interceptEvent;
+        public delegate void SwitchServerEventHandler(Object sender, Object param);
+        public event SwitchServerEventHandler SwitchServeHandler;
 
-        public FullScreenRemoteServerControl(List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList)
+        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList/*, Server currentServer, List<Server> computerList*/)
         {
-            this.hotkeyList = hotkeyList;
-            this.currentServer = currentServer;
-            this.computerList = computerList;
+            //this.currentServer = currentServer;
+            //this.computerList = computerList;
+            this.interceptEvent = ie; 
             InitializeComponent();
-            InitGUI();
+            //InitGUI();
+            RegisterHotkey(hotkeyList);
+            
         }
 
-        private void InitGUI()
+        private void RegisterHotkey(List<Hotkey> hotkeyList)
         {
-            foreach (Hotkey hotkey in hotkeyList)
+
+            foreach (Hotkey h in hotkeyList)
             {
-                switch (hotkey.Command)
+                try
                 {
-                    case HotkeyManager.SWITCH_SERVER_CMD:
-                        this.switchServerShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
-                        break;
-                    case HotkeyManager.OPEN_PANEL_CMD:
-                        this.controlPanelShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
-                        break;
+                    RoutedCommand settings = new RoutedCommand();
+                    settings.InputGestures.Add(new KeyGesture(h.Key, h.KModifier));
+                    switch (h.Command)
+                    {
+                        case Hotkey.SWITCH_SERVER_CMD:
+                            CommandBindings.Add(new CommandBinding(settings, My_first_event_handler));
+                            // Istanzio il delegato dell'evento
+                            SwitchServeHandler = new SwitchServerEventHandler(interceptEvent.OnSwitch);
+                            break;
+
+                        case Hotkey.OPEN_PANEL_CMD:
+                            CommandBindings.Add(new CommandBinding(settings, My_second_event_handler));
+                        
+                            break;
+                    }
                 }
+                catch (Exception err)
+                {
+                    //handle exception error
+                }
+
             }
-            this.currentServerNameLabel.Content = currentServer;
-            this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+            
         }
+
+        //private void InitGUI()
+        //{
+        //    foreach (Hotkey hotkey in hotkeyList)
+        //    {
+        //        switch (hotkey.Command)
+        //        {
+        //            case HotkeyManager.SWITCH_SERVER_CMD:
+        //                this.switchServerShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+        //                break;
+        //            case HotkeyManager.OPEN_PANEL_CMD:
+        //                this.controlPanelShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+        //                break;
+        //        }
+        //    }
+        //    this.currentServerNameLabel.Content = currentServer;
+        //    this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+        //}
 
         private List<String> GetComputerNameArrayFromServer()
         {
             List<String> connComputers = new List<string>();
-            foreach (Server s in computerList)
-            {
-                connComputers.Add(s.ComputerName);
-            }
+            //foreach (Server s in computerList)
+            //{
+            //    connComputers.Add(s.ComputerName);
+            //}
             return connComputers;
+        }
+
+        private void My_first_event_handler(object sender, ExecutedRoutedEventArgs e)
+        {
+            //handler code goes here.
+            MessageBox.Show("Alt+A key pressed");
+            OnSwitch(new EventArgs());
+        }
+
+        protected virtual void OnSwitch(EventArgs eventArgs)
+        {
+            SwitchServerEventHandler handler = SwitchServeHandler;
+            if (handler != null)
+            {
+                // Invoco il delegato 
+                handler(this, eventArgs);
+            }
+        }
+
+        private void My_second_event_handler(object sender, RoutedEventArgs e)
+        {
+            //handler code goes here. 
+            MessageBox.Show("Alt+B key pressed");
         }
     }
 }

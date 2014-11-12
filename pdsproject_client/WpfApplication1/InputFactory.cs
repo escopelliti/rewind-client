@@ -70,8 +70,6 @@ namespace NativeInput
             Keys key = (Keys)Marshal.ReadInt32(lParam);
             string s = "";
 
-            
-
             INPUT keyboard_input = new INPUT();
             keyboard_input.type = TYPE.INPUT_KEYBOARD;
             keyboard_input.ki = new KEYBDINPUT();
@@ -118,8 +116,6 @@ namespace NativeInput
             mouse_input.type = TYPE.INPUT_MOUSE;
             mouse_input.mi = (MOUSEINPUT)Marshal.PtrToStructure(lParam, typeof(MOUSEINPUT));
             mouse_input.mi.time = 0;
-
-
             mouse_input.mi.dwFlags = mouseFlagDictionary[(MouseMessages)wParam];
             if ((MouseMessages)wParam == MouseMessages.WM_MOUSE_HORIZONTAL_WHEEL || 
                 (MouseMessages)wParam == MouseMessages.WM_MOUSE_VERTICAL_WHEEL)
@@ -128,6 +124,18 @@ namespace NativeInput
             }
             return mouse_input;
 
+        }
+
+        public INPUT CreateKeyUpInput(Keys key)
+        {
+            INPUT keyboard_input = new INPUT();
+            keyboard_input.type = TYPE.INPUT_KEYBOARD;
+            keyboard_input.ki = new KEYBDINPUT();
+            keyboard_input.ki.wVk = (VirtualKeyCode)key;
+            keyboard_input.ki.wScan = 0;
+            keyboard_input.ki.dwFlags = 0;
+            keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+            return keyboard_input;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]

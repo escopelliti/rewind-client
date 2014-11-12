@@ -4,39 +4,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Input;
+
 
 namespace WpfApplication1
 {
     public class Hotkey
     {
-        private int idHotkey;
-        HotkeyManager.KeyModifier kModifier;
-        Keys key;
-        string command;
+        private ModifierKeys kModifier;
+        private Key key;
+        private string command;
 
-        public Hotkey() { }
+        public const string SWITCH_SERVER_CMD = "SWITCH_SERVER";
+        public const string OPEN_PANEL_CMD = "OPEN_PANEL";
 
-        public Hotkey(int id, HotkeyManager.KeyModifier km, Keys k, string c)
+        public Hotkey(ModifierKeys km, Key k, string c)
         {
-            idHotkey = id;
             kModifier = km;
             key = k;
             command = c;
         }
-        
-        public int IdHotkey
-        {
-            get { return idHotkey; }
-            set { idHotkey = value; }
-        }
 
-        public HotkeyManager.KeyModifier KModifier
+        public ModifierKeys KModifier
         {
             get { return kModifier; }
             set { kModifier = value; } 
         }
 
-        public Keys Key
+        public Key Key
         {
             get { return key; }
             set { key = value; }

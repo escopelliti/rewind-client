@@ -6,17 +6,14 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
-
-//HOTkey
+using System.Windows.Interop;
 using System.Windows.Forms;
-
-
 using CommunicationLibrary;
 using NativeInput;
-using System.Windows.Interop;
 
 namespace WpfApplication1
 {
+    [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
     public class InterceptEvents
     {
 
@@ -28,7 +25,6 @@ namespace WpfApplication1
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
         private static LowLevelKeyboardProc _proc;
 
-
         private static IntPtr _hookID_ = IntPtr.Zero;
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
         private static LowLevelMouseProc _proc_;
@@ -36,60 +32,39 @@ namespace WpfApplication1
         private static InputFactory inputFactory;
         private static ChannelManager channelMgr;
 
-        private static HotkeyManager hotkeyMgr;
 
         private static IntPtr hInstance;
         // TO MODIFY
-        
 
-        public InterceptEvents(ChannelManager ChannelManager, IntPtr windowHandle)
+
+        public InterceptEvents(/*ChannelManager ChannelManager,*/)
         {
-            channelMgr = ChannelManager;
+            //channelMgr = ChannelManager;
             hInstance = LoadLibrary("User32");
             _proc += HookCallback;
             _proc_ += HookCallbackMouse;
-            inputFactory = new InputFactory();            
-            CreateHotKeys(windowHandle);
-            FullScreenRemoteServerControl fullScreenWin = new FullScreenRemoteServerControl(hotkeyMgr.RegisteredHotkey, channelMgr.getCurrentServer(), channelMgr.ConnectedServer);
-            fullScreenWin.Show();
+            inputFactory = new InputFactory();
             StartCapture(); 
-        }
-
-        private void CreateHotKeys(IntPtr windowHandle)
-        {
-            //  TO DO ... Apre il file di configurazione e leggere le hotkey impostate dall'utente
-            Hotkey hot = new Hotkey(0, HotkeyManager.KeyModifier.Control, Keys.A, HotkeyManager.SWITCH_SERVER_CMD);
-            Hotkey hot2 = new Hotkey(0, HotkeyManager.KeyModifier.Control, Keys.B, HotkeyManager.OPEN_PANEL_CMD);
-            //NON FUNZIONANO CTRL + ESCAPE, CTRL + NumLock, ALt + tab,
-
-            List<Hotkey> hotkeyList = new List<Hotkey>();
-            hotkeyList.Add(hot);
-            hotkeyList.Add(hot2);
-
-            hotkeyMgr = new HotkeyManager(windowHandle, hotkeyList, this);
         }
 
         private static void StartCapture()
         {
+
+            //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, AppDomain.GetCurrentThreadId()/*System.Threading.Thread.CurrentThread.ManagedThreadId*/);
+            //Console.WriteLine(Marshal.GetLastWin32Error());
             
-            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
             hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
         }
 
         public static void RestartCapture()
         {
             block = false;
-            //_proc += HookCallback;
-            //_proc_ += HookCallbackMouse;
+       
         }
 
         public static void StopCapture()
         {
-            //_proc -= HookCallback;
-            //_proc_ -= HookCallbackMouse;
             block = true;
-            //UnhookWindowsHookEx(_hookID_);
-            //UnhookWindowsHookEx(hookID);
         }
 
         private static IntPtr HookCallback(int nCode, IntPtr wParam, IntPtr lParam)
@@ -98,25 +73,10 @@ namespace WpfApplication1
             {
                 if (nCode >= 0)
                 {
-                    //int wparam = (int) wParam;
                     INPUT inputToSend = inputFactory.CreateKeyboardInput((IntPtr)wParam, (IntPtr)lParam);
-                    channelMgr.sendInputToSever(inputToSend);
-                    if ((Key)Marshal.ReadInt32(lParam) == Key.LWin || (Key)Marshal.ReadInt32(lParam) == Key.RWin)
+                    //channelMgr.sendInputToSever(inputToSend);
+                    if ((Keys)Marshal.ReadInt32(lParam) == Keys.LWin || (Keys)Marshal.ReadInt32(lParam) == Keys.RWin)
                         return (IntPtr)1;
-
-                    Message msg = new Message();
-                    if (GetMessage(ref msg, IntPtr.Zero, 0, 0))
-                    {
-                        if (msg.Msg == (int)KeyboardMessages.WM_HOTKEY)
-                        {
-                            int id = msg.WParam.ToInt32();
-
-                            hotkeyMgr.HotkeyPressed(id);
-                        }
-                        else
-                        {
-                        }
-                    }
 
                 }
 
@@ -142,8 +102,20 @@ namespace WpfApplication1
         public void OnSwitch(object sender, object param)
         {
             StopCapture();
-            //block = true;
+            ResetKModifier();
             OpenWorkareaWindow();
+        }
+
+        private void ResetKModifier()
+        {
+
+            INPUT inputToSend = inputFactory.CreateKeyUpInput(Keys.Control);
+            //channelMgr.sendInputToSever(inputToSend);
+            inputToSend = inputFactory.CreateKeyUpInput(Keys.Shift);
+            //channelMgr.sendInputToSever(inputToSend);
+            inputToSend = inputFactory.CreateKeyUpInput(Keys.Alt);
+            //channelMgr.sendInputToSever(inputToSend);
+
         }
 
         private void OpenWorkareaWindow()
@@ -156,12 +128,13 @@ namespace WpfApplication1
                 System.Windows.MessageBox.Show("Non hai ancora un computer attivo. Selezionane uno!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning); 
             }
         }
-       
-        [DllImport("user32.dll")]
+
+
+        [DllImport("user32.dll", CharSet=CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
+        [DllImport("user32.dll", CharSet=CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, int dwThreadId);
 
         [DllImport("user32.dll")]
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
@@ -172,9 +145,6 @@ namespace WpfApplication1
         [DllImport("user32.dll")]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll")]
-        private static extern bool GetMessage(ref Message lpMsg, IntPtr handle, uint mMsgFilterMain, uint mMsgFilerMax);
-
         [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
         public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
 
@@ -183,5 +153,8 @@ namespace WpfApplication1
             RestartCapture();
             //StartCapture();
         }
+
+
+
     }
 }
