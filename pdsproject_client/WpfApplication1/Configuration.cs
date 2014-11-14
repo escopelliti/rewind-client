@@ -15,7 +15,5 @@ namespace WpfApplication1
         
         public List<Hotkey> hotkeyList { get; set; }
 
-
-
     }
 }

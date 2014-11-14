@@ -92,10 +92,10 @@ namespace WpfApplication1
         private List<String> GetComputerNameArrayFromServer()
         {
             List<String> connComputers = new List<string>();
-            //foreach (Server s in computerList)
-            //{
-            //    connComputers.Add(s.ComputerName);
-            //}
+            foreach (Server s in computerList)
+            {
+                connComputers.Add(s.ComputerName);
+            }
             return connComputers;
         }
 

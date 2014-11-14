@@ -1,15 +1,9 @@
-﻿//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using System.Collections;
-
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using System.Runtime.InteropServices;
 using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
 
 
 namespace NativeInput
@@ -41,8 +35,6 @@ namespace NativeInput
         private byte[] GetKeyState()
         {
             byte[] keyState = new byte[256];
-            //for (int x = 0; x < 256; x++)
-            //    keyState[x] = (byte)GetKeyState(x);
             GetKeyboardState(keyState);
             return keyState;
         }
@@ -178,8 +170,6 @@ namespace NativeInput
             if ((MouseMessages)wParam == MouseMessages.WM_MOUSE_HORIZONTAL_WHEEL || 
                 (MouseMessages)wParam == MouseMessages.WM_MOUSE_VERTICAL_WHEEL)
             {
-              
-
                 mouse_input.mi.mouseData = mouse_input.mi.mouseData >> 16;
             }
             return mouse_input;
