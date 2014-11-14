@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using CommunicationLibrary;
 using NativeInput;
 using System.Windows.Interop;
+using System.Diagnostics;
 
 namespace WpfApplication1
 {
@@ -72,9 +73,13 @@ namespace WpfApplication1
         private static void StartCapture()
         {
             
-            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, hInstance, 0);
+            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, 0);            
             hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
         }
+
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
 
         public static void RestartCapture()
         {
@@ -101,22 +106,22 @@ namespace WpfApplication1
                     //int wparam = (int) wParam;
                     INPUT inputToSend = inputFactory.CreateKeyboardInput((IntPtr)wParam, (IntPtr)lParam);
                     channelMgr.sendInputToSever(inputToSend);
-                    if ((Key)Marshal.ReadInt32(lParam) == Key.LWin || (Key)Marshal.ReadInt32(lParam) == Key.RWin)
+                    if ((Keys)Marshal.ReadInt32(lParam) == Keys.LWin || (Keys)Marshal.ReadInt32(lParam) == Keys.RWin)
                         return (IntPtr)1;
 
-                    Message msg = new Message();
-                    if (GetMessage(ref msg, IntPtr.Zero, 0, 0))
-                    {
-                        if (msg.Msg == (int)KeyboardMessages.WM_HOTKEY)
-                        {
-                            int id = msg.WParam.ToInt32();
+                    //Message msg = new Message();
+                    //if (GetMessage(ref msg, IntPtr.Zero, 0, 0))
+                    //{
+                    //    if (msg.Msg == (int)KeyboardMessages.WM_HOTKEY)
+                    //    {
+                    //        int id = msg.WParam.ToInt32();
 
-                            hotkeyMgr.HotkeyPressed(id);
-                        }
-                        else
-                        {
-                        }
-                    }
+                    //        hotkeyMgr.HotkeyPressed(id);
+                    //    }
+                    //    else
+                    //    {
+                    //    }
+                    //}
 
                 }
 
@@ -157,10 +162,10 @@ namespace WpfApplication1
             }
         }
        
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, int dwThreadId);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelMouseProc lpfn, IntPtr hMod, uint dwThreadId);
 
         [DllImport("user32.dll")]

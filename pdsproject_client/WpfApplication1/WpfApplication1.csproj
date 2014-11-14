@@ -161,6 +161,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="off.png" />
     <Resource Include="plus.png" />
   </ItemGroup>
   <ItemGroup>

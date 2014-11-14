@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Threading;
+using System.Collections.ObjectModel;
 
 namespace WpfApplication1
 {
@@ -33,6 +34,9 @@ namespace WpfApplication1
         private System.Windows.Forms.ContextMenu contextMenu1;
         private System.Windows.Forms.MenuItem menuItem1;
         private bool exit = false;
+        private Discovery.ServiceDiscovery sd;
+        public ObservableCollection<ComputerItem> computerItemList { get; set; }
+        public ChannelManager channelMgr { get; set; }
 
         public MainWindow()
         {
@@ -62,11 +66,11 @@ namespace WpfApplication1
             //assegno l'id a computerItem per quelli accesi solamente (con immagine differente);
             //do la lista di computer item al form;
 
-            List<ComputerItem> items = new List<ComputerItem>();
-            items.Add(new ComputerItem() { Name = "TEST_PC", computerNum = "0"});
-            items.Add(new ComputerItem() { Name = "INSIDEMYHEAD", ComputerStateImage = "connComputer.png", focusedImage = "tick.png", computerNum = "1", computerID = 0 });
-            items.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
-            computerList.ItemsSource = items;
+            computerItemList = new ObservableCollection<ComputerItem>();
+            //computerItemList.Add(new ComputerItem() { Name = "TEST_PC", computerNum = "0" });
+            //computerItemList.Add(new ComputerItem() { Name = "INSIDEMYHEAD", ComputerStateImage = "connComputer.png", focusedImage = "tick.png", computerNum = "1", computerID = 0 });
+            //computerItemList.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
+            computerList.ItemsSource = computerItemList;
 
             
             //Server alessandra = new Server();
@@ -78,18 +82,41 @@ namespace WpfApplication1
             //alberto.DataPort = 12001;
             //alberto.ComputerName = "NEW_PC_PORTABLE";
 
-            //ChannelManager cm = new ChannelManager();
-            //// TO DO ... Creazione dei server dal file di configurazione del client
-            ////cm.addServer(alessandra);
-            //cm.addServer(alberto);
-            //cm.setCurrentServer(alberto);            
+            channelMgr = new ChannelManager();
+            ////// TO DO ... Creazione dei server dal file di configurazione del client
+            //////cm.addServer(alessandra);
+            //channelMgr.addServer(alberto);
+            //channelMgr.setCurrentServer(alberto);
             //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
-            //InterceptEvents ie = new InterceptEvents(cm, windowHandle);
+            //InterceptEvents ie = new InterceptEvents(channelMgr, windowHandle);
 
-            Discovery.ServiceDiscovery sd = new Discovery.ServiceDiscovery();
-           
+            //Thread discoveryThread = new Thread(() => StartDiscovery());
+            //discoveryThread.Start();
+            StartDiscovery();
+            
         }
-        
+
+        private void StartDiscovery()
+        {
+            sd = new Discovery.ServiceDiscovery(this);            
+        }
+
+        public void OnNewComputerConnected(Object sender, Object param) {
+
+            Server server = (Server)param;            
+            int lastComputerNum = -1;
+            if (this.computerItemList.Count != 0)
+            {
+                lastComputerNum = this.computerItemList.Last<ComputerItem>().computerNum;
+            }
+            lastComputerNum += 1;
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {                
+                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = "off.png", computerNum = lastComputerNum });
+            }));
+            
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // TO BE CHANGED BUT IT WORKS
@@ -163,6 +190,19 @@ namespace WpfApplication1
             Server server = sea.Server;
 
             //illuminami o dammi feedback su questo nuovo server 
+        }
+
+        public void OnLostComputerConnection(object sender, object param)
+        {
+            Server server = (Server)param;
+            ComputerItem toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+            if (toRemove != null)
+            {
+                this.computerList.Dispatcher.Invoke(new Action(() =>
+                {
+                    this.computerItemList.Remove(toRemove);
+                }));
+            }
         }
     }
 }

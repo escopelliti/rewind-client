@@ -15,8 +15,6 @@ namespace WpfApplication1
         private ushort serverID;
         private Channel channel;
         private string computerName;
-        private ushort dataPort;
-        private ushort cmdPort;
 
         public Server()
         {
@@ -43,18 +41,6 @@ namespace WpfApplication1
         public void SetChannel(Channel ch)
         {
             channel = ch;
-        }
-
-        public UInt16 DataPort
-        {
-            get { return dataPort; }
-            set { dataPort = value; }
-        }
-
-        public UInt16 CmdPort
-        {
-            get { return cmdPort; }
-            set { cmdPort = value; }
         }
     }
 }

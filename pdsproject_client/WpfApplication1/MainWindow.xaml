@@ -1,6 +1,7 @@
 ﻿<Window x:Class="WpfApplication1.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"        
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="mainWindow"
         Title="Control Panel" Height="369.149" Width="282" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="plus.png"        
         StateChanged="Window_StateChanged" Closing="Window_Closing">
 
@@ -91,7 +92,7 @@
             </Button>
 
             <StackPanel x:Name="mainStackPanel" Margin="0,81,0,0">
-                <ItemsControl Name="computerList" HorizontalAlignment="Stretch">
+                <ItemsControl Name="computerList" HorizontalAlignment="Stretch" ItemsSource="{Binding ElementName=mainWindow, Path=computerItemList}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border  BorderBrush="#31698a" BorderThickness="4" HorizontalAlignment="Stretch" Height="Auto">
@@ -112,7 +113,7 @@
                                     </Button>
                                     <Label Grid.Column="1" Grid.Row="0" Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"/>                                    
                                     <CheckBox Grid.Column="1" Grid.Row="0" ToolTip="Aggiungi il computer alla tua area di lavoro" HorizontalAlignment="Center" Style="{DynamicResource CheckBoxStyle1}" VerticalAlignment="Center"/>
-                                    <Image Grid.Column="1" Grid.Row="0" Source="{Binding focusedImage}" Width="32" Height="32" ToolTip="Stai controllando questo computer!" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                                    <!--<Image Grid.Column="1" Grid.Row="0" Source="{Binding focusedImage}" Width="32" Height="32" ToolTip="Stai controllando questo computer!" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>-->
                                 </Grid>
                             </Border>
                         </DataTemplate>

@@ -19,6 +19,6 @@ namespace CommunicationLibrary
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
             socket.Connect(remoteEP);
             return socket;
-        }
+        }        
     }
 }

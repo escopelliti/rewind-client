@@ -25,6 +25,20 @@ namespace CommunicationLibrary
             tokenGen = new TokenGenerator();
         }
 
+        public void OnLostComputerConnection(object sender, object param)
+        {
+            Server server = (Server)param;
+            server = this.ConnectedServer.Find(x => x.ComputerName == server.ComputerName);
+            if (server != null)
+            {
+                this.ConnectedServer.Remove(server);
+                this.ccm.Shutdown(server.GetChannel().GetDataSocket(), SocketShutdown.Both);
+                this.ccm.Shutdown(server.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+                this.ccm.Close(server.GetChannel().GetDataSocket());
+                this.ccm.Close(server.GetChannel().GetCmdSocket());
+            }
+        }
+
         public long GetClipboardDimension()
         {
             byte[] data = new byte[16];
@@ -54,17 +68,15 @@ namespace CommunicationLibrary
             ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
             ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
         }
-        
+
         public void AssignChannel(Server s)
         {
             Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            dataSocket = ccm.Connect(s.ComputerName, s.DataPort, dataSocket);
+            dataSocket = ccm.Connect(s.ComputerName, s.GetChannel().DataPort, dataSocket);
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            cmdSocket = ccm.Connect(s.ComputerName, s.CmdPort, cmdSocket);
-            Channel ch = new Channel();
-            ch.SetCmdSocket(cmdSocket);
-            ch.SetDataSocket(dataSocket);
-            s.SetChannel(ch);
+            cmdSocket = ccm.Connect(s.ComputerName, s.GetChannel().CmdPort, cmdSocket);            
+            s.GetChannel().SetCmdSocket(cmdSocket);
+            s.GetChannel().SetDataSocket(dataSocket);            
         }
  
         public Server getCurrentServer()
@@ -115,7 +127,7 @@ namespace CommunicationLibrary
                 if (s != currentServer)
                 {
                     connectedComputers.Add(new ComputerItem()
-                    { Name = s.ComputerName, ComputerStateImage = "connComputer.png", computerNum = idItem.ToString(), computerID = s.ServerID });
+                    { Name = s.ComputerName, ComputerStateImage = "connComputer.png", computerNum = idItem, computerID = s.ServerID });
                     idItem++;
                 }
             }
