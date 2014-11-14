@@ -47,7 +47,7 @@ namespace CommunicationLibrary
             ccm.Receive(new byte[16], currentServer.GetChannel().GetCmdSocket());
         }
 
-        public void sendInputToSever(NativeInput.INPUT inputToSend)
+        public void SendInputToSever(NativeInput.INPUT inputToSend)
         {
             string json = JsonConvert.SerializeObject(inputToSend);
             byte[] toSend = Encoding.Unicode.GetBytes(json);
@@ -67,12 +67,12 @@ namespace CommunicationLibrary
             s.SetChannel(ch);
         }
  
-        public Server getCurrentServer()
+        public Server GetCurrentServer()
         {
             return currentServer;
         }
 
-        public void setCurrentServer(Server cs) 
+        public void SetCurrentServer(Server cs) 
         {
             currentServer = cs;
         }
@@ -92,7 +92,7 @@ namespace CommunicationLibrary
             return id;
         }
 
-        public void addServer(Server s) 
+        public void AddServer(Server s) 
         {
             s.ServerID = FindFreeIdServer(); 
             if (s.GetChannel() == null) {
@@ -101,7 +101,7 @@ namespace CommunicationLibrary
             ConnectedServer.Add(s);
         }
 
-        public void deleteServer(Server s)
+        public void DeleteServer(Server s)
         {
             ConnectedServer.Remove(s);
         }

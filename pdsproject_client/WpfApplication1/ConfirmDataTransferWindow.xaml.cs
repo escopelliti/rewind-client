@@ -40,7 +40,7 @@ namespace WpfApplication1
             clipboardMgr.ReceiveClipboard();
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
-            win.OnSetNewServer(new ServerEventArgs(this.channelMgr.getCurrentServer()));
+            win.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             clipboardMgr.SendClipboard();
         }
 

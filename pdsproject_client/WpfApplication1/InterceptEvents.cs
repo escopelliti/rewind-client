@@ -11,9 +11,10 @@ using System.Windows.Forms;
 using CommunicationLibrary;
 using NativeInput;
 
+using System.Threading;
+
 namespace WpfApplication1
 {
-    [System.Security.Permissions.PermissionSet(System.Security.Permissions.SecurityAction.Demand, Name = "FullTrust")]
     public class InterceptEvents
     {
 
@@ -32,15 +33,9 @@ namespace WpfApplication1
         private static InputFactory inputFactory;
         private static ChannelManager channelMgr;
 
-
-        private static IntPtr hInstance;
-        // TO MODIFY
-
-
-        public InterceptEvents(/*ChannelManager ChannelManager,*/)
+        public InterceptEvents(ChannelManager ChannelManager)
         {
-            //channelMgr = ChannelManager;
-            hInstance = LoadLibrary("User32");
+            channelMgr = ChannelManager;
             _proc += HookCallback;
             _proc_ += HookCallbackMouse;
             inputFactory = new InputFactory();
@@ -48,12 +43,9 @@ namespace WpfApplication1
         }
 
         private static void StartCapture()
-        {
-
-            //_hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, AppDomain.GetCurrentThreadId()/*System.Threading.Thread.CurrentThread.ManagedThreadId*/);
-            //Console.WriteLine(Marshal.GetLastWin32Error());
-            
+        {   
             hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
+            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, 0);   
         }
 
         public static void RestartCapture()
@@ -73,8 +65,11 @@ namespace WpfApplication1
             {
                 if (nCode >= 0)
                 {
-                    INPUT inputToSend = inputFactory.CreateKeyboardInput((IntPtr)wParam, (IntPtr)lParam);
-                    //channelMgr.sendInputToSever(inputToSend);
+                    List<INPUT> inputToSendArray = inputFactory.CreateKeyboardInput((IntPtr)wParam, (IntPtr)lParam);
+                    foreach (INPUT inputToSend in inputToSendArray)
+                    {
+                        channelMgr.SendInputToSever(inputToSend);
+                    }
                     if ((Keys)Marshal.ReadInt32(lParam) == Keys.LWin || (Keys)Marshal.ReadInt32(lParam) == Keys.RWin)
                         return (IntPtr)1;
 
@@ -92,7 +87,7 @@ namespace WpfApplication1
                 if (nCode >= 0)
                 {
                     INPUT inputToSend = inputFactory.CreateMouseInput(wParam, lParam);
-                    channelMgr.sendInputToSever(inputToSend);
+                    channelMgr.SendInputToSever(inputToSend);
                 }
                 return CallNextHookEx(hookID, nCode, wParam, lParam);
             }
@@ -102,25 +97,23 @@ namespace WpfApplication1
         public void OnSwitch(object sender, object param)
         {
             StopCapture();
-            ResetKModifier();
             OpenWorkareaWindow();
+            ResetKModifier();
         }
 
         private void ResetKModifier()
         {
-
             INPUT inputToSend = inputFactory.CreateKeyUpInput(Keys.Control);
-            //channelMgr.sendInputToSever(inputToSend);
+            channelMgr.SendInputToSever(inputToSend);
             inputToSend = inputFactory.CreateKeyUpInput(Keys.Shift);
-            //channelMgr.sendInputToSever(inputToSend);
+            channelMgr.SendInputToSever(inputToSend);
             inputToSend = inputFactory.CreateKeyUpInput(Keys.Alt);
-            //channelMgr.sendInputToSever(inputToSend);
-
+            channelMgr.SendInputToSever(inputToSend);
         }
 
         private void OpenWorkareaWindow()
         {
-            if (channelMgr.getCurrentServer() != null) {
+            if (channelMgr.GetCurrentServer() != null) {
                 WorkareaWindow wk = new WorkareaWindow(channelMgr);            
                 wk.computerList.ItemsSource = channelMgr.GetComputerItemList();
                 wk.Show();
@@ -129,6 +122,10 @@ namespace WpfApplication1
             }
         }
 
+        public static void OnSetNewServer(object sender, object param)
+        {
+            RestartCapture();
+        }
 
         [DllImport("user32.dll", CharSet=CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
@@ -138,23 +135,9 @@ namespace WpfApplication1
 
         [DllImport("user32.dll")]
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
-
-        [DllImport("kernel32.dll")]
-        static extern IntPtr LoadLibrary(string lpFileName);
        
         [DllImport("user32.dll")]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
-        public static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
-
-        public static void OnSetNewServer(object sender, object param)
-        {
-            RestartCapture();
-            //StartCapture();
-        }
-
-
-
+    
     }
 }

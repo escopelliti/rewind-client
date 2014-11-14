@@ -43,7 +43,7 @@ namespace NativeInput
     public struct MOUSEINPUT
     {
         public POINT pt;
-        public uint mouseData;
+        public Int32 mouseData;
         public MouseFlag dwFlags;
         public uint time;
         public IntPtr dwExtraInfo;

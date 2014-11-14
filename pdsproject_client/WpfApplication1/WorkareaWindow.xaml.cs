@@ -80,7 +80,7 @@ namespace WpfApplication1
                 clipboardMgr.ReceiveClipboard();                
                 this.channelMgr.EndConnectionToCurrentServer();
                 this.channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
-                OnSetNewServer(new ServerEventArgs(this.channelMgr.getCurrentServer()));
+                OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
                 clipboardMgr.SendClipboard();
                 this.channelMgr.ResetTokenGen();                         
             }

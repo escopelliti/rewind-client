@@ -80,6 +80,8 @@
     <Compile Include="ChannelManager.cs" />
     <Compile Include="ClipboardMgr.cs" />
     <Compile Include="ComputerItem.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="ConfigurationManager.cs" />
     <Compile Include="ConfirmDataTransferWindow.xaml.cs">
       <DependentUpon>ConfirmDataTransferWindow.xaml</DependentUpon>
     </Compile>
@@ -87,7 +89,6 @@
       <DependentUpon>FullScreenRemoteServerControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Hotkey.cs" />
-    <Compile Include="HotkeyManager.cs" />
     <Compile Include="InterceptEvents.cs" />
     <Compile Include="JSONFactory.cs" />
     <Compile Include="ProtocolUtils.cs" />

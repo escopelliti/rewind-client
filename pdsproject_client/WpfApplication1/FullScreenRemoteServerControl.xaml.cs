@@ -22,21 +22,24 @@ namespace WpfApplication1
         private Server currentServer;
         private List<Server> computerList;
         private InterceptEvents interceptEvent;
+        public List<Hotkey> hotkeyList;
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
+        
 
-        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList/*, Server currentServer, List<Server> computerList*/)
+        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList)
         {
-            //this.currentServer = currentServer;
-            //this.computerList = computerList;
-            this.interceptEvent = ie; 
+            this.currentServer = currentServer;
+            this.computerList = computerList;
+            this.interceptEvent = ie;
+            this.hotkeyList = hotkeyList;
             InitializeComponent();
-            //InitGUI();
-            RegisterHotkey(hotkeyList);
+            InitGUI();
+            RegisterHotkey();
             
         }
 
-        private void RegisterHotkey(List<Hotkey> hotkeyList)
+        private void RegisterHotkey()
         {
 
             foreach (Hotkey h in hotkeyList)
@@ -68,23 +71,23 @@ namespace WpfApplication1
             
         }
 
-        //private void InitGUI()
-        //{
-        //    foreach (Hotkey hotkey in hotkeyList)
-        //    {
-        //        switch (hotkey.Command)
-        //        {
-        //            case HotkeyManager.SWITCH_SERVER_CMD:
-        //                this.switchServerShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
-        //                break;
-        //            case HotkeyManager.OPEN_PANEL_CMD:
-        //                this.controlPanelShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
-        //                break;
-        //        }
-        //    }
-        //    this.currentServerNameLabel.Content = currentServer;
-        //    this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
-        //}
+        private void InitGUI()
+        {
+            foreach (Hotkey hotkey in hotkeyList)
+            {
+                switch (hotkey.Command)
+                {
+                    case Hotkey.SWITCH_SERVER_CMD:
+                        this.switchServerShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                    case Hotkey.OPEN_PANEL_CMD:
+                        this.controlPanelShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                }
+            }
+            this.currentServerNameLabel.Content = currentServer;
+            this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+        }
 
         private List<String> GetComputerNameArrayFromServer()
         {
@@ -99,7 +102,6 @@ namespace WpfApplication1
         private void My_first_event_handler(object sender, ExecutedRoutedEventArgs e)
         {
             //handler code goes here.
-            MessageBox.Show("Alt+A key pressed");
             OnSwitch(new EventArgs());
         }
 

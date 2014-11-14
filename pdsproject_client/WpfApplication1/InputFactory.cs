@@ -41,8 +41,9 @@ namespace NativeInput
         private byte[] GetKeyState()
         {
             byte[] keyState = new byte[256];
-            for (int x = 0; x < 256; x++)
-                keyState[x] = (byte)GetKeyState(x);
+            //for (int x = 0; x < 256; x++)
+            //    keyState[x] = (byte)GetKeyState(x);
+            GetKeyboardState(keyState);
             return keyState;
         }
 
@@ -65,39 +66,95 @@ namespace NativeInput
 
         }
 
-        public INPUT CreateKeyboardInput(IntPtr wParam, IntPtr lParam)
+        public List<INPUT> CreateKeyboardInput(IntPtr wParam, IntPtr lParam)
         {
             Keys key = (Keys)Marshal.ReadInt32(lParam);
-            string s = "";
+            string s = string.Empty;
+            List<INPUT> inputToSend = new List<INPUT>();
 
             INPUT keyboard_input = new INPUT();
             keyboard_input.type = TYPE.INPUT_KEYBOARD;
             keyboard_input.ki = new KEYBDINPUT();
-
+            
             if (wParam == (IntPtr)KeyboardMessages.WM_KEYDOWN)
             {
-                // Send key down using unicode
-                if (IsUnicodeChar(key))
+                
+                if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 ||
+                    (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0)
                 {
-                    StringBuilder sb = new StringBuilder(1);
-                    byte[] ks = GetKeyState();
-                    ToAscii((uint)key, MapVirtualKey((uint)key, 0), ks, sb, 0);
-                    s = sb.ToString(0, 1);
-                    char[] f = s.ToCharArray();
-
-                    keyboard_input.ki.wVk = 0;
-                    keyboard_input.ki.wScan = f[0];
-                    keyboard_input.ki.dwFlags = KeyboardFlag.Unicode;
-                    keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
-                }
-
-                // send Keydown using Virtualcode 
-                else
-                {
-                    keyboard_input.ki.wVk = (VirtualKeyCode)key;
+                    
+                    keyboard_input.ki.wVk = (VirtualKeyCode)Keys.LControlKey;
                     keyboard_input.ki.wScan = 0;
                     keyboard_input.ki.dwFlags = 0;
                     keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+                    inputToSend.Add(keyboard_input);
+
+                    if ((Keyboard.GetKeyStates(Key.LeftShift) & KeyStates.Down) > 0 ||
+                    (Keyboard.GetKeyStates(Key.RightShift) & KeyStates.Down) > 0)
+                    {
+                        INPUT keyboard_input5 = new INPUT();
+                        keyboard_input5.type = TYPE.INPUT_KEYBOARD;
+                        keyboard_input5.ki = new KEYBDINPUT();
+                        keyboard_input5.ki.wVk = (VirtualKeyCode)Keys.LShiftKey;
+                        keyboard_input5.ki.wScan = 0;
+                        keyboard_input5.ki.dwFlags = 0;
+                        keyboard_input5.ki.dwExtraInfo = IntPtr.Zero;
+                        inputToSend.Add(keyboard_input5);
+                    }
+
+                    if ((Keyboard.GetKeyStates(Key.LeftAlt) & KeyStates.Down) > 0 ||
+                    (Keyboard.GetKeyStates(Key.RightAlt) & KeyStates.Down) > 0)
+                    {
+                        INPUT keyboard_input6 = new INPUT();
+                        keyboard_input6.type = TYPE.INPUT_KEYBOARD;
+                        keyboard_input6.ki = new KEYBDINPUT();
+                        keyboard_input6.ki.wVk = (VirtualKeyCode)Keys.LMenu;
+                        keyboard_input6.ki.wScan = 0;
+                        keyboard_input6.ki.dwFlags = 0;
+                        keyboard_input6.ki.dwExtraInfo = IntPtr.Zero;
+                        inputToSend.Add(keyboard_input6);
+                    }
+
+                    INPUT keyboard_input2 = new INPUT();
+                    keyboard_input2.type = TYPE.INPUT_KEYBOARD;
+                    keyboard_input2.ki = new KEYBDINPUT();
+                    keyboard_input2.ki.wVk = (VirtualKeyCode)key;
+                    keyboard_input2.ki.wScan = 0;
+                    keyboard_input2.ki.dwFlags = 0;
+                    keyboard_input2.ki.dwExtraInfo = IntPtr.Zero;
+                    inputToSend.Add(keyboard_input2);
+
+                }
+
+                // Send key down using unicode
+                else
+                {
+                    if (IsUnicodeChar(key))
+                    {
+                        StringBuilder sb = new StringBuilder(1);
+                        byte[] ks = GetKeyState();
+                        ToAscii((uint)key, MapVirtualKey((uint)key, 0), ks, sb, 0);
+                        s = sb.ToString(0, 1);
+                        char[] f = s.ToCharArray();
+
+                        keyboard_input.ki.wVk = 0;
+                        keyboard_input.ki.wScan = f[0];
+                        keyboard_input.ki.dwFlags = KeyboardFlag.Unicode;
+                        keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+                        inputToSend.Add(keyboard_input);
+
+                    }
+
+                    // send Keydown using Virtualcode 
+                    else
+                    {
+                        keyboard_input.ki.wVk = (VirtualKeyCode)key;
+                        keyboard_input.ki.wScan = 0;
+                        keyboard_input.ki.dwFlags = 0;
+                        keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+                        inputToSend.Add(keyboard_input);
+
+                    }
                 }
             }
 
@@ -105,9 +162,10 @@ namespace NativeInput
             {
                 keyboard_input.ki.wVk = (VirtualKeyCode)key;
                 keyboard_input.ki.dwFlags = KeyboardFlag.KeyUp;
+                inputToSend.Add(keyboard_input);
             }
 
-            return keyboard_input;
+            return inputToSend;
         }
 
         public INPUT CreateMouseInput(IntPtr wParam, IntPtr lParam)
@@ -120,7 +178,9 @@ namespace NativeInput
             if ((MouseMessages)wParam == MouseMessages.WM_MOUSE_HORIZONTAL_WHEEL || 
                 (MouseMessages)wParam == MouseMessages.WM_MOUSE_VERTICAL_WHEEL)
             {
-                mouse_input.mi.mouseData = (uint)-(mouse_input.mi.mouseData >> 16);
+              
+
+                mouse_input.mi.mouseData = mouse_input.mi.mouseData >> 16;
             }
             return mouse_input;
 
@@ -146,6 +206,9 @@ namespace NativeInput
 
         [DllImport("user32.dll")]
         private static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
+        [DllImport("user32")]
+        private static extern int GetKeyboardState(byte[] pbKeyState);
     }
 
 }
