@@ -10,7 +10,7 @@ namespace WpfApplication1
     {
         public String Name { get; set; }
         public String ComputerStateImage { get; set; }                
-        public int computerNum { get; set; }
-        public int computerID { get; set; }
+        public int ComputerNum { get; set; }
+        public int ComputerID { get; set; }
     }
 }

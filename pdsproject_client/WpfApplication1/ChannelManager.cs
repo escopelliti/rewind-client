@@ -127,7 +127,7 @@ namespace CommunicationLibrary
                 if (s != currentServer)
                 {
                     connectedComputers.Add(new ComputerItem()
-                    { Name = s.ComputerName, ComputerStateImage = "connComputer.png", computerNum = idItem, computerID = s.ServerID });
+                    { Name = s.ComputerName, ComputerStateImage = @"resources/images/connComputer.png", ComputerNum = idItem, ComputerID = s.ServerID });
                     idItem++;
                 }
             }

@@ -46,7 +46,7 @@ namespace WpfApplication1
                         break;
                 }
             }
-            this.currentServerNameLabel.Content = currentServer;
+            this.currentServerNameLabel.Content = currentServer.ComputerName;
             this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
         }
 

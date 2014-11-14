@@ -55,7 +55,7 @@ namespace WpfApplication1
             
 
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
-            MyNotifyIcon.Icon = new System.Drawing.Icon("..\\..\\Computers.ico");
+            MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
 
             MyNotifyIcon.ContextMenu = this.contextMenu1;
@@ -107,12 +107,12 @@ namespace WpfApplication1
             int lastComputerNum = -1;
             if (this.computerItemList.Count != 0)
             {
-                lastComputerNum = this.computerItemList.Last<ComputerItem>().computerNum;
+                lastComputerNum = this.computerItemList.Last<ComputerItem>().ComputerNum;
             }
             lastComputerNum += 1;
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {                
-                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = "off.png", computerNum = lastComputerNum });
+                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum });
             }));
             
         }
@@ -166,9 +166,9 @@ namespace WpfApplication1
                 this.ShowInTaskbar = false;
 
                 //TO BE CHANGED
-                MyNotifyIcon.BalloonTipTitle = "Minimize Sucessful";
-                MyNotifyIcon.BalloonTipText = "Minimized the app ";
-                MyNotifyIcon.ShowBalloonTip(400);
+                //MyNotifyIcon.BalloonTipTitle = "Minimize Sucessful";
+                //MyNotifyIcon.BalloonTipText = "Minimized the app ";
+                //MyNotifyIcon.ShowBalloonTip(400);
                 MyNotifyIcon.Visible = true;
             }
             else if (this.WindowState == WindowState.Normal)
