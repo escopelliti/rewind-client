@@ -19,6 +19,7 @@ namespace WpfApplication1
         public Image image { get; set; }
         public Stream audio { get; set; }
         public List<ProtocolUtils.FileStruct> filesToReceive { get; set; }
+        public String Text { get; set; }
         public JObject receivedJson { get; set; }
 
         public ChannelManager ChannelMgr { get; set; }
@@ -106,6 +107,7 @@ namespace WpfApplication1
 
                 }    
             }
+            this.ChannelMgr.ReceiveAck();
         }
 
 
@@ -222,7 +224,6 @@ namespace WpfApplication1
             byte[] buffer = this.ChannelMgr.ReceiveData();
             if (buffer != null)
             {
-
                 receivedJson = JObject.Parse(Encoding.Unicode.GetString(buffer));
                 string type = receivedJson[ProtocolUtils.TYPE].ToString();
                 switch (type)
@@ -231,6 +232,10 @@ namespace WpfApplication1
                         NewClipboardFileToPaste((JObject)receivedJson[ProtocolUtils.CONTENT]);
                         MoveByteToFiles();
                         currentContent = ProtocolUtils.SET_CLIPBOARD_FILES;
+                        break;
+                    case ProtocolUtils.SET_CLIPBOARD_TEXT:
+                        this.Text = (String) receivedJson[ProtocolUtils.CONTENT];
+                        currentContent = ProtocolUtils.SET_CLIPBOARD_TEXT;
                         break;
                 }
 
@@ -253,7 +258,31 @@ namespace WpfApplication1
 
         public void SendClipboard()
         {
-            //this.ChannelMgr.ReceiveAck();
+            switch (currentContent)
+            {
+                case ProtocolUtils.SET_CLIPBOARD_FILES:
+                    SendClipboardFiles();
+                    break;
+                case ProtocolUtils.SET_CLIPBOARD_TEXT:
+                    SendClipboardText();
+                    break;
+            }
+            
+        }
+
+        private void SendClipboardText()
+        {
+            this.ChannelMgr.AssignNewToken();
+            StandardRequest sr = new StandardRequest();
+            sr.content = this.Text;
+            sr.type = ProtocolUtils.SET_CLIPBOARD_TEXT;
+            string toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
+            this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
+            this.ChannelMgr.ReceiveAck();
+        }
+
+        private void SendClipboardFiles()
+        {
             String[] fileDropListArray = RetrieveFileDropListArray();
             this.ChannelMgr.AssignNewToken();
             string toSend = JSON.JSONFactory.CreateFileTransferJSONRequest(Protocol.ProtocolUtils.SET_CLIPBOARD_FILES, fileDropListArray);
@@ -281,8 +310,17 @@ namespace WpfApplication1
                         }
 
                     }
-                }                
-            }
+                }
+            }           
+        }
+
+        public void ResetClassValues()
+        {
+            this.currentContent = null;
+            this.receivedJson = null;
+            this.image = null;
+            this.filesToReceive.Clear();
+            this.audio = null;
         }
 
         private string[] RetrieveFileDropListArray()

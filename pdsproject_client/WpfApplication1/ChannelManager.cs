@@ -145,8 +145,8 @@ namespace CommunicationLibrary
         }
 
         public void EndConnectionToCurrentServer()
-        {
-            ReceiveAck();
+        {            
+            InterceptEvents.ResetKModifier();
             SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_OFF);
             ReceiveAck();
             currentServer = null;

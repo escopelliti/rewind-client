@@ -77,6 +77,7 @@ namespace WpfApplication1
                 this.channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
                 OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
                 clipboardMgr.SendClipboard();
+                clipboardMgr.ResetClassValues();
                 this.channelMgr.ResetTokenGen();                         
             }
             else

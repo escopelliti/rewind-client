@@ -65,6 +65,24 @@ namespace WpfApplication1
             ConfigurationManager ConfigurationMgr = new ConfigurationManager();
             List<Hotkey> l = ConfigurationMgr.ReadConfiguration().hotkeyList;     
             channelMgr = new ChannelManager();
+            Server s = new Server();
+            s.ComputerName = "bernoulli";
+            Channel c = new Channel();
+            c.CmdPort = 12000;
+            c.DataPort = 12001;
+            s.SetChannel(c);
+            channelMgr.AssignChannel(s);
+            channelMgr.AddServer(s);
+            Server s1 = new Server();
+            s1.ComputerName = "New-Pc-Portable";
+            Channel c1 = new Channel();
+            c1.CmdPort = 12000;
+            c1.DataPort = 12001;
+            s1.SetChannel(c1);
+            channelMgr.AssignChannel(s1);
+            channelMgr.AddServer(s1);
+            channelMgr.SetCurrentServer(s1);
+
             InterceptEvents ie = new InterceptEvents(channelMgr);
             OpenFullScreenWindow(ie, l, channelMgr);              
             StartDiscovery();

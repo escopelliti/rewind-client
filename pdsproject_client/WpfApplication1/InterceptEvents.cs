@@ -101,11 +101,10 @@ namespace WpfApplication1
         public void OnSwitch(object sender, object param)
         {
             StopCapture();
-            OpenWorkareaWindow();
-            ResetKModifier();
+            OpenWorkareaWindow();            
         }
 
-        private void ResetKModifier()
+        public static void ResetKModifier()
         {
             INPUT inputToSend = inputFactory.CreateKeyUpInput(Keys.Control);
             channelMgr.SendInputToSever(inputToSend);
