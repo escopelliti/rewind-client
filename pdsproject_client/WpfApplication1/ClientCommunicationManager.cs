@@ -12,10 +12,8 @@ namespace CommunicationLibrary
 {
     public class ClientCommunicationManager : ClientServerCommunicationManager
     {
-        public Socket Connect(string host, int port, Socket socket)
+        public Socket Connect(IPAddress ipAddress, ushort port, Socket socket)
         {
-            IPHostEntry ipHostInfo = Dns.GetHostEntry(host);
-            IPAddress ipAddress = ipHostInfo.AddressList[0];
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
             socket.Connect(remoteEP);
             return socket;

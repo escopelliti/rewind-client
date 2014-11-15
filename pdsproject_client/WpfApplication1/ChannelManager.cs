@@ -72,9 +72,9 @@ namespace CommunicationLibrary
         public void AssignChannel(Server s)
         {
             Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            dataSocket = ccm.Connect(s.ComputerName, s.GetChannel().DataPort, dataSocket);
+            dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            cmdSocket = ccm.Connect(s.ComputerName, s.GetChannel().CmdPort, cmdSocket);            
+            cmdSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().CmdPort, cmdSocket);            
             s.GetChannel().SetCmdSocket(cmdSocket);
             s.GetChannel().SetDataSocket(dataSocket);            
         }
