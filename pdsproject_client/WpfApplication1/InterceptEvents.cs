@@ -38,15 +38,19 @@ namespace WpfApplication1
             channelMgr = ChannelManager;
             _proc += HookCallback;
             _proc_ += HookCallbackMouse;
-            inputFactory = new InputFactory();
+            inputFactory = new InputFactory();            
             StartCapture(); 
         }
 
         private static void StartCapture()
-        {   
+        {
             hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
             _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, 0);   
         }
+
+
+        [DllImport("kernel32.dll")]
+        public static extern IntPtr GetModuleHandle(string lpModuleName);
 
         public static void RestartCapture()
         {
@@ -126,7 +130,7 @@ namespace WpfApplication1
         {
             RestartCapture();
         }
-
+       
         [DllImport("user32.dll", CharSet=CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
@@ -135,9 +139,9 @@ namespace WpfApplication1
 
         [DllImport("user32.dll")]
         private static extern bool UnhookWindowsHookEx(IntPtr hhk);
-       
+
         [DllImport("user32.dll")]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-    
+
     }
 }

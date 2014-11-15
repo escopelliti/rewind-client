@@ -35,11 +35,6 @@ namespace WpfApplication1
             this.KeyDown += WorkareaWindow_KeyDown;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-                   
-        }
-
         public void OnSetNewServer(ServerEventArgs sea)
         {
             SetNewServerOnGUIEventHandler handler = setNewServerOnGUIHandler;
@@ -64,7 +59,7 @@ namespace WpfApplication1
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
                 ItemCollection items = this.computerList.Items;
                 ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
-                Thread switchThread = new Thread(() => SwitchOperations(ci.computerID));
+                Thread switchThread = new Thread(() => SwitchOperations(ci.ComputerID));
                 switchThread.SetApartmentState(ApartmentState.STA);
                 switchThread.IsBackground = true;
                 switchThread.Start();                

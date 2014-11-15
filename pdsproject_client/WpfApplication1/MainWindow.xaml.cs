@@ -19,6 +19,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Threading;
+using System.Collections.ObjectModel;
 
 namespace WpfApplication1
 {
@@ -33,6 +34,9 @@ namespace WpfApplication1
         private System.Windows.Forms.ContextMenu contextMenu1;
         private System.Windows.Forms.MenuItem menuItem1;
         private bool exit = false;
+        private Discovery.ServiceDiscovery sd;
+        public ObservableCollection<ComputerItem> computerItemList { get; set; }
+        public ChannelManager channelMgr { get; set; }
 
         public MainWindow()
         {
@@ -51,7 +55,7 @@ namespace WpfApplication1
             
 
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
-            MyNotifyIcon.Icon = new System.Drawing.Icon("..\\..\\Computers.ico");
+            MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
 
             MyNotifyIcon.ContextMenu = this.contextMenu1;
@@ -62,19 +66,15 @@ namespace WpfApplication1
             //assegno l'id a computerItem per quelli accesi solamente (con immagine differente);
             //do la lista di computer item al form;
 
-            List<ComputerItem> items = new List<ComputerItem>();
-            items.Add(new ComputerItem() { Name = "TEST_PC", computerNum = "0"});
-            items.Add(new ComputerItem() { Name = "INSIDEMYHEAD", ComputerStateImage = "connComputer.png", focusedImage = "tick.png", computerNum = "1", computerID = 0 });
-            items.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
-            computerList.ItemsSource = items;
+            computerItemList = new ObservableCollection<ComputerItem>();
+            //computerItemList.Add(new ComputerItem() { Name = "TEST_PC", computerNum = "0" });
+            //computerItemList.Add(new ComputerItem() { Name = "INSIDEMYHEAD", ComputerStateImage = "connComputer.png", focusedImage = "tick.png", computerNum = "1", computerID = 0 });
+            //computerItemList.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
+            computerList.ItemsSource = computerItemList;
 
-
+            
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             
-            Server enrico = new Server();
-            enrico.ComputerName = "INSIDEMYHEAD";
-            enrico.DataPort = 12001;
-            enrico.CmdPort = 12000;
             ////Server alessandra = new Server();
             ////alessandra.ComputerName = "bernoulli";
             ////alessandra.CmdPort = 12000;
@@ -84,30 +84,58 @@ namespace WpfApplication1
             ////alberto.DataPort = 12001;
             ////alberto.ComputerName = "NEW_PC_PORTABLE";
 
-            ChannelManager cm = new ChannelManager();
+            
             
             ////cm.addServer(alessandra);
             ////cm.addServer(alberto);
-            cm.AddServer(enrico);
-            cm.SetCurrentServer(enrico);
-
-
+            
             ConfigurationManager ConfigurationMgr = new ConfigurationManager();
             List<Hotkey> l = ConfigurationMgr.ReadConfiguration().hotkeyList;
             
-            InterceptEvents ie = new InterceptEvents(cm);
             
-            OpenFullScreenWondows(ie, l, cm);
-
-            //Discovery.ServiceDiscovery sd = new Discovery.ServiceDiscovery();
+            
+            
+            
            
+        
+            channelMgr = new ChannelManager();
+            OpenFullScreenWindow(ie, l, channelMgr);
+            ////// TO DO ... Creazione dei server dal file di configurazione del client
+            //////cm.addServer(alessandra);
+            //channelMgr.addServer(alberto);
+            //channelMgr.setCurrentServer(alberto);
+            //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
+            InterceptEvents ie = new InterceptEvents(channelMgr);
+
+            //Thread discoveryThread = new Thread(() => StartDiscovery());
+            //discoveryThread.Start();
+            StartDiscovery();
+            
         }
 
-        private void OpenFullScreenWondows(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
+        private void StartDiscovery()
+        {
+            sd = new Discovery.ServiceDiscovery(this);            
+        }
+
+        public void OnNewComputerConnected(Object sender, Object param) {
+
+            Server server = (Server)param;            
+            int lastComputerNum = -1;
+            if (this.computerItemList.Count != 0)
+            {
+                lastComputerNum = this.computerItemList.Last<ComputerItem>().ComputerNum;
+            }
+            lastComputerNum += 1;
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {                
+                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum });
+            }));
+        private void OpenFullScreenWindow(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
         {
             FullScreenRemoteServerControl fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer);
             fullScreenWin.Show();
-            
+           
         }
         
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -159,9 +187,9 @@ namespace WpfApplication1
                 this.ShowInTaskbar = false;
 
                 //TO BE CHANGED
-                MyNotifyIcon.BalloonTipTitle = "Minimize Sucessful";
-                MyNotifyIcon.BalloonTipText = "Minimized the app ";
-                MyNotifyIcon.ShowBalloonTip(400);
+                //MyNotifyIcon.BalloonTipTitle = "Minimize Sucessful";
+                //MyNotifyIcon.BalloonTipText = "Minimized the app ";
+                //MyNotifyIcon.ShowBalloonTip(400);
                 MyNotifyIcon.Visible = true;
             }
             else if (this.WindowState == WindowState.Normal)
@@ -183,6 +211,19 @@ namespace WpfApplication1
             Server server = sea.Server;
 
             //illuminami o dammi feedback su questo nuovo server 
+        }
+
+        public void OnLostComputerConnection(object sender, object param)
+        {
+            Server server = (Server)param;
+            ComputerItem toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+            if (toRemove != null)
+            {
+                this.computerList.Dispatcher.Invoke(new Action(() =>
+                {
+                    this.computerItemList.Remove(toRemove);
+                }));
+            }
         }
     }
 }

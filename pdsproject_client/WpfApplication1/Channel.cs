@@ -12,6 +12,14 @@ namespace CommunicationLibrary
 
         private Socket dataSocket;
         private Socket cmdSocket;
+        public ushort CmdPort { get; set; }
+        public ushort DataPort { get; set; }
+        public System.Net.IPAddress ipAddress { get; set; }
+
+        public Channel()
+        {
+            this.ipAddress = null;
+        }
 
         public Socket GetCmdSocket()
         {

@@ -162,10 +162,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="plus.png" />
+    <Resource Include="resources\images\off.png" />
+    <Resource Include="resources\images\plus.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Computers.ico" />
+    <Resource Include="resources\images\Computers.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -185,8 +186,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="connComputer.png" />
-    <Resource Include="tick.png" />
+    <Resource Include="resources\images\connComputer.png" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="Bonjour">
