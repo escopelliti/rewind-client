@@ -16,7 +16,7 @@ namespace WpfApplication1
 {
     public class ClipboardMgr
     {
-        public Image image { get; set; }
+        public byte[] Data { get; set; }
         public Stream audio { get; set; }
         public List<ProtocolUtils.FileStruct> filesToReceive { get; set; }
         public String Text { get; set; }
@@ -237,9 +237,33 @@ namespace WpfApplication1
                         this.Text = (String) receivedJson[ProtocolUtils.CONTENT];
                         currentContent = ProtocolUtils.SET_CLIPBOARD_TEXT;
                         break;
+                    case ProtocolUtils.SET_CLIPBOARD_IMAGE:
+                        this.Data = new byte[(int)receivedJson[ProtocolUtils.CONTENT]];
+                        currentContent = ProtocolUtils.SET_CLIPBOARD_IMAGE;
+                        NewClipboardDataToPaste();
+                        break;
                 }
 
             }
+        }
+
+        private void NewClipboardDataToPaste()
+        {
+            DeleteFileDirContent(ProtocolUtils.TMP_DIR);
+            string filename = String.Empty;
+            if (currentContent == ProtocolUtils.SET_CLIPBOARD_IMAGE)
+            {
+                filename = ProtocolUtils.TMP_IMAGE_FILE;
+                //chiedo di mandarmi l'immagine e ricevo i dati;
+            }
+            int offset = 0;
+            while (offset < Data.Length)
+            {                    
+                    this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_IMG, String.Empty);
+                    byte[] bufferData = this.ChannelMgr.ReceiveData();
+                    System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);                    
+                    offset += bufferData.Length;   
+            }                                    
         }
 
         public bool GetClipboardDimensionOverFlow()
@@ -266,8 +290,44 @@ namespace WpfApplication1
                 case ProtocolUtils.SET_CLIPBOARD_TEXT:
                     SendClipboardText();
                     break;
+                case ProtocolUtils.SET_CLIPBOARD_IMAGE:
+                    SendClipboardImg();
+                    break;
             }
             
+        }
+
+        private void SendClipboardImg()
+        {
+            this.ChannelMgr.AssignNewToken();
+            StandardRequest sr = new StandardRequest();
+            sr.type = Protocol.ProtocolUtils.SET_CLIPBOARD_IMAGE;
+            sr.content = Data.Length;
+            string toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
+            this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
+            this.ChannelMgr.ReceiveAck();
+
+            short chunkLength = 1024;
+            int offset = 0;
+            while (offset < Data.Length)
+            {
+                byte[] chunk = new byte[chunkLength + TokenGenerator.TOKEN_DIM];
+                System.Buffer.BlockCopy(this.ChannelMgr.CurrentToken, 0, chunk, 0, TokenGenerator.TOKEN_DIM);
+                System.Buffer.BlockCopy(Data, offset, chunk, TokenGenerator.TOKEN_DIM, chunkLength);
+                offset += chunkLength;
+                this.ChannelMgr.SendBytes(chunk);
+                this.ChannelMgr.ReceiveAck();
+            }
+            int lastBytes = (Data.Length - (offset - chunkLength));
+            if (lastBytes > 0)
+            {
+                byte[] chunk = new byte[lastBytes + TokenGenerator.TOKEN_DIM];
+                System.Buffer.BlockCopy(this.ChannelMgr.CurrentToken, 0, chunk, 0, TokenGenerator.TOKEN_DIM);
+                System.Buffer.BlockCopy(Data, (offset - chunkLength), chunk, 0, lastBytes);
+                this.ChannelMgr.SendBytes(chunk);
+                this.ChannelMgr.ReceiveAck();                               
+            }
+
         }
 
         private void SendClipboardText()
@@ -318,7 +378,7 @@ namespace WpfApplication1
         {
             this.currentContent = null;
             this.receivedJson = null;
-            this.image = null;
+            this.Data = null;
             this.filesToReceive.Clear();
             this.audio = null;
         }
