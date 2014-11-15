@@ -59,56 +59,14 @@ namespace WpfApplication1
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
 
             MyNotifyIcon.ContextMenu = this.contextMenu1;
-
-            //leggi da file di conf i server;
-            //capisci quali sono quelli accesi;
-            //quelli accesi li passi a channelmgr (gli assegnerà un id);
-            //assegno l'id a computerItem per quelli accesi solamente (con immagine differente);
-            //do la lista di computer item al form;
-
-            computerItemList = new ObservableCollection<ComputerItem>();
-            //computerItemList.Add(new ComputerItem() { Name = "TEST_PC", computerNum = "0" });
-            //computerItemList.Add(new ComputerItem() { Name = "INSIDEMYHEAD", ComputerStateImage = "connComputer.png", focusedImage = "tick.png", computerNum = "1", computerID = 0 });
-            //computerItemList.Add(new ComputerItem() { Name = "NEW_PC_PORTABLE", ComputerStateImage = "connComputer.png", computerNum = "2", computerID = 1 });
+            computerItemList = new ObservableCollection<ComputerItem>();            
             computerList.ItemsSource = computerItemList;
-
-            
-            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            ////Server alessandra = new Server();
-            ////alessandra.ComputerName = "bernoulli";
-            ////alessandra.CmdPort = 12000;
-            ////alessandra.DataPort = 12001;
-            ////Server alberto = new Server();
-            ////alberto.CmdPort = 12000;
-            ////alberto.DataPort = 12001;
-            ////alberto.ComputerName = "NEW_PC_PORTABLE";
-
-            
-            
-            ////cm.addServer(alessandra);
-            ////cm.addServer(alberto);
             
             ConfigurationManager ConfigurationMgr = new ConfigurationManager();
-            List<Hotkey> l = ConfigurationMgr.ReadConfiguration().hotkeyList;
-            
-            
-            
-            
-            
-           
-        
+            List<Hotkey> l = ConfigurationMgr.ReadConfiguration().hotkeyList;     
             channelMgr = new ChannelManager();
-            OpenFullScreenWindow(ie, l, channelMgr);
-            ////// TO DO ... Creazione dei server dal file di configurazione del client
-            //////cm.addServer(alessandra);
-            //channelMgr.addServer(alberto);
-            //channelMgr.setCurrentServer(alberto);
-            //IntPtr windowHandle = new WindowInteropHelper(this).Handle;
             InterceptEvents ie = new InterceptEvents(channelMgr);
-
-            //Thread discoveryThread = new Thread(() => StartDiscovery());
-            //discoveryThread.Start();
+            OpenFullScreenWindow(ie, l, channelMgr);              
             StartDiscovery();
             
         }
@@ -131,6 +89,7 @@ namespace WpfApplication1
             {                
                 this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum });
             }));
+        }
         private void OpenFullScreenWindow(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
         {
             FullScreenRemoteServerControl fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer);
