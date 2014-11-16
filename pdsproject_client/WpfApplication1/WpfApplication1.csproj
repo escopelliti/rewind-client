@@ -96,6 +96,7 @@
     <Compile Include="ServerEventArgs.cs" />
     <Compile Include="ServiceDiscovery.cs" />
     <Compile Include="StandardRequest.cs" />
+    <Compile Include="SwitchOperator.cs" />
     <Compile Include="TokenGenerator.cs" />
     <Compile Include="WorkareaWindow.xaml.cs">
       <DependentUpon>WorkareaWindow.xaml</DependentUpon>

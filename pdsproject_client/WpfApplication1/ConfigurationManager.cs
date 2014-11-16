@@ -14,7 +14,7 @@ namespace WpfApplication1
 
         public ConfigurationManager() 
         {
-            path = "config.json";
+            path = @"../../resources/config.json";
             
             if (!File.Exists(path))
             {

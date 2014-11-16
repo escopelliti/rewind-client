@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace WpfApplication1
     public partial class FullScreenRemoteServerControl : Window
     {
         private Server currentServer;
-        private List<Server> computerList;
+        private ObservableCollection<Server> computerList;
         private InterceptEvents interceptEvent;
         public List<Hotkey> hotkeyList;
         public delegate void SwitchServerEventHandler(Object sender, Object param);
@@ -30,18 +31,17 @@ namespace WpfApplication1
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList)
         {
             this.currentServer = currentServer;
-            this.computerList = computerList;
+            // Forse non è supportato il costruttore così fatto DA PROVARE
+            this.computerList = new ObservableCollection<Server>(computerList);
             this.interceptEvent = ie;
             this.hotkeyList = hotkeyList;
             InitializeComponent();
             InitGUI();
             RegisterHotkey();
-            
         }
 
         private void RegisterHotkey()
         {
-
             foreach (Hotkey h in hotkeyList)
             {
                 try
@@ -51,14 +51,13 @@ namespace WpfApplication1
                     switch (h.Command)
                     {
                         case Hotkey.SWITCH_SERVER_CMD:
-                            CommandBindings.Add(new CommandBinding(settings, My_first_event_handler));
+                            CommandBindings.Add(new CommandBinding(settings, Switch_Server_Event_Handler));
                             // Istanzio il delegato dell'evento
                             SwitchServeHandler = new SwitchServerEventHandler(interceptEvent.OnSwitch);
                             break;
 
                         case Hotkey.OPEN_PANEL_CMD:
-                            CommandBindings.Add(new CommandBinding(settings, My_second_event_handler));
-                        
+                            CommandBindings.Add(new CommandBinding(settings, Open_Panel_Event_Handler));
                             break;
                     }
                 }
@@ -66,9 +65,7 @@ namespace WpfApplication1
                 {
                     //handle exception error
                 }
-
             }
-            
         }
 
         private void InitGUI()
@@ -99,9 +96,8 @@ namespace WpfApplication1
             return connComputers;
         }
 
-        private void My_first_event_handler(object sender, ExecutedRoutedEventArgs e)
+        private void Switch_Server_Event_Handler(object sender, ExecutedRoutedEventArgs e)
         {
-            //handler code goes here.
             OnSwitch(new EventArgs());
         }
 
@@ -115,10 +111,35 @@ namespace WpfApplication1
             }
         }
 
-        private void My_second_event_handler(object sender, RoutedEventArgs e)
+        private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)
         {
-            //handler code goes here. 
             MessageBox.Show("Alt+B key pressed");
+        }
+
+        public void AddServerToList(Server s)
+        {
+            this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerList.Add(s);
+            }));
+
+        }
+
+        public void RemoveServerToList(Server s)
+        {
+            this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerList.Remove(s);
+            }));
+        }
+
+        public void UpdateCurrentServer(Server s)
+        {
+            this.currentServerNameLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                this.currentServerNameLabel.Content = currentServer.ComputerName;
+            }));
+
         }
     }
 }

@@ -37,6 +37,10 @@ namespace WpfApplication1
         private Discovery.ServiceDiscovery sd;
         public ObservableCollection<ComputerItem> computerItemList { get; set; }
         public ChannelManager channelMgr { get; set; }
+        private ComputerItem focusedComputerItem;
+        private List<Server> serverList;
+        public FullScreenRemoteServerControl fullScreenWin;
+        private ConfigurationManager configurationMgr;
 
         public MainWindow()
         {
@@ -53,39 +57,27 @@ namespace WpfApplication1
             this.menuItem1.Text = "Exit";
             this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
             
-
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
             MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
-
             MyNotifyIcon.ContextMenu = this.contextMenu1;
             computerItemList = new ObservableCollection<ComputerItem>();            
             computerList.ItemsSource = computerItemList;
             
-            ConfigurationManager ConfigurationMgr = new ConfigurationManager();
-            List<Hotkey> l = ConfigurationMgr.ReadConfiguration().hotkeyList;     
-            channelMgr = new ChannelManager();
-            //Server s = new Server();
-            //s.ComputerName = "bernoulli";
-            //Channel c = new Channel();
-            //c.CmdPort = 12000;
-            //c.DataPort = 12001;
-            //s.SetChannel(c);
-            //channelMgr.AssignChannel(s);
-            //channelMgr.AddServer(s);
-            //Server s1 = new Server();
-            //s1.ComputerName = "New-Pc-Portable";
-            //Channel c1 = new Channel();
-            //c1.CmdPort = 12000;
-            //c1.DataPort = 12001;
-            //s1.SetChannel(c1);
-            //channelMgr.AssignChannel(s1);
-            //channelMgr.AddServer(s1);
-            //channelMgr.SetCurrentServer(s1);
+            // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
+            
 
-            InterceptEvents ie = new InterceptEvents(channelMgr);
-            OpenFullScreenWindow(ie, l, channelMgr);              
+            //Carichiamo quella attivo con l'immagine corretta e con i relativi tasti disabilitati
+
+
+
+            serverList = new List<Server>();
+
+            configurationMgr = new ConfigurationManager();                
+            channelMgr = new ChannelManager();
             StartDiscovery();
+            //InterceptEvents ie = new InterceptEvents(channelMgr);
+            //OpenFullScreenWindow(ie, l, channelMgr);              
             
         }
 
@@ -97,6 +89,8 @@ namespace WpfApplication1
         public void OnNewComputerConnected(Object sender, Object param) {
 
             Server server = (Server)param;            
+            serverList.Add(server);
+
             int lastComputerNum = -1;
             if (this.computerItemList.Count != 0)
             {
@@ -105,13 +99,13 @@ namespace WpfApplication1
             lastComputerNum += 1;
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {                
-                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum });
+                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum, IsCheckboxEnabled=true});
             }));
         }
 
         private void OpenFullScreenWindow(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
         {
-            FullScreenRemoteServerControl fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer);
+            fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer);
             fullScreenWin.Show();
            
         }
@@ -177,12 +171,6 @@ namespace WpfApplication1
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            // AT FIRST IT ASKS YOU A PSW
-            //CODE TO SWITCH SERVER OR MAKE CURRENT THAT SPECIFIC SERVER
-        }
-
         public static void OnSetNewServer(Object obj, Object ea)
         {
             ServerEventArgs sea = (ServerEventArgs)ea;
@@ -194,6 +182,7 @@ namespace WpfApplication1
         public void OnLostComputerConnection(object sender, object param)
         {
             Server server = (Server)param;
+            serverList.Remove(server);
             ComputerItem toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
             if (toRemove != null)
             {
@@ -203,5 +192,138 @@ namespace WpfApplication1
                 }));
             }
         }
+
+
+        private void SetActiveButton_Click(object sender, RoutedEventArgs e)
+        {
+            // AT FIRST IT ASKS YOU A PSW
+            //CODE TO SWITCH SERVER OR MAKE CURRENT THAT SPECIFIC SERVER
+            if (!focusedComputerItem.IsCheckboxChecked)
+            {
+                System.Windows.MessageBox.Show
+                    ("Connettiti al computer prima di continuare", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            Server currentServer = channelMgr.GetCurrentServer();
+            Server s = serverList.Find(x => x.ComputerName == focusedComputerItem.Name);
+
+            if (currentServer == null)
+            {
+                channelMgr.SetCurrentServer(s);
+            }
+            else
+            {
+                if (focusedComputerItem.Name == currentServer.ComputerName)
+                {
+                    System.Windows.MessageBox.Show
+                    ("Il focus è già attivo su questo computer", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                }
+                //verifico che il computer su cui voglio attivare il focus è connesso
+                SwitchOperator switchOp = new SwitchOperator();
+                Thread switchThread = new Thread(() => switchOp.SwitchOperations(focusedComputerItem.ComputerID, channelMgr));
+                switchThread.SetApartmentState(ApartmentState.STA);
+                switchThread.IsBackground = true;
+                switchThread.Start();
+            }
+            //al momento con c'è alcun focus settato sui server
+            bool isWindowOpened = false;
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
+                {
+                    if (win.IsActive)
+                    {
+                        ((FullScreenRemoteServerControl)win).UpdateCurrentServer(s);
+                        isWindowOpened = true;
+                        break;
+                    }
+                }
+            }
+
+            if(!isWindowOpened)
+            {
+                List<Hotkey> l = configurationMgr.ReadConfiguration().hotkeyList;
+                InterceptEvents ie = new InterceptEvents(channelMgr);
+                OpenFullScreenWindow(ie, l, channelMgr);
+            }
+
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(focusedComputerItem);
+                focusedComputerItem.ComputerStateImage = @"resources/images/connComputer.png";
+                focusedComputerItem.IsCheckboxEnabled = false;
+                this.computerItemList.Add(focusedComputerItem);
+            }));
+            
+        }
+
+        private void connectCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(focusedComputerItem);
+                this.focusedComputerItem.IsCheckboxChecked = true;
+                this.computerItemList.Add(focusedComputerItem);
+            }));
+
+            Server s = serverList.Find(x => x.ComputerName == focusedComputerItem.Name);
+            if (s.GetChannel().GetCmdSocket() == null || s.GetChannel().GetDataSocket() == null)
+            {
+                channelMgr.AssignChannel(s);
+                channelMgr.AddServer(s);
+            }
+
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(focusedComputerItem);
+                focusedComputerItem.ComputerID = s.ServerID;
+                this.computerItemList.Add(focusedComputerItem);
+            }));
+            
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
+                {
+                    if (win.IsActive)
+                    {
+                        ((FullScreenRemoteServerControl)win).AddServerToList(s);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void connectCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(focusedComputerItem);
+                this.focusedComputerItem.IsCheckboxChecked = false;
+                this.computerItemList.Add(focusedComputerItem);
+            }));   
+            
+            Server s = serverList.Find(x => x.ComputerName == focusedComputerItem.Name);
+            channelMgr.DeleteServer(s);
+
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
+                {
+                    if (win.IsActive)
+                    {
+                        ((FullScreenRemoteServerControl)win).RemoveServerToList(s);
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void ListBoxItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            focusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;
+        }    
     }
 }
+

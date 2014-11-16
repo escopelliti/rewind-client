@@ -22,28 +22,16 @@ namespace WpfApplication1
     public partial class WorkareaWindow : Window
     {
         public ChannelManager channelMgr { get; set; }
-        public delegate void SetNewServerOnGUIEventHandler(Object sender, Object param);
-        public event SetNewServerOnGUIEventHandler setNewServerOnGUIHandler; 
+
 
 
         public WorkareaWindow(ChannelManager channelMgr) 
         {
             this.channelMgr = channelMgr;
             InitializeComponent();            
-            this.setNewServerOnGUIHandler += MainWindow.OnSetNewServer;
-            this.setNewServerOnGUIHandler += InterceptEvents.OnSetNewServer;
             this.KeyDown += WorkareaWindow_KeyDown;
         }
 
-        public void OnSetNewServer(ServerEventArgs sea)
-        {
-            SetNewServerOnGUIEventHandler handler = setNewServerOnGUIHandler;
-            if (handler != null)
-            {
-                handler(this, sea);
-            }
-        }
-        
         private void WorkareaWindow_KeyDown(object sender, KeyEventArgs e)
         {
             this.Close();           
@@ -59,33 +47,12 @@ namespace WpfApplication1
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
                 ItemCollection items = this.computerList.Items;
                 ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
-                Thread switchThread = new Thread(() => SwitchOperations(ci.ComputerID));
+                SwitchOperator switchOp = new SwitchOperator();
+                Thread switchThread = new Thread(() => switchOp.SwitchOperations(ci.ComputerID, channelMgr));
                 switchThread.SetApartmentState(ApartmentState.STA);
                 switchThread.IsBackground = true;
                 switchThread.Start();                
             }
-        }
-
-        private void SwitchOperations(int computerID)
-        {
-            ClipboardMgr clipboardMgr = new ClipboardMgr();
-            clipboardMgr.ChannelMgr = channelMgr;
-            if (!clipboardMgr.GetClipboardDimensionOverFlow())
-            {
-                clipboardMgr.ReceiveClipboard();                
-                this.channelMgr.EndConnectionToCurrentServer();
-                this.channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
-                OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
-                clipboardMgr.SendClipboard();
-                clipboardMgr.ResetClassValues();
-                this.channelMgr.ResetTokenGen();                         
-            }
-            else
-            {
-                ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(computerID, clipboardMgr, this, channelMgr);
-                confirmWin.Show();
-                System.Windows.Threading.Dispatcher.Run();
-            }            
         }
     }
 }
