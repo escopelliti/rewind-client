@@ -21,18 +21,18 @@ namespace WpfApplication1
  
     public partial class ConfirmDataTransferWindow : Window
     {
-        private WorkareaWindow win;
+        private SwitchOperator switchOp;
         private ChannelManager channelMgr;
         private int computerID;
         private ClipboardMgr clipboardMgr;
 
-        public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, WorkareaWindow win, ChannelManager channelMgr)
+        public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, SwitchOperator switchOp, ChannelManager channelMgr)
         {
             InitializeComponent();
             this.computerID = computerID;
             this.clipboardMgr = clipboardMgr;
             this.channelMgr = channelMgr;
-            this.win = win;            
+            this.switchOp = switchOp; 
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
@@ -40,7 +40,7 @@ namespace WpfApplication1
             clipboardMgr.ReceiveClipboard();
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
-            win.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
+            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             clipboardMgr.SendClipboard();
         }
 

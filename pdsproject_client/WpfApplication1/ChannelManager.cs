@@ -116,6 +116,8 @@ namespace CommunicationLibrary
         public void DeleteServer(Server s)
         {
             ConnectedServer.Remove(s);
+            ccm.Shutdown(s.GetChannel().GetCmdSocket(),SocketShutdown.Send);
+            ccm.Shutdown(s.GetChannel().GetDataSocket(), SocketShutdown.Send);
         }
 
         public List<ComputerItem> GetComputerItemList()

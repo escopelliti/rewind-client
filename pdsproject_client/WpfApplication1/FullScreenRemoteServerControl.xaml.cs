@@ -31,7 +31,7 @@ namespace WpfApplication1
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList)
         {
             this.currentServer = currentServer;
-            // Forse non è supportato il costruttore così fatto
+            // Forse non è supportato il costruttore così fatto DA PROVARE
             this.computerList = new ObservableCollection<Server>(computerList);
             this.interceptEvent = ie;
             this.hotkeyList = hotkeyList;
@@ -58,7 +58,6 @@ namespace WpfApplication1
 
                         case Hotkey.OPEN_PANEL_CMD:
                             CommandBindings.Add(new CommandBinding(settings, Open_Panel_Event_Handler));
-                        
                             break;
                     }
                 }
@@ -66,9 +65,7 @@ namespace WpfApplication1
                 {
                     //handle exception error
                 }
-
             }
-            
         }
 
         private void InitGUI()
@@ -119,13 +116,28 @@ namespace WpfApplication1
             MessageBox.Show("Alt+B key pressed");
         }
 
-        public void UpdateList(Server s)
+        public void AddServerToList(Server s)
         {
-            this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
-
             this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
             {
                 this.computerList.Add(s);
+            }));
+
+        }
+
+        public void RemoveServerToList(Server s)
+        {
+            this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerList.Remove(s);
+            }));
+        }
+
+        public void UpdateCurrentServer(Server s)
+        {
+            this.currentServerNameLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                this.currentServerNameLabel.Content = currentServer.ComputerName;
             }));
 
         }
