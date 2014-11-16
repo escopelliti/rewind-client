@@ -248,8 +248,7 @@ namespace WpfApplication1
         }
 
         private void NewClipboardDataToPaste()
-        {
-            DeleteFileDirContent(ProtocolUtils.TMP_DIR);
+        {           
             string filename = String.Empty;
             if (currentContent == ProtocolUtils.SET_CLIPBOARD_IMAGE)
             {
@@ -306,29 +305,21 @@ namespace WpfApplication1
             string toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
             this.ChannelMgr.ReceiveAck();
-
-            short chunkLength = 1024;
             int offset = 0;
             while (offset < Data.Length)
             {
-                byte[] chunk = new byte[chunkLength + TokenGenerator.TOKEN_DIM];
-                System.Buffer.BlockCopy(this.ChannelMgr.CurrentToken, 0, chunk, 0, TokenGenerator.TOKEN_DIM);
-                System.Buffer.BlockCopy(Data, offset, chunk, TokenGenerator.TOKEN_DIM, chunkLength);
-                offset += chunkLength;
+                int dim = 1024;
+                if (Data.Length - offset < dim)
+                {
+                    dim = Data.Length - offset;
+                }
+                byte[] chunk = new byte[dim];                
+                System.Buffer.BlockCopy(Data, offset, chunk, 0, dim);
+                offset += dim;
                 this.ChannelMgr.SendBytes(chunk);
                 this.ChannelMgr.ReceiveAck();
             }
-            int lastBytes = (Data.Length - (offset - chunkLength));
-            if (lastBytes > 0)
-            {
-                byte[] chunk = new byte[lastBytes + TokenGenerator.TOKEN_DIM];
-                System.Buffer.BlockCopy(this.ChannelMgr.CurrentToken, 0, chunk, 0, TokenGenerator.TOKEN_DIM);
-                System.Buffer.BlockCopy(Data, (offset - chunkLength), chunk, 0, lastBytes);
-                this.ChannelMgr.SendBytes(chunk);
-                this.ChannelMgr.ReceiveAck();                               
-            }
-
-        }
+        }       
 
         private void SendClipboardText()
         {
