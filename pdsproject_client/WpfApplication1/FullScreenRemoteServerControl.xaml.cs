@@ -26,7 +26,7 @@ namespace WpfApplication1
         public List<Hotkey> hotkeyList;
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
-        public MainWindow mainWin;
+        private MainWindow mainWin;
 
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList, MainWindow mainWin)
         {
