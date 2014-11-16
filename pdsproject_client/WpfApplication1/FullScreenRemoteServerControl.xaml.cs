@@ -26,15 +26,16 @@ namespace WpfApplication1
         public List<Hotkey> hotkeyList;
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
-        
+        public MainWindow mainWin;
 
-        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList)
+        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList, MainWindow mainWin)
         {
             this.currentServer = currentServer;
             // Forse non è supportato il costruttore così fatto DA PROVARE
             this.computerList = new ObservableCollection<Server>(computerList);
             this.interceptEvent = ie;
             this.hotkeyList = hotkeyList;
+            this.mainWin = mainWin;
             InitializeComponent();
             InitGUI();
             RegisterHotkey();
@@ -53,7 +54,7 @@ namespace WpfApplication1
                         case Hotkey.SWITCH_SERVER_CMD:
                             CommandBindings.Add(new CommandBinding(settings, Switch_Server_Event_Handler));
                             // Istanzio il delegato dell'evento
-                            SwitchServeHandler = new SwitchServerEventHandler(interceptEvent.OnSwitch);
+                            SwitchServeHandler = new SwitchServerEventHandler(mainWin.OnSwitch);
                             break;
 
                         case Hotkey.OPEN_PANEL_CMD:
@@ -125,7 +126,7 @@ namespace WpfApplication1
 
         }
 
-        public void RemoveServerToList(Server s)
+        public void RemoveServerFromList(Server s)
         {
             this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
             {

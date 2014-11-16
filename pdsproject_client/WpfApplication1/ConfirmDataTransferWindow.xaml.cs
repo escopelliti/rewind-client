@@ -38,9 +38,10 @@ namespace WpfApplication1
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
             clipboardMgr.ReceiveClipboard();
+            switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
-            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
+            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));            
             clipboardMgr.SendClipboard();
         }
 

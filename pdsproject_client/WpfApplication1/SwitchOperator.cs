@@ -11,13 +11,17 @@ namespace WpfApplication1
     {
         public delegate void SetNewServerOnGUIEventHandler(Object sender, Object param);
         public event SetNewServerOnGUIEventHandler setNewServerOnGUIHandler;
+        public delegate void ResetServerStateOnGUIEventHandler(Object sender, Object param);
+        public event ResetServerStateOnGUIEventHandler resetServerStateOnGUIHandler;
+        private MainWindow mainWin;
 
-        public SwitchOperator()
+        public SwitchOperator(MainWindow mainWin)
         {
-            this.setNewServerOnGUIHandler += MainWindow.OnSetNewServer;
+            this.mainWin = mainWin;
+            this.resetServerStateOnGUIHandler += mainWin.OnEndConnectionToServer;
+            this.setNewServerOnGUIHandler += mainWin.OnSetNewServer;
             this.setNewServerOnGUIHandler += InterceptEvents.OnSetNewServer;
         }
-
 
         public void SwitchOperations(int computerID,ChannelManager channelMgr)
         {
@@ -25,10 +29,11 @@ namespace WpfApplication1
             clipboardMgr.ChannelMgr = channelMgr;
             if (!clipboardMgr.GetClipboardDimensionOverFlow())
             {
-                clipboardMgr.ReceiveClipboard();                
+                clipboardMgr.ReceiveClipboard();
+                OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();
                 channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
-                OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
+                OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));                
                 clipboardMgr.SendClipboard();
                 channelMgr.ResetTokenGen();                         
             }
@@ -43,6 +48,15 @@ namespace WpfApplication1
         public void OnSetNewServer(ServerEventArgs sea)
         {
             SetNewServerOnGUIEventHandler handler = setNewServerOnGUIHandler;
+            if (handler != null)
+            {
+                handler(this, sea);
+            }
+        }
+
+        public void OnEndConnectionToServer(ServerEventArgs sea)
+        {
+            ResetServerStateOnGUIEventHandler handler = resetServerStateOnGUIHandler;
             if (handler != null)
             {
                 handler(this, sea);

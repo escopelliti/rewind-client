@@ -41,7 +41,7 @@ namespace WpfApplication1
         private List<Server> serverList;
         public FullScreenRemoteServerControl fullScreenWin;
         private ConfigurationManager configurationMgr;
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -75,10 +75,7 @@ namespace WpfApplication1
 
             configurationMgr = new ConfigurationManager();                
             channelMgr = new ChannelManager();
-            StartDiscovery();
-            //InterceptEvents ie = new InterceptEvents(channelMgr);
-            //OpenFullScreenWindow(ie, l, channelMgr);              
-            
+            StartDiscovery();                          
         }
 
         private void StartDiscovery()
@@ -105,9 +102,29 @@ namespace WpfApplication1
 
         private void OpenFullScreenWindow(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
         {
-            fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer);
+            fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer, this);
             fullScreenWin.Show();
            
+        }
+
+        private void OpenWorkareaWindow()
+        {
+            if (channelMgr.GetCurrentServer() != null)
+            {
+                WorkareaWindow wk = new WorkareaWindow(channelMgr, this);
+                wk.computerList.ItemsSource = channelMgr.GetComputerItemList();
+                wk.Show();
+            }
+            else
+            {
+                System.Windows.MessageBox.Show("Non hai ancora un computer attivo. Selezionane uno!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+            }
+        }
+
+        public void OnSwitch(object sender, object param)
+        {
+            InterceptEvents.StopCapture();
+            OpenWorkareaWindow();
         }
         
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -171,12 +188,37 @@ namespace WpfApplication1
             }
         }
 
-        public static void OnSetNewServer(Object obj, Object ea)
+        public void OnEndConnectionToServer(Object obj, Object param)
+        {
+            ServerEventArgs sea = (ServerEventArgs)param;
+            Server server = sea.Server;
+            ComputerItem oldComputerItem = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+            if (oldComputerItem != null)
+            {
+                this.computerList.Dispatcher.Invoke(new Action(() =>
+                {
+                    this.computerItemList.Remove(oldComputerItem);
+                    oldComputerItem.ComputerStateImage = @"resources/images/off.png";
+                    this.computerItemList.Add(oldComputerItem);
+                }));
+            }
+        }
+
+        public void OnSetNewServer(Object obj, Object ea)
         {
             ServerEventArgs sea = (ServerEventArgs)ea;
             Server server = sea.Server;
-
-            //illuminami o dammi feedback su questo nuovo server 
+            ComputerItem newComputerItem = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+            if (newComputerItem != null)
+            {
+                this.computerList.Dispatcher.Invoke(new Action(() =>
+                {
+                    this.computerItemList.Remove(newComputerItem);
+                    newComputerItem.ComputerStateImage = @"resources/images/connConputer.png";
+                    newComputerItem.IsCheckboxEnabled = false;
+                    this.computerItemList.Add(newComputerItem);
+                }));
+            }            
         }
 
         public void OnLostComputerConnection(object sender, object param)
@@ -191,7 +233,19 @@ namespace WpfApplication1
                     this.computerItemList.Remove(toRemove);
                 }));
             }
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
+                {
+                    if (win.IsActive)
+                    {
+                        ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
+                        break;
+                    }
+                }
+            }
         }
+            
 
 
         private void SetActiveButton_Click(object sender, RoutedEventArgs e)
@@ -221,7 +275,7 @@ namespace WpfApplication1
                     return;
                 }
                 //verifico che il computer su cui voglio attivare il focus è connesso
-                SwitchOperator switchOp = new SwitchOperator();
+                SwitchOperator switchOp = new SwitchOperator(this);
                 Thread switchThread = new Thread(() => switchOp.SwitchOperations(focusedComputerItem.ComputerID, channelMgr));
                 switchThread.SetApartmentState(ApartmentState.STA);
                 switchThread.IsBackground = true;
@@ -313,7 +367,7 @@ namespace WpfApplication1
                 {
                     if (win.IsActive)
                     {
-                        ((FullScreenRemoteServerControl)win).RemoveServerToList(s);
+                        ((FullScreenRemoteServerControl)win).RemoveServerFromList(s);
                         break;
                     }
                 }
