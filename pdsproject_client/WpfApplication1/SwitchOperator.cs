@@ -21,6 +21,7 @@ namespace WpfApplication1
 
         public void SwitchOperations(int computerID,ChannelManager channelMgr)
         {
+
             ClipboardMgr clipboardMgr = new ClipboardMgr();
             clipboardMgr.ChannelMgr = channelMgr;
             if (!clipboardMgr.GetClipboardDimensionOverFlow())

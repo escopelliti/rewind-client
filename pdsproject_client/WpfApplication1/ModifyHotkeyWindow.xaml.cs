@@ -114,16 +114,7 @@ namespace WpfApplication1
         private void ButtonOkClick(object sender, RoutedEventArgs e)
         {
 
-            IsValidComboBoxField(this.OpenPanelComboBox);
-            IsValidComboBoxField(this.SwitchServeComboBox);
-            IsValidLabelFiled(this.SwitchServerKeyLabel);
-            IsValidLabelFiled(this.OpenPanelKeyLabel);
-
-            if (IsValidComboBoxField(this.OpenPanelComboBox) &&
-                IsValidComboBoxField(this.SwitchServeComboBox) &&
-                IsValidLabelFiled(this.SwitchServerKeyLabel) &&
-                IsValidLabelFiled(this.OpenPanelKeyLabel))
-
+            if (IsValidConfiguration())
             {
                 Hotkey newSwitchServerHotkey = new Hotkey
                     ((ModifierKeys)SwitchServeComboBox.SelectedItem, (Key)SwitchServerKeyLabel.Content, Hotkey.SWITCH_SERVER_CMD);
@@ -143,8 +134,18 @@ namespace WpfApplication1
             }
         }
 
-        private bool IsValidComboBoxField(ComboBox comboBox)
+        private bool IsValidConfiguration() {
+            bool IsValidConf = true;
+            IsValidConf = IsValidComboBoxField(this.OpenPanelComboBox, IsValidConf);
+            IsValidConf = IsValidComboBoxField(this.SwitchServeComboBox, IsValidConf);
+            IsValidConf = IsValidLabelFiled(this.SwitchServerKeyLabel, IsValidConf);
+            IsValidConf = IsValidLabelFiled(this.OpenPanelKeyLabel, IsValidConf);
+            return IsValidConf;
+        }
+
+        private bool IsValidComboBoxField(ComboBox comboBox, bool isValidConf)
         {
+
             if (comboBox.SelectedItem == null)
             {
                 BrushConverter bc = new BrushConverter();
@@ -155,11 +156,11 @@ namespace WpfApplication1
             {
                 BrushConverter bc = new BrushConverter();
                 comboBox.Background = (Brush)bc.ConvertFrom("#FFCDCDCD");
-                return true;
+                return isValidConf;
             }
         }
 
-        private bool IsValidLabelFiled(Label label)
+        private bool IsValidLabelFiled(Label label, bool isValidConf)
         {
             if (label.Content == null)
             {
@@ -171,7 +172,7 @@ namespace WpfApplication1
             {
                 BrushConverter bc = new BrushConverter();
                 label.Background = Brushes.White;
-                return true;
+                return isValidConf;
             }
 
         }

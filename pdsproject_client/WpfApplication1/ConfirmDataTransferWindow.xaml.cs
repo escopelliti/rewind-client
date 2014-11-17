@@ -37,11 +37,14 @@ namespace WpfApplication1
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
+            ProgressBar progress = new ProgressBar();
+            progress.Show();
             clipboardMgr.ReceiveClipboard();
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
             switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             clipboardMgr.SendClipboard();
+            progress.Close();
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

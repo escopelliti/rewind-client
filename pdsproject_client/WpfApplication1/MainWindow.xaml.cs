@@ -78,7 +78,7 @@ namespace WpfApplication1
             //StartDiscovery();
             ////InterceptEvents ie = new InterceptEvents(channelMgr);
             ////OpenFullScreenWindow(ie, l, channelMgr);
-            
+
         }
 
         private void StartDiscovery()
