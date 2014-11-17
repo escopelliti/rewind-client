@@ -154,7 +154,9 @@ namespace WpfApplication1
             {
                 this.WindowState = WindowState.Minimized;
                 e.Cancel = true;
-            }            
+                return;
+            }
+            this.sd.Stop();
         }
 
         private void menuItem1_Click(object Sender, EventArgs e)
@@ -225,22 +227,25 @@ namespace WpfApplication1
         {
             Server server = (Server)param;
             serverList.Remove(server);
-            ComputerItem toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
-            if (toRemove != null)
+            if (computerItemList.Count != 0)
             {
-                this.computerList.Dispatcher.Invoke(new Action(() =>
+                ComputerItem toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+                if (toRemove != null)
                 {
-                    this.computerItemList.Remove(toRemove);
-                }));
-            }
-            foreach (Window win in System.Windows.Application.Current.Windows)
-            {
-                if (win is FullScreenRemoteServerControl)
-                {
-                    if (win.IsActive)
+                    this.computerList.Dispatcher.Invoke(new Action(() =>
                     {
-                        ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
-                        break;
+                        this.computerItemList.Remove(toRemove);
+                    }));
+                }
+                foreach (Window win in System.Windows.Application.Current.Windows)
+                {
+                    if (win is FullScreenRemoteServerControl)
+                    {
+                        if (win.IsActive)
+                        {
+                            ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
+                            break;
+                        }
                     }
                 }
             }
@@ -315,14 +320,8 @@ namespace WpfApplication1
 
         private void connectCheckbox_Checked(object sender, RoutedEventArgs e)
         {
-            this.computerList.Dispatcher.Invoke(new Action(() =>
-            {
-                this.computerItemList.Remove(focusedComputerItem);
-                this.focusedComputerItem.IsCheckboxChecked = true;
-                this.computerItemList.Add(focusedComputerItem);
-            }));
-
             Server s = serverList.Find(x => x.ComputerName == focusedComputerItem.Name);
+
             if (s.GetChannel().GetCmdSocket() == null || s.GetChannel().GetDataSocket() == null)
             {
                 channelMgr.AssignChannel(s);
@@ -335,7 +334,10 @@ namespace WpfApplication1
                 focusedComputerItem.ComputerID = s.ServerID;
                 this.computerItemList.Add(focusedComputerItem);
             }));
-            
+
+            AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
+            a.Show();
+                                
             foreach (Window win in System.Windows.Application.Current.Windows)
             {
                 if (win is FullScreenRemoteServerControl)
@@ -347,6 +349,12 @@ namespace WpfApplication1
                     }
                 }
             }
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(focusedComputerItem);
+                this.focusedComputerItem.IsCheckboxChecked = true;
+                this.computerItemList.Add(focusedComputerItem);
+            }));
         }
 
         private void connectCheckbox_Unchecked(object sender, RoutedEventArgs e)
@@ -378,6 +386,27 @@ namespace WpfApplication1
         {
             focusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;
         }    
+    
+        public void Forbidden(Server s)
+        {
+ 	        ComputerItem ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(ci);
+                this.focusedComputerItem.IsCheckboxChecked = false;
+                this.computerItemList.Add(ci);
+            }));
+            System.Windows.MessageBox.Show("Autenticazione non riuscita!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        public void Permitted(Server toAuthenticate)
+        {
+            Server s = this.serverList.Find(x => x.ComputerName == toAuthenticate.ComputerName);
+            if (s != null)
+            {
+                s.Authenticated = toAuthenticate.Authenticated;
+            }
+        }
     }
 }
 

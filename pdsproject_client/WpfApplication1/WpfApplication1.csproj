@@ -76,6 +76,10 @@
     <Compile Include="AddComputerWindow.xaml.cs">
       <DependentUpon>AddComputerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="AuthenticationMgr.cs" />
+    <Compile Include="AuthenticationWindow.xaml.cs">
+      <DependentUpon>AuthenticationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelManager.cs" />
     <Compile Include="ClipboardMgr.cs" />
@@ -104,6 +108,10 @@
     <Page Include="AddComputerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="AuthenticationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ConfirmDataTransferWindow.xaml">
       <SubType>Designer</SubType>

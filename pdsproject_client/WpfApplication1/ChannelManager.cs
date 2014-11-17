@@ -14,7 +14,7 @@ namespace CommunicationLibrary
     {
         private Server currentServer;
         public List<Server> ConnectedServer { get; set; }
-        private ClientCommunicationManager ccm;
+        public ClientCommunicationManager ccm { get; set; }
         public byte[] CurrentToken { get; set; }
         private TokenGenerator tokenGen;
 
@@ -106,7 +106,8 @@ namespace CommunicationLibrary
 
         public void AddServer(Server s) 
         {
-            s.ServerID = FindFreeIdServer(); 
+            s.ServerID = FindFreeIdServer();
+            s.Authenticated = false;
             if (s.GetChannel() == null) {
                 AssignChannel(s);
             }
@@ -116,8 +117,16 @@ namespace CommunicationLibrary
         public void DeleteServer(Server s)
         {
             ConnectedServer.Remove(s);
-            ccm.Shutdown(s.GetChannel().GetCmdSocket(),SocketShutdown.Send);
-            ccm.Shutdown(s.GetChannel().GetDataSocket(), SocketShutdown.Send);
+            Socket cmdSocket = s.GetChannel().GetCmdSocket();
+            Socket dataSocket = s.GetChannel().GetDataSocket();
+            ccm.Shutdown(cmdSocket, SocketShutdown.Send);            
+            ccm.Close(cmdSocket);
+            cmdSocket = null;
+            s.GetChannel().SetCmdSocket(cmdSocket);
+            ccm.Shutdown(dataSocket, SocketShutdown.Send);
+            ccm.Close(dataSocket);
+            dataSocket = null;
+            s.GetChannel().SetDataSocket(dataSocket);
         }
 
         public List<ComputerItem> GetComputerItemList()
@@ -154,7 +163,19 @@ namespace CommunicationLibrary
             currentServer = null;
         }
 
-
+        public void SendRequest(string requestType, Object content, Socket socket)
+        {
+            StandardRequest stdReq = new StandardRequest();
+            stdReq.type = requestType;
+            stdReq.content = content;
+            string jsonTosend = JsonConvert.SerializeObject(stdReq);
+            byte[] requestToSend = Encoding.Unicode.GetBytes(jsonTosend);
+            byte[] toSend = new byte[requestToSend.Length + TokenGenerator.TOKEN_DIM];
+            CurrentToken = tokenGen.GetNewToken();
+            System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
+            System.Buffer.BlockCopy(requestToSend, 0, toSend, TokenGenerator.TOKEN_DIM, requestToSend.Length);
+            ccm.Send(toSend, socket);
+        }
 
         public void SendRequest(string requestType, Object content)
         {
