@@ -23,6 +23,7 @@ namespace WpfApplication1
     {
         public ChannelManager channelMgr { get; set; }
         private MainWindow mainWin;
+        private bool switchFlag = false;
 
         public WorkareaWindow(ChannelManager channelMgr, MainWindow mainWin) 
         {
@@ -43,7 +44,8 @@ namespace WpfApplication1
                 if (e.Key >= Key.NumPad0)
                 {
                     fixedDisplacement += fixedDisplacement;
-                }                
+                }  
+                switchFlag = true;
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
                 ItemCollection items = this.computerList.Items;
                 ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
@@ -52,6 +54,14 @@ namespace WpfApplication1
                 switchThread.SetApartmentState(ApartmentState.STA);
                 switchThread.IsBackground = true;
                 switchThread.Start();                
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!switchFlag)
+            {
+                InterceptEvents.RestartCapture();
             }
         }
     }
