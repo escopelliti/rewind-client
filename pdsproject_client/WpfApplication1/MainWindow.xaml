@@ -104,6 +104,14 @@
                     </StackPanel>
                 </Button.Content>
             </Button>
+            
+            <Button Click="Button_Click" Background="White" ToolTip="Modifica le shortcut" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,8,0,0">
+                <Button.Content>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="resources/images/hotkey.png" Height="63" Width="49" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
 
             <StackPanel x:Name="mainStackPanel" Margin="0,81,0,0">
                 <!--<UserControl>

@@ -8,9 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("computers.ico")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("conncomputer.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("off.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("plus.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/images/hotkey.png")]
 
 

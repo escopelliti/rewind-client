@@ -10,7 +10,8 @@ namespace WpfApplication1
 {
     public class ConfigurationManager
     {
-        public string path { get; set; } 
+        public string path { get; set; }
+        
 
         public ConfigurationManager() 
         {
@@ -25,13 +26,7 @@ namespace WpfApplication1
 
         public void CreateConfigurationFile()
         {
-            Configuration stdConfiguration = new Configuration();
-                 
-            stdConfiguration.hotkeyList.Add(
-                new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.Space, Hotkey.SWITCH_SERVER_CMD));
-            stdConfiguration.hotkeyList.Add(
-                new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.Enter, Hotkey.OPEN_PANEL_CMD));
-            
+            Configuration stdConfiguration = createStdConfiguration();
             string s = JsonConvert.SerializeObject(stdConfiguration, Formatting.Indented);
 
             using (FileStream fs = new FileStream(path, FileMode.CreateNew))
@@ -42,6 +37,16 @@ namespace WpfApplication1
                 }
                 
             }
+        }
+
+        public Configuration createStdConfiguration()
+        {
+            Configuration stdConfiguration = new Configuration();
+            stdConfiguration.hotkeyList.Add(
+               new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.Space, Hotkey.SWITCH_SERVER_CMD));
+            stdConfiguration.hotkeyList.Add(
+                new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.Enter, Hotkey.OPEN_PANEL_CMD));
+            return stdConfiguration;
         }
 
         

@@ -46,38 +46,38 @@ namespace WpfApplication1
         {
             InitializeComponent();
 
-            this.contextMenu1 = new System.Windows.Forms.ContextMenu();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            //this.contextMenu1 = new System.Windows.Forms.ContextMenu();
+            //this.menuItem1 = new System.Windows.Forms.MenuItem();
 
-            // Initialize contextMenu1 
-            this.contextMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem1 });
+            //// Initialize contextMenu1 
+            //this.contextMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem1 });
 
-            // Initialize menuItem1 
-            this.menuItem1.Index = 0;
-            this.menuItem1.Text = "Exit";
-            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            //// Initialize menuItem1 
+            //this.menuItem1.Index = 0;
+            //this.menuItem1.Text = "Exit";
+            //this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
             
-            MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
-            MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
-            MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
-            MyNotifyIcon.ContextMenu = this.contextMenu1;
-            computerItemList = new ObservableCollection<ComputerItem>();            
-            computerList.ItemsSource = computerItemList;
+            //MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
+            //MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
+            //MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
+            //MyNotifyIcon.ContextMenu = this.contextMenu1;
+            //computerItemList = new ObservableCollection<ComputerItem>();            
+            //computerList.ItemsSource = computerItemList;
             
-            // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
+            //// I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
             
 
-            //Carichiamo quella attivo con l'immagine corretta e con i relativi tasti disabilitati
+            ////Carichiamo quella attivo con l'immagine corretta e con i relativi tasti disabilitati
 
 
 
-            serverList = new List<Server>();
+            //serverList = new List<Server>();
 
-            configurationMgr = new ConfigurationManager();                
-            channelMgr = new ChannelManager();
-            StartDiscovery();
-            //InterceptEvents ie = new InterceptEvents(channelMgr);
-            //OpenFullScreenWindow(ie, l, channelMgr);              
+            //configurationMgr = new ConfigurationManager();                
+            //channelMgr = new ChannelManager();
+            //StartDiscovery();
+            ////InterceptEvents ie = new InterceptEvents(channelMgr);
+            ////OpenFullScreenWindow(ie, l, channelMgr);
             
         }
 
@@ -323,6 +323,26 @@ namespace WpfApplication1
         private void ListBoxItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
             focusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            bool isWindowOpen = false;
+
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is ModifyHotkeyWindow)
+                {
+                    isWindowOpen = true;
+                    win.Activate();
+                }
+            }
+
+            if (!isWindowOpen)
+            {
+                ModifyHotkeyWindow w = new ModifyHotkeyWindow();
+                w.Show();
+            }
         }    
     }
 }

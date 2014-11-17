@@ -29,7 +29,6 @@ namespace NativeInput
         INPUT_MOUSE = 0,
         INPUT_KEYBOARD = 1,
         INPUT_HARDWARE = 2
-    
     }
 
     [StructLayout(LayoutKind.Sequential)]
