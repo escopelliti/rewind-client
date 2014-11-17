@@ -22,7 +22,7 @@ namespace Authentication
             this.mainWin = mainWin;           
         }
 
-        public bool Authenticate(Server toAuthenticate, byte[] pswDigest)
+        public bool Authenticate(Server toAuthenticate, String pswDigest)
         {
             //StandardRequest sr = new StandardRequest();
             //sr.type = ProtocolUtils.TRY_AUTHENTICATE;

@@ -39,7 +39,7 @@ namespace WpfApplication1
             this.Close();
         }
 
-        private void StartAuthentication(byte[] hashString)
+        private void StartAuthentication(String hashString)
         {            
             bool auth = authMgr.Authenticate(toAuthenticate, hashString);
             if (!auth)
@@ -59,7 +59,13 @@ namespace WpfApplication1
                 byte[] bytes = Encoding.UTF8.GetBytes(psw);
                 SHA256Managed hashstring = new SHA256Managed();
                 byte[] hash = hashstring.ComputeHash(bytes);
-                Thread authThread = new Thread(() => StartAuthentication(hash));
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (byte b in hash)
+                {
+                    stringBuilder.AppendFormat("{0:X2}", b);
+                }
+                string hashString = stringBuilder.ToString();
+                Thread authThread = new Thread(() => StartAuthentication(hashString));
                 authThread.Start();
                 this.Close();
             }
