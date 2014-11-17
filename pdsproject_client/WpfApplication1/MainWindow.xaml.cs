@@ -416,7 +416,7 @@ namespace WpfApplication1
                 this.focusedComputerItem.IsCheckboxChecked = false;
                 this.computerItemList.Add(ci);
             }));
-            System.Windows.MessageBox.Show("Autenticazione non riuscita!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+            //System.Windows.MessageBox.Show("Autenticazione non riuscita!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         public void Permitted(Server toAuthenticate)

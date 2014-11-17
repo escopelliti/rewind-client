@@ -48,7 +48,9 @@ namespace WpfApplication1
                 {
                     this.errorLabel.Foreground = Brushes.Red;
                 }));
+                return;
             }
+            this.Dispatcher.Invoke(new Action(() => this.Close()));
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
@@ -66,8 +68,7 @@ namespace WpfApplication1
                 }
                 string hashString = stringBuilder.ToString();
                 Thread authThread = new Thread(() => StartAuthentication(hashString));
-                authThread.Start();
-                this.Close();
+                authThread.Start();                
             }
             else
             {                
