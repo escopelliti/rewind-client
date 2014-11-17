@@ -2,12 +2,12 @@
   "hotkeyList": [
     {
       "KModifier": 2,
-      "Key": 18,
+      "Key": 44,
       "Command": "SWITCH_SERVER"
     },
     {
       "KModifier": 2,
-      "Key": 6,
+      "Key": 47,
       "Command": "OPEN_PANEL"
     }
   ]

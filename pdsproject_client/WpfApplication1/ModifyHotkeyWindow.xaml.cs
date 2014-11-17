@@ -19,15 +19,29 @@ namespace WpfApplication1
     /// </summary>
     public partial class ModifyHotkeyWindow : Window
     {
-            
+        private ConfigurationManager confMgr;
+  
         public ModifyHotkeyWindow()
         {
+            confMgr = new ConfigurationManager();
             InitializeComponent();
-            InitizlizeComboBox();
+            InitializeComboBox();
+            InitializeGui();
 
         }
 
-        private void InitizlizeComboBox()
+        private void InitializeGui()
+        {
+            Configuration config = confMgr.ReadConfiguration();
+            Hotkey h = config.hotkeyList.Find(x => x.Command == Hotkey.SWITCH_SERVER_CMD);
+            SwitchServerKeyLabel.Content = h.Key;
+            SwitchServeComboBox.SelectedItem = h.KModifier;
+            h = config.hotkeyList.Find(x => x.Command == Hotkey.OPEN_PANEL_CMD);
+            OpenPanelKeyLabel.Content = h.Key;
+            OpenPanelComboBox.SelectedItem = h.KModifier;
+        }
+
+        private void InitializeComboBox()
         {
             List<ModifierKeys> ModifierList = new List<ModifierKeys>();
             ModifierList.Add(ModifierKeys.Alt);
@@ -100,7 +114,6 @@ namespace WpfApplication1
 
         private void ButtonDefaultClick(object sender, RoutedEventArgs e) 
         {
-            ConfigurationManager confMgr = new ConfigurationManager();
             Configuration stdConfig = confMgr.createStdConfiguration();
             Hotkey h = stdConfig.hotkeyList.Find(x=>x.Command==Hotkey.SWITCH_SERVER_CMD);
             SwitchServerKeyLabel.Content = h.Key;
@@ -129,52 +142,21 @@ namespace WpfApplication1
                 confMgr.UpdateConfigFile(newConf);
 
                 this.Close();
-                System.Windows.MessageBox.Show
-                    ("Le mofiche saranno disponibili al prossimo avvio dell'applicazione", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                System.Windows.MessageBox.Show ("Le modifiche saranno disponibili al prossimo avvio dell'applicazione", "Informazione", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
-        private bool IsValidConfiguration() {
-            bool IsValidConf = true;
-            IsValidConf = IsValidComboBoxField(this.OpenPanelComboBox, IsValidConf);
-            IsValidConf = IsValidComboBoxField(this.SwitchServeComboBox, IsValidConf);
-            IsValidConf = IsValidLabelFiled(this.SwitchServerKeyLabel, IsValidConf);
-            IsValidConf = IsValidLabelFiled(this.OpenPanelKeyLabel, IsValidConf);
-            return IsValidConf;
-        }
-
-        private bool IsValidComboBoxField(ComboBox comboBox, bool isValidConf)
+        private bool IsValidConfiguration()
         {
-
-            if (comboBox.SelectedItem == null)
+            if (SwitchServeComboBox.SelectedItem.Equals(OpenPanelComboBox.SelectedItem) &&
+                SwitchServerKeyLabel.Content.Equals(OpenPanelKeyLabel.Content))
             {
-                BrushConverter bc = new BrushConverter();
-                comboBox.Background = (Brush)bc.ConvertFrom("#FFFF7F7F");
+                System.Windows.MessageBox.Show ("Non puoi scegliere due shortcut uguali", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Stop);
                 return false;
+
             }
-            else
-            {
-                BrushConverter bc = new BrushConverter();
-                comboBox.Background = (Brush)bc.ConvertFrom("#FFCDCDCD");
-                return isValidConf;
-            }
+            return true;
         }
 
-        private bool IsValidLabelFiled(Label label, bool isValidConf)
-        {
-            if (label.Content == null)
-            {
-                BrushConverter bc = new BrushConverter();
-                label.Background = (Brush)bc.ConvertFrom("#FFFF7F7F");
-                return false;
-            }
-            else
-            {
-                BrushConverter bc = new BrushConverter();
-                label.Background = Brushes.White;
-                return isValidConf;
-            }
-
-        }
     }
 }

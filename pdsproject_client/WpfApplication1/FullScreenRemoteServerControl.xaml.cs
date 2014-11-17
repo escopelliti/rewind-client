@@ -115,7 +115,13 @@ namespace WpfApplication1
 
         private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Alt+B key pressed");
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is MainWindow)
+                {
+                    win.Activate();
+                }
+            }
         }
 
         public void AddServerToList(Server s)
