@@ -96,13 +96,7 @@ namespace WpfApplication1
                 return CallNextHookEx(hookID, nCode, wParam, lParam);
             }
             return IntPtr.Zero;
-        }
-
-        public void OnSwitch(object sender, object param)
-        {
-            StopCapture();
-            OpenWorkareaWindow();            
-        }
+        }        
 
         public static void ResetKModifier()
         {
@@ -112,18 +106,7 @@ namespace WpfApplication1
             channelMgr.SendInputToSever(inputToSend);
             inputToSend = inputFactory.CreateKeyUpInput(Keys.Alt);
             channelMgr.SendInputToSever(inputToSend);
-        }
-
-        private void OpenWorkareaWindow()
-        {
-            if (channelMgr.GetCurrentServer() != null) {
-                WorkareaWindow wk = new WorkareaWindow(channelMgr);            
-                wk.computerList.ItemsSource = channelMgr.GetComputerItemList();
-                wk.Show();
-            } else {
-                System.Windows.MessageBox.Show("Non hai ancora un computer attivo. Selezionane uno!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning); 
-            }
-        }
+        } 
 
         public static void OnSetNewServer(object sender, object param)
         {

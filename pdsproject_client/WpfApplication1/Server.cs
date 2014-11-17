@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommunicationLibrary;
 
-//using System.Net.Sockets;
-
-
-namespace WpfApplication1
+namespace CommunicationLibrary
 {
     public class Server
     {
         private ushort serverID;
         private Channel channel;
         private string computerName;
+        public bool Authenticated { get; set; }
 
         public Server()
         {

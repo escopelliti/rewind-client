@@ -31,12 +31,30 @@ namespace CommunicationLibrary
 
         public void Shutdown(Socket socket, SocketShutdown shutdownMode)
         {
-            socket.Shutdown(shutdownMode);
+            try
+            {
+                socket.Shutdown(shutdownMode);
+            }
+            catch (SocketException ex)
+            {
+                return;
+            }
+            catch (ObjectDisposedException ex)
+            {
+                return;
+            }
         }
 
         public void Close(Socket socket)
         {
-            socket.Close();
+            try
+            {
+                socket.Close();
+            }
+            catch (SocketException ex)
+            {
+                return;
+            }
         }
     }
 }

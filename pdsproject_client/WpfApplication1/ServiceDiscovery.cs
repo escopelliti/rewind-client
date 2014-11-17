@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Bonjour;
 using WpfApplication1;
+using CommunicationLibrary;
 
 namespace Discovery
 {
@@ -161,9 +162,7 @@ namespace Discovery
                     ushort port,
                     TXTRecord txtRecord
                     )
-        {
-            //m_resolver.Stop();
-           // m_resolver = null;
+        {            
             String hostname = hostName.Substring(0, hostName.IndexOf("."));
 
             Server server = this.serverList.Find(x => x.ComputerName == hostname);
@@ -187,6 +186,7 @@ namespace Discovery
                 channel.CmdPort = port;
             }
             server.SetChannel(channel);
+            server.Authenticated = false;
             this.serverList.Add(server);
             //
             // Now query for the IP address associated with "hostName"
@@ -204,6 +204,15 @@ namespace Discovery
             }
         }
 
+        public void Stop()
+        {
+            m_browser.Stop();
+            m_browser = null;
+            m_service.Stop();
+            m_service = null;
+            m_resolver.Stop();            
+            m_resolver = null;
+        }
 
         public void ServiceFound (
                     DNSSDService sref,

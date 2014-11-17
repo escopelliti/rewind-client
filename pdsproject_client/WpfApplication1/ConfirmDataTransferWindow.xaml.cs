@@ -40,9 +40,10 @@ namespace WpfApplication1
             ProgressBar progress = new ProgressBar();
             progress.Show();
             clipboardMgr.ReceiveClipboard();
+            switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
-            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
+            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));            
             clipboardMgr.SendClipboard();
             progress.Close();
         }
