@@ -85,9 +85,15 @@ namespace WpfApplication1
 
         public void OnNewComputerConnected(Object sender, Object param) {
 
-            Server server = (Server)param;            
-            serverList.Add(server);
-
+            Server newServer = (Server)param;
+            Server oldServer = serverList.Find(x => x.ComputerName.Equals(newServer.ComputerName));
+            if (oldServer != null)
+            {
+                this.serverList.Remove(oldServer);
+                this.serverList.Add(newServer);
+                return;
+            }
+            serverList.Add(newServer);            
             int lastComputerNum = -1;
             if (this.computerItemList.Count != 0)
             {
@@ -96,7 +102,7 @@ namespace WpfApplication1
             lastComputerNum += 1;
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {                
-                this.computerItemList.Add(new ComputerItem() { Name = server.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum, IsCheckboxEnabled=true});
+                this.computerItemList.Add(new ComputerItem() { Name = newServer.ComputerName, ComputerStateImage = @"resources/images/off.png", ComputerNum = lastComputerNum, IsCheckboxEnabled=true});
             }));
         }
 
