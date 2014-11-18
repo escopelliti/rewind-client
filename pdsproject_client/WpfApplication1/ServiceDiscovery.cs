@@ -206,12 +206,21 @@ namespace Discovery
 
         public void Stop()
         {
-            m_browser.Stop();
-            m_browser = null;
-            m_service.Stop();
-            m_service = null;
-            m_resolver.Stop();            
-            m_resolver = null;
+            try 
+            {
+                m_browser.Stop();
+                m_browser = null;
+                m_service.Stop();
+                m_service = null;
+                m_resolver.Stop();
+                m_resolver = null;
+            }
+            catch (Exception stopEx)
+            {
+                //already stopped - nothing to do;
+                return;
+            }
+            
         }
 
         public void ServiceFound (

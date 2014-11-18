@@ -46,6 +46,18 @@ namespace WpfApplication1
         {
             InitializeComponent();
 
+            InitTrayIcon();
+            // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
+            computerItemList = new ObservableCollection<ComputerItem>();            
+            computerList.ItemsSource = computerItemList;
+            serverList = new List<Server>();
+            configurationMgr = new ConfigurationManager();                
+            channelMgr = new ChannelManager();
+            StartDiscovery();                          
+        }
+
+        private void InitTrayIcon()
+        {
             this.contextMenu1 = new System.Windows.Forms.ContextMenu();
             this.menuItem1 = new System.Windows.Forms.MenuItem();
 
@@ -56,26 +68,11 @@ namespace WpfApplication1
             this.menuItem1.Index = 0;
             this.menuItem1.Text = "Exit";
             this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
-            
+
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
             MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
             MyNotifyIcon.ContextMenu = this.contextMenu1;
-            computerItemList = new ObservableCollection<ComputerItem>();            
-            computerList.ItemsSource = computerItemList;
-            
-            // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
-            
-
-            //Carichiamo quella attivo con l'immagine corretta e con i relativi tasti disabilitati
-
-
-
-            serverList = new List<Server>();
-
-            configurationMgr = new ConfigurationManager();                
-            channelMgr = new ChannelManager();
-            StartDiscovery();                          
         }
 
         private void StartDiscovery()
