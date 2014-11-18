@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using WpfApplication1;
 using System.Net.Sockets;
 using Protocol;
+using System.Collections.ObjectModel;
 
 namespace CommunicationLibrary
 {
@@ -129,9 +130,9 @@ namespace CommunicationLibrary
             s.GetChannel().SetDataSocket(dataSocket);
         }
 
-        public List<ComputerItem> GetComputerItemList()
+        public ObservableCollection<ComputerItem> GetComputerItemList()
         {
-            List<ComputerItem> connectedComputers = new List<ComputerItem>();
+            ObservableCollection<ComputerItem> connectedComputers = new ObservableCollection<ComputerItem>();
             ushort idItem = 0;
             foreach (Server s in ConnectedServer)
             {

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Text.RegularExpressions;
 using CommunicationLibrary;
+using System.Collections.ObjectModel;
 
 namespace WpfApplication1
 {
@@ -24,6 +25,8 @@ namespace WpfApplication1
         public ChannelManager channelMgr { get; set; }
         private MainWindow mainWin;
         private bool switchFlag = false;
+        private ObservableCollection<ComputerItem> computerItemList;
+        private ComputerItem focusedComputerItem;
 
         public WorkareaWindow(ChannelManager channelMgr, MainWindow mainWin) 
         {
@@ -31,11 +34,11 @@ namespace WpfApplication1
             InitializeComponent();            
             this.KeyDown += WorkareaWindow_KeyDown;
             this.mainWin = mainWin;
+            this.computerItemList = channelMgr.GetComputerItemList();
         }
 
         private void WorkareaWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            this.Close();           
+        {                       
             string pattern = @"[0-9]";
             string input = e.Key.ToString();            
             int fixedDisplacement = 48;
@@ -49,6 +52,9 @@ namespace WpfApplication1
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
                 ItemCollection items = this.computerList.Items;
                 ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
+                if (ci == null)
+                    return;
+                this.Close();
                 SwitchOperator switchOp = new SwitchOperator(mainWin);
                 Thread switchThread = new Thread(() => switchOp.SwitchOperations(ci.ComputerID, channelMgr));
                 switchThread.SetApartmentState(ApartmentState.STA);
@@ -57,11 +63,28 @@ namespace WpfApplication1
             }
         }
 
+        private void ListBoxItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            focusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;
+        } 
+
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!switchFlag)
             {
                 InterceptEvents.RestartCapture();
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (focusedComputerItem != null) 
+            {
+                SwitchOperator switchOp = new SwitchOperator(mainWin);
+                Thread switchThread = new Thread(() => switchOp.SwitchOperations(focusedComputerItem.ComputerID, channelMgr));
+                switchThread.SetApartmentState(ApartmentState.STA);
+                switchThread.IsBackground = true;
+                switchThread.Start();
             }
         }
     }

@@ -50,10 +50,15 @@ namespace WpfApplication1
             // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
             computerItemList = new ObservableCollection<ComputerItem>();            
             computerList.ItemsSource = computerItemList;
-            serverList = new List<Server>();
-            configurationMgr = new ConfigurationManager();                
-            channelMgr = new ChannelManager();
-            StartDiscovery();                          
+            //serverList = new List<Server>();
+            //configurationMgr = new ConfigurationManager();
+            //channelMgr = new ChannelManager();
+            //StartDiscovery();
+            WorkareaWindow wk = new WorkareaWindow(channelMgr, this);
+            ObservableCollection<ComputerItem> cil = new ObservableCollection<ComputerItem>();
+            cil.Add(new ComputerItem() { Name = "prova", ComputerNum = 1});
+            wk.computerList.ItemsSource = cil;
+            wk.ShowDialog();           
         }
 
         private void InitTrayIcon()
@@ -106,17 +111,15 @@ namespace WpfApplication1
         private void OpenFullScreenWindow(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
         {
             fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer, this);
-            fullScreenWin.Show();
-           
+            fullScreenWin.Show();           
         }
         
         private void OpenWorkareaWindow()
         {
             if (channelMgr.GetCurrentServer() != null)
             {
-                WorkareaWindow wk = new WorkareaWindow(channelMgr, this);
-                wk.computerList.ItemsSource = channelMgr.GetComputerItemList();
-                wk.Show();
+                WorkareaWindow wk = new WorkareaWindow(channelMgr, this);                
+                wk.ShowDialog();
             }
             else
             {
@@ -337,10 +340,10 @@ namespace WpfApplication1
                 focusedComputerItem.ComputerID = s.ServerID;
                 this.computerItemList.Add(focusedComputerItem);
             }));
-            
+
             AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
-            a.Show();
-                                
+            a.ShowDialog();
+ 
             foreach (Window win in System.Windows.Application.Current.Windows)
             {
                 if (win is FullScreenRemoteServerControl)
@@ -350,7 +353,7 @@ namespace WpfApplication1
                         ((FullScreenRemoteServerControl)win).AddServerToList(s);
                         break;
                     }
-                }
+                }                
             }
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {

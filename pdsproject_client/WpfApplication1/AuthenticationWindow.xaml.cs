@@ -29,9 +29,9 @@ namespace WpfApplication1
         public AuthenticationWindow(Server toAuthenticate, ChannelManager channelMgr, MainWindow mainWin)
         {
             InitializeComponent();
-            this.toAuthenticate = toAuthenticate;
-            this.channelMgr = channelMgr;
-            authMgr = new Authentication.AuthenticationMgr(channelMgr, mainWin);
+            //this.toAuthenticate = toAuthenticate;
+            //this.channelMgr = channelMgr;
+            //authMgr = new Authentication.AuthenticationMgr(channelMgr, mainWin);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)

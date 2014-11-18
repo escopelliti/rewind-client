@@ -114,11 +114,6 @@
             </Button>
 
             <StackPanel x:Name="mainStackPanel" Margin="0,81,0,0">
-                <!--<UserControl>
-                    <UserControl.Resources>
-                        
-                    </UserControl.Resources>-->
-
                     <ListBox Name="computerList" SelectionMode="Single" HorizontalContentAlignment="Stretch" BorderBrush="Transparent" ItemsSource="{Binding ElementName=mainWindow, Path=computerItemList}" ItemContainerStyle="{StaticResource listboxStyle}">
                         <ListBox.ItemTemplate>
                         <DataTemplate>
