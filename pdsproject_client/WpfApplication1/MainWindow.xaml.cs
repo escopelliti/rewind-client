@@ -104,7 +104,7 @@ namespace WpfApplication1
         {
             fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer, this);
             fullScreenWin.Show();
-           
+            this.WindowState = WindowState.Minimized;
         }
         
         private void OpenWorkareaWindow()
@@ -152,6 +152,10 @@ namespace WpfApplication1
         {
             if (!exit)
             {
+                if (channelMgr.GetCurrentServer() != null)
+                {
+                    InterceptEvents.RestartCapture();
+                }
                 this.WindowState = WindowState.Minimized;
                 e.Cancel = true;
                 return;
@@ -245,7 +249,7 @@ namespace WpfApplication1
                         {
                             ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
                             break;
-        }
+                        }
                     }
                 }
             }
@@ -255,12 +259,10 @@ namespace WpfApplication1
 
         private void SetActiveButton_Click(object sender, RoutedEventArgs e)
         {
-            // AT FIRST IT ASKS YOU A PSW
-            //CODE TO SWITCH SERVER OR MAKE CURRENT THAT SPECIFIC SERVER
             if (!focusedComputerItem.IsCheckboxChecked)
             {
                 System.Windows.MessageBox.Show
-                    ("Connettiti al computer prima di continuare", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    ("Connettiti al computer prima di continuare", "Attenzione!", MessageBoxButton.OK,MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -269,7 +271,9 @@ namespace WpfApplication1
 
             if (currentServer == null)
             {
-                channelMgr.SetCurrentServer(s);
+                Thread startConnection = new Thread(() => StartNewConnection(s.ServerID));
+                startConnection.IsBackground = true;
+                startConnection.Start();
             }
             else
             {
@@ -285,6 +289,7 @@ namespace WpfApplication1
                 switchThread.SetApartmentState(ApartmentState.STA);
                 switchThread.IsBackground = true;
                 switchThread.Start();
+                this.WindowState = WindowState.Minimized;
             }
             //al momento con c'è alcun focus settato sui server
             bool isWindowOpened = false;
@@ -316,6 +321,12 @@ namespace WpfApplication1
                 this.computerItemList.Add(focusedComputerItem);
             }));
             
+        }
+
+        private void StartNewConnection(int p)
+        {
+            channelMgr.StartNewConnection(focusedComputerItem.ComputerID);
+            this.WindowState = WindowState.Minimized;
         }
 
         private void connectCheckbox_Checked(object sender, RoutedEventArgs e)
@@ -387,7 +398,7 @@ namespace WpfApplication1
             focusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;
         }    
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ButtonModifyClick(object sender, RoutedEventArgs e)
         {
             bool isWindowOpen = false;
 
@@ -426,6 +437,35 @@ namespace WpfApplication1
             {
                 s.Authenticated = toAuthenticate.Authenticated;
             }
+        }
+
+        private void ButtonExitClick(object sender, RoutedEventArgs e)
+        {
+            Thread exit = new Thread(() => ExitFromApplication());
+            exit.IsBackground = true;
+            exit.Start();
+            
+        }
+
+        private void ExitFromApplication()
+        {
+            if (channelMgr.GetCurrentServer() != null)
+            {
+                channelMgr.EndConnectionToCurrentServer();
+                channelMgr.SetCurrentServer(null);
+            }
+
+            foreach (Server s in channelMgr.ConnectedServer)
+            {
+                channelMgr.DeleteServer(s);
+            }
+            this.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.Shutdown(); }));
+        }
+
+        private void ButtonInfoClick(object sender, RoutedEventArgs e)
+        {
+            InfoWindow infoWnd = new InfoWindow();
+            infoWnd.Show();
         }
     }
 }

@@ -105,10 +105,26 @@
                 </Button.Content>
             </Button>
             
-            <Button Click="Button_Click" Background="White" ToolTip="Modifica le shortcut" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,8,0,0">
+            <Button Click="ButtonModifyClick" Background="White" ToolTip="Modifica le shortcut" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="70,8,0,0">
                 <Button.Content>
                     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Image Source="resources/images/hotkey.png" Height="63" Width="49" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+
+            <Button Click="ButtonExitClick" Background="White" ToolTip="Chiudi apllicazione" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,10,0">
+                <Button.Content>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="resources/images/exit.png" Height="63" Width="49" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button.Content>
+            </Button>
+
+            <Button Click="ButtonInfoClick" Background="White" ToolTip="Mostra informazioni sull'applicazione" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,8,70,0">
+                <Button.Content>
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <Image Source="resources/images/info.png" Height="63" Width="49" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button.Content>
             </Button>
