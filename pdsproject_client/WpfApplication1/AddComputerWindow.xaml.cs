@@ -22,10 +22,12 @@ namespace WpfApplication1
     public partial class AddComputerWindow : Window
     {
         private AddComputerViewModel viewModel;
-        
-        public AddComputerWindow()
+        private MainWindow mainWin;
+
+        public AddComputerWindow(MainWindow mainWin)
         {
             InitializeComponent();
+            this.mainWin = mainWin;
             viewModel = new AddComputerViewModel();
             DataContext = viewModel;
         }
@@ -44,9 +46,17 @@ namespace WpfApplication1
             string ip = byte1 + "." + byte2 + "." + byte3 + "." + byte4;
             string cmdPort = this.cmdPortTextBox.Text;
             string dataPort = this.dataPortTextBox.Text;
-            
 
-            //mettiamo nella UI queste info;
+            this.Close();
+            CommunicationLibrary.Server newServer = new CommunicationLibrary.Server();
+            newServer.ComputerName = computerName;
+            CommunicationLibrary.Channel channel = new CommunicationLibrary.Channel();
+            channel.CmdPort = Convert.ToUInt16(cmdPort);
+            channel.DataPort = Convert.ToUInt16(dataPort);
+            channel.ipAddress = System.Net.IPAddress.Parse(ip);
+            newServer.SetChannel(channel);
+
+            mainWin.OnNewComputerConnected(this, newServer);           
         }
     }    
 

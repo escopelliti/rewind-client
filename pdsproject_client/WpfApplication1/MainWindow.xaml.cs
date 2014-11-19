@@ -50,15 +50,10 @@ namespace WpfApplication1
             // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
             computerItemList = new ObservableCollection<ComputerItem>();            
             computerList.ItemsSource = computerItemList;
-            //serverList = new List<Server>();
-            //configurationMgr = new ConfigurationManager();
-            //channelMgr = new ChannelManager();
-            //StartDiscovery();
-            WorkareaWindow wk = new WorkareaWindow(channelMgr, this);
-            ObservableCollection<ComputerItem> cil = new ObservableCollection<ComputerItem>();
-            cil.Add(new ComputerItem() { Name = "prova", ComputerNum = 1});
-            wk.computerList.ItemsSource = cil;
-            wk.ShowDialog();           
+            serverList = new List<Server>();
+            configurationMgr = new ConfigurationManager();
+            channelMgr = new ChannelManager();
+            StartDiscovery();                      
         }
 
         private void InitTrayIcon()
@@ -136,22 +131,22 @@ namespace WpfApplication1
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             // TO BE CHANGED BUT IT WORKS
-            bool isWindowOpen = false;
+            //bool isWindowOpen = false;
 
-            foreach (Window win in System.Windows.Application.Current.Windows)
-            {
-                if (win is AddComputerWindow)
-                {
-                    isWindowOpen = true;
-                    win.Activate();
-                }
-            }
+            //foreach (Window win in System.Windows.Application.Current.Windows)
+            //{
+            //    if (win is AddComputerWindow)
+            //    {
+            //        isWindowOpen = true;
+            //        win.Activate();
+            //    }
+            //}
 
-            if (!isWindowOpen)
-            {
-                AddComputerWindow w = new AddComputerWindow();
-                w.Show();
-            }
+            //if (!isWindowOpen)
+            //{
+                AddComputerWindow w = new AddComputerWindow(this);
+                w.ShowDialog();
+            //}
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
