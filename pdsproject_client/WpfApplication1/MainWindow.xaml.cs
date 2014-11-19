@@ -326,7 +326,7 @@ namespace WpfApplication1
         private void StartNewConnection(int p)
         {
             channelMgr.StartNewConnection(focusedComputerItem.ComputerID);
-            this.WindowState = WindowState.Minimized;
+            this.Dispatcher.Invoke(new Action(() => WindowState = WindowState.Minimized));
         }
 
         private void connectCheckbox_Checked(object sender, RoutedEventArgs e)
