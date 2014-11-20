@@ -41,6 +41,7 @@ namespace WpfApplication1
         private List<Server> serverList;
         public FullScreenRemoteServerControl fullScreenWin;
         private ConfigurationManager configurationMgr;
+        private InterceptEvents ie = null;
 
         public MainWindow()
         {
@@ -131,23 +132,8 @@ namespace WpfApplication1
         
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            // TO BE CHANGED BUT IT WORKS
-            //bool isWindowOpen = false;
-
-            //foreach (Window win in System.Windows.Application.Current.Windows)
-            //{
-            //    if (win is AddComputerWindow)
-            //    {
-            //        isWindowOpen = true;
-            //        win.Activate();
-            //    }
-            //}
-
-            //if (!isWindowOpen)
-            //{
-                AddComputerWindow w = new AddComputerWindow(this);
-                w.ShowDialog();
-            //}
+            AddComputerWindow w = new AddComputerWindow(this);
+            w.ShowDialog();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -311,7 +297,14 @@ namespace WpfApplication1
             if(!isWindowOpened)
             {
                 List<Hotkey> l = configurationMgr.ReadConfiguration().hotkeyList;
-                InterceptEvents ie = new InterceptEvents(channelMgr);
+                if (ie != null)
+                {
+                    InterceptEvents.RestartCapture();
+                }
+                else
+                {
+                    ie = new InterceptEvents(channelMgr);
+                }               
                 OpenFullScreenWindow(ie, l, channelMgr);
             }
 
@@ -438,6 +431,12 @@ namespace WpfApplication1
             {
                 s.Authenticated = toAuthenticate.Authenticated;
             }
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(FocusedComputerItem);
+                this.FocusedComputerItem.IsCheckboxChecked = true;
+                this.computerItemList.Add(FocusedComputerItem);
+            }));
         }
 
         private void ButtonExitClick(object sender, RoutedEventArgs e)
@@ -448,7 +447,7 @@ namespace WpfApplication1
             
         }
 
-        private void ExitFromApplication()
+        public void ExitFromApplication()
         {
             if (channelMgr.GetCurrentServer() != null)
             {

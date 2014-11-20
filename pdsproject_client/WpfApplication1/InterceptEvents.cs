@@ -54,8 +54,7 @@ namespace WpfApplication1
 
         public static void RestartCapture()
         {
-            block = false;
-       
+            block = false;       
         }
 
         public static void StopCapture()

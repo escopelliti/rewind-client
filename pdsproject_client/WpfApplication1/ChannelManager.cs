@@ -8,6 +8,7 @@ using WpfApplication1;
 using System.Net.Sockets;
 using Protocol;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace CommunicationLibrary
 {
@@ -73,7 +74,19 @@ namespace CommunicationLibrary
             string json = JsonConvert.SerializeObject(inputToSend);
             byte[] toSend = Encoding.Unicode.GetBytes(json);
             ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
-            ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
+            if (ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket()) <= 0)
+            {
+                DeleteServer(currentServer, SocketShutdown.Both);
+                currentServer = null;
+                foreach (Window win in System.Windows.Application.Current.Windows)
+                {
+                    if (win is FullScreenRemoteServerControl)
+                    {
+                        ((FullScreenRemoteServerControl)win).Close();
+                    }
+                }
+                InterceptEvents.StopCapture();
+            }
         }
 
         public void AssignCmdChannel(Server s)
@@ -86,9 +99,12 @@ namespace CommunicationLibrary
         public void AssignDataChannel(Server s)
         {
             s = ConnectedServer.Find(x => x.ServerID == s.ServerID);
-            Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
-            s.GetChannel().SetDataSocket(dataSocket);
+            if (s != null)
+            {
+                Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
+                dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
+                s.GetChannel().SetDataSocket(dataSocket);
+            }            
         }
  
         public Server GetCurrentServer()
@@ -128,17 +144,25 @@ namespace CommunicationLibrary
 
         public void DeleteServer(Server s, SocketShutdown mode)
         {
-            ConnectedServer.Remove(s);
-            Socket cmdSocket = s.GetChannel().GetCmdSocket();
-            Socket dataSocket = s.GetChannel().GetDataSocket();
-            ccm.Shutdown(cmdSocket, mode);            
-            ccm.Close(cmdSocket);
-            cmdSocket = null;
-            s.GetChannel().SetCmdSocket(cmdSocket);
-            ccm.Shutdown(dataSocket, mode);
-            ccm.Close(dataSocket);
-            dataSocket = null;
-            s.GetChannel().SetDataSocket(dataSocket);
+            if (ConnectedServer.Remove(s))
+            {
+                Socket cmdSocket = s.GetChannel().GetCmdSocket();
+                Socket dataSocket = s.GetChannel().GetDataSocket();
+                if(cmdSocket != null) 
+                {
+                    ccm.Shutdown(cmdSocket, mode);
+                    ccm.Close(cmdSocket);
+                    cmdSocket = null;
+                    s.GetChannel().SetCmdSocket(cmdSocket);
+                }
+                if (dataSocket != null)
+                {
+                    ccm.Shutdown(dataSocket, mode);
+                    ccm.Close(dataSocket);
+                    dataSocket = null;
+                    s.GetChannel().SetDataSocket(dataSocket);
+                }
+            }
         }
 
         public ObservableCollection<ComputerItem> GetComputerItemList()

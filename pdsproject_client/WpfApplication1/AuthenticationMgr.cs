@@ -42,25 +42,27 @@ namespace Authentication
                             toAuthenticate.Authenticated = true;
                             mainWin.Permitted(toAuthenticate);
                             //autnticato --> evento
+                            return true;
                         }
                         else
                         {
                             toAuthenticate.Authenticated = false;                            
                             //non autenticato --> evento
                             mainWin.Forbidden(toAuthenticate);
-                        }
-                        return toAuthenticate.Authenticated;
+                            return false;
+                        }                        
                     }
                 }
                 catch (JsonException ex)
                 {
                     toAuthenticate.Authenticated = false;
                     mainWin.Forbidden(toAuthenticate);
-                    return false;//evento che dice autnticazione non riuscita
+                    throw ex;
+                   
                 }
                 
             }
-            return false;
+            throw new Exception("problem on socket");
         }
 
     }

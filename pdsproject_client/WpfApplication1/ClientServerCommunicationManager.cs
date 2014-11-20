@@ -23,12 +23,20 @@ namespace CommunicationLibrary
         {
             try
             {
-                socket.Send(toSend);   
+                socket.Send(toSend);
             }
             catch (SocketException ex)
             {
                 return;
-            }            
+            }
+            catch (ObjectDisposedException ex)
+            {
+                return;
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
         }
 
         public int Receive(byte[] bytes, Socket socket)
@@ -39,6 +47,10 @@ namespace CommunicationLibrary
                 bytesRead = socket.Receive(bytes);
             }
             catch (SocketException ex)
+            {
+                return 0;
+            }
+            catch (Exception ex)
             {
                 return 0;
             }

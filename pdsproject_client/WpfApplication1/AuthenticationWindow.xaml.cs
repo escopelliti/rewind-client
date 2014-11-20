@@ -45,16 +45,19 @@ namespace WpfApplication1
                    mainWin.computerItemList.Add(mainWin.FocusedComputerItem);
                }));
             this.Close();
-        }
-
-        private void SwitchOFFCheckbox() 
-        {
-            
-        }
+        }        
 
         private void StartAuthentication(String hashString)
-        {            
-            bool auth = authMgr.Authenticate(toAuthenticate, hashString);
+        {
+            bool auth = false;
+            try
+            {
+                auth = authMgr.Authenticate(toAuthenticate, hashString);
+            }
+            catch (Exception ex)
+            {
+                mainWin.ExitFromApplication();
+            }
             if (!auth)
             {
                 this.errorLabel.Dispatcher.Invoke(new Action(() =>

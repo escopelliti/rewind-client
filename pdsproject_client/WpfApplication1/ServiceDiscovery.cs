@@ -15,9 +15,11 @@ namespace Discovery
 
         //Service object
         private Bonjour.DNSSDService m_service = null;
+        private Bonjour.DNSSDService m_service2 = null;
         
         //Browser object which browses the network for a service type
         private Bonjour.DNSSDService m_browser = null;
+        private Bonjour.DNSSDService m_browser2 = null;
 
         //Resolver object which contains the results of a resolved domain name or a query record
         private Bonjour.DNSSDService m_resolver = null;
@@ -42,8 +44,8 @@ namespace Discovery
         public ServiceDiscovery(MainWindow mainWindow)
         {
             SetupEventManager();
-            BrowseServers();
             this.serverList = new List<Server>();
+            BrowseServers();            
             this.mainWindow = mainWindow;
             this.newComputerHandler += mainWindow.OnNewComputerConnected;
             this.lostComputerHandler += mainWindow.OnLostComputerConnection;
@@ -67,8 +69,9 @@ namespace Discovery
             try
             {
                 m_service = new Bonjour.DNSSDService();
+                m_service2 = new Bonjour.DNSSDService();
                 m_browser = m_service.Browse(0, 0, "_dataListening._tcp", null, m_eventManager);
-                m_browser = m_service.Browse(0, 0, "_cmdListening._tcp", null, m_eventManager);
+                m_browser2 = m_service2.Browse(0, 0, "_cmdListening._tcp", null, m_eventManager);
             }
             catch
             {
@@ -79,17 +82,20 @@ namespace Discovery
         public void QueryAnswered(DNSSDService service, DNSSDFlags flags, uint ifIndex,
             String fullName, DNSSDRRType rrtype, DNSSDRRClass rrclass, Object rdata, uint ttl)
         {
-            //
-            // Stop the resolve to reduce the burden on the network
-            //
-            //m_resolver.Stop();
-            //m_resolver = null;
-            String hostname = fullName.Substring(0, fullName.IndexOf("."));
-            Server server = this.serverList.Find(x => x.ComputerName == hostname);
-            uint bits = BitConverter.ToUInt32((Byte[])rdata, 0);                        
-            System.Net.IPAddress address = new System.Net.IPAddress(bits);
-            server.GetChannel().ipAddress = address;
-            OnNewComputer(server);
+            try
+            {
+                String hostname = fullName.Substring(0, fullName.IndexOf("."));
+                Server server = this.serverList.Find(x => x.ComputerName == hostname);
+                uint bits = BitConverter.ToUInt32((Byte[])rdata, 0);
+                System.Net.IPAddress address = new System.Net.IPAddress(bits);
+                server.GetChannel().ipAddress = address;
+                OnNewComputer(server);
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+            
         }
 
         public void
@@ -132,6 +138,10 @@ namespace Discovery
                 catch (NullReferenceException nre)
                 {
                     //nothing to close;
+                }
+                catch (Exception ex)
+                {
+                    //nothing to do
                 }
                 OnDisconnettedComputerService(server);
             }
