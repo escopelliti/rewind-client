@@ -48,18 +48,34 @@ namespace WpfApplication1
                 {
                     fixedDisplacement += fixedDisplacement;
                 }  
-                switchFlag = true;
                 int serverNum = (KeyInterop.VirtualKeyFromKey(e.Key) - fixedDisplacement);
-                ItemCollection items = this.computerList.Items;
-                ComputerItem ci = (ComputerItem) items.GetItemAt(serverNum);
-                if (ci == null)
+                try
+                {
+                    ItemCollection items = this.computerList.Items;
+                    ComputerItem ci = (ComputerItem)items.GetItemAt(serverNum);
+                    if (ci == null)
+                        return;                    
+                    SwitchOperator switchOp = new SwitchOperator(mainWin);
+                    Thread switchThread = new Thread(() => switchOp.SwitchOperations(ci.ComputerID, channelMgr));
+                    switchThread.SetApartmentState(ApartmentState.STA);
+                    switchThread.IsBackground = true;
+                    switchThread.Start();
+                    switchFlag = true;
+                    this.Close();
+                }
+                catch (InvalidOperationException ex)
+                {
                     return;
-                this.Close();
-                SwitchOperator switchOp = new SwitchOperator(mainWin);
-                Thread switchThread = new Thread(() => switchOp.SwitchOperations(ci.ComputerID, channelMgr));
-                switchThread.SetApartmentState(ApartmentState.STA);
-                switchThread.IsBackground = true;
-                switchThread.Start();                
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
+
             }
         }
 

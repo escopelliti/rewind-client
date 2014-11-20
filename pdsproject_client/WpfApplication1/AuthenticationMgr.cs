@@ -24,11 +24,6 @@ namespace Authentication
 
         public bool Authenticate(Server toAuthenticate, String pswDigest)
         {
-            //StandardRequest sr = new StandardRequest();
-            //sr.type = ProtocolUtils.TRY_AUTHENTICATE;
-            //sr.content = pswDigest;
-            //String toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
-            //this.channelMgr.ccm.Send(Encoding.Unicode.GetBytes(toSend), toAuthenticate.GetChannel().GetCmdSocket());
             this.channelMgr.SendRequest(ProtocolUtils.TRY_AUTHENTICATE, pswDigest, toAuthenticate.GetChannel().GetCmdSocket());
             byte[] data = new byte[1024];
             int bytesRead = this.channelMgr.ccm.Receive(data, toAuthenticate.GetChannel().GetCmdSocket());

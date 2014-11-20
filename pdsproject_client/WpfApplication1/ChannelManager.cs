@@ -33,10 +33,16 @@ namespace CommunicationLibrary
             if (server != null)
             {
                 this.ConnectedServer.Remove(server);
-                this.ccm.Shutdown(server.GetChannel().GetDataSocket(), SocketShutdown.Both);
-                this.ccm.Shutdown(server.GetChannel().GetCmdSocket(), SocketShutdown.Both);
-                this.ccm.Close(server.GetChannel().GetDataSocket());
-                this.ccm.Close(server.GetChannel().GetCmdSocket());
+                if (server.GetChannel().GetDataSocket() != null)
+                {
+                    this.ccm.Shutdown(server.GetChannel().GetDataSocket(), SocketShutdown.Both);
+                    this.ccm.Close(server.GetChannel().GetDataSocket());
+                }
+                if (server.GetChannel().GetCmdSocket() != null)
+                {
+                    this.ccm.Shutdown(server.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+                    this.ccm.Close(server.GetChannel().GetCmdSocket());
+                }
             }
         }
 
@@ -70,14 +76,19 @@ namespace CommunicationLibrary
             ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket());
         }
 
-        public void AssignChannel(Server s)
+        public void AssignCmdChannel(Server s)
         {
-            Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
             cmdSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().CmdPort, cmdSocket);            
             s.GetChannel().SetCmdSocket(cmdSocket);
-            s.GetChannel().SetDataSocket(dataSocket);            
+        }
+
+        public void AssignDataChannel(Server s)
+        {
+            s = ConnectedServer.Find(x => x.ServerID == s.ServerID);
+            Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
+            dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
+            s.GetChannel().SetDataSocket(dataSocket);
         }
  
         public Server GetCurrentServer()
@@ -110,21 +121,21 @@ namespace CommunicationLibrary
             s.ServerID = FindFreeIdServer();
             s.Authenticated = false;
             if (s.GetChannel() == null) {
-                AssignChannel(s);
+                AssignCmdChannel(s);
             }
             ConnectedServer.Add(s);
         }
 
-        public void DeleteServer(Server s)
+        public void DeleteServer(Server s, SocketShutdown mode)
         {
             ConnectedServer.Remove(s);
             Socket cmdSocket = s.GetChannel().GetCmdSocket();
             Socket dataSocket = s.GetChannel().GetDataSocket();
-            ccm.Shutdown(cmdSocket, SocketShutdown.Send);            
+            ccm.Shutdown(cmdSocket, mode);            
             ccm.Close(cmdSocket);
             cmdSocket = null;
             s.GetChannel().SetCmdSocket(cmdSocket);
-            ccm.Shutdown(dataSocket, SocketShutdown.Send);
+            ccm.Shutdown(dataSocket, mode);
             ccm.Close(dataSocket);
             dataSocket = null;
             s.GetChannel().SetDataSocket(dataSocket);
@@ -202,6 +213,8 @@ namespace CommunicationLibrary
             currentServer = newServer;
             SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);
             ReceiveAck();
+            AssignDataChannel(newServer);
+
         }
 
         public void ResetTokenGen()

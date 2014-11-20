@@ -109,7 +109,6 @@ namespace WpfApplication1
         private void ButtonCancelClick(object sender, RoutedEventArgs e)
         {
             this.Close();
-
         }
 
         private void ButtonDefaultClick(object sender, RoutedEventArgs e) 
@@ -143,6 +142,7 @@ namespace WpfApplication1
 
                 this.Close();
                 System.Windows.MessageBox.Show ("Le modifiche saranno disponibili al prossimo avvio dell'applicazione", "Informazione", MessageBoxButton.OK, MessageBoxImage.Information);
+
             }
         }
 

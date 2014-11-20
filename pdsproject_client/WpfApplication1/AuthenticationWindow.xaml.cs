@@ -25,18 +25,31 @@ namespace WpfApplication1
         private Server toAuthenticate;
         private ChannelManager channelMgr;
         private Authentication.AuthenticationMgr authMgr;
+        private MainWindow mainWin;
 
         public AuthenticationWindow(Server toAuthenticate, ChannelManager channelMgr, MainWindow mainWin)
         {
             InitializeComponent();
-            //this.toAuthenticate = toAuthenticate;
-            //this.channelMgr = channelMgr;
-            //authMgr = new Authentication.AuthenticationMgr(channelMgr, mainWin);
+            this.toAuthenticate = toAuthenticate;
+            this.channelMgr = channelMgr;
+            this.mainWin = mainWin;
+            authMgr = new Authentication.AuthenticationMgr(channelMgr, mainWin);
         }
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            mainWin.Dispatcher.Invoke(new Action(() =>
+               {
+                   mainWin.computerItemList.Remove(mainWin.FocusedComputerItem);
+                   mainWin.FocusedComputerItem.IsCheckboxChecked = false;
+                   mainWin.computerItemList.Add(mainWin.FocusedComputerItem);
+               }));
             this.Close();
+        }
+
+        private void SwitchOFFCheckbox() 
+        {
+            
         }
 
         private void StartAuthentication(String hashString)

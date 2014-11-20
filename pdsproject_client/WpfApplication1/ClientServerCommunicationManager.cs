@@ -21,12 +21,28 @@ namespace CommunicationLibrary
 
         public void Send(byte[] toSend, Socket socket)
         {
-            socket.Send(toSend);
+            try
+            {
+                socket.Send(toSend);   
+            }
+            catch (SocketException ex)
+            {
+                return;
+            }            
         }
 
         public int Receive(byte[] bytes, Socket socket)
         {
-            return socket.Receive(bytes);
+            int bytesRead = 0;
+            try
+            {
+                bytesRead = socket.Receive(bytes);
+            }
+            catch (SocketException ex)
+            {
+                return 0;
+            }
+            return bytesRead;
         }
 
         public void Shutdown(Socket socket, SocketShutdown shutdownMode)

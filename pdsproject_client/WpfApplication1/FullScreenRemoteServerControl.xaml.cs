@@ -42,6 +42,21 @@ namespace WpfApplication1
             RegisterHotkey();
         }
 
+        private void MinimizedControlPanel()
+        {
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is MainWindow)
+                {
+                    if (win.IsActive)
+                    {
+                        win.WindowState = WindowState.Minimized;
+                        break;
+                    }
+                }
+            }
+        }
+
         private void RegisterHotkey()
         {
             foreach (Hotkey h in hotkeyList)
@@ -115,11 +130,13 @@ namespace WpfApplication1
 
         private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)
         {
+            InterceptEvents.StopCapture();
             foreach (Window win in System.Windows.Application.Current.Windows)
             {
                 if (win is MainWindow)
                 {
-                    win.Activate();
+                    win.WindowState = System.Windows.WindowState.Normal;
+                    //win.Topmost = true;
                 }
             }
         }
