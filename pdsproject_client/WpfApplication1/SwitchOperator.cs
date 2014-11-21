@@ -28,7 +28,22 @@ namespace WpfApplication1
 
             ClipboardMgr clipboardMgr = new ClipboardMgr();
             clipboardMgr.ChannelMgr = channelMgr;
-            if (!clipboardMgr.GetClipboardDimensionOverFlow())
+            bool dimensionOverflow = false;
+            try
+            {
+                dimensionOverflow = clipboardMgr.GetClipboardDimensionOverFlow();
+            }
+            catch (Exception ex) 
+            {
+                OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
+                channelMgr.EndConnectionToCurrentServer();
+                channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
+                OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
+                channelMgr.ResetTokenGen();                         
+                return;
+            }
+
+            if (!dimensionOverflow)
             {
                 clipboardMgr.ReceiveClipboard();
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
