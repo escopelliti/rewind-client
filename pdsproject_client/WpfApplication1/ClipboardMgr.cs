@@ -275,6 +275,10 @@ namespace WpfApplication1
             }
             else
             {
+                if (dimension == 0)
+                {
+                    throw new Exception("No clipboard content");
+                }
                 return false;
             }
         }
