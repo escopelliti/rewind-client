@@ -130,8 +130,8 @@
             </Button>
 
             <StackPanel x:Name="mainStackPanel" Margin="0,81,0,0">
-                    <ListBox Name="computerList" SelectionMode="Single" HorizontalContentAlignment="Stretch" BorderBrush="Transparent" ItemsSource="{Binding ElementName=mainWindow, Path=computerItemList}" ItemContainerStyle="{StaticResource listboxStyle}">
-                        <ListBox.ItemTemplate>
+                <ListBox Name="computerList" SelectionMode="Single" HorizontalContentAlignment="Stretch" BorderBrush="Transparent" ItemsSource="{Binding ElementName=mainWindow, Path=computerItemList}" ItemContainerStyle="{StaticResource listboxStyle}">
+                    <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border  BorderBrush="#31698a" BorderThickness="4" HorizontalAlignment="Stretch" Height="Auto">
                                 <Grid Margin="0,0,0,0" HorizontalAlignment="Stretch">
@@ -140,7 +140,7 @@
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition/>                      
+                                        <RowDefinition/>
                                     </Grid.RowDefinitions>
                                     <Button Grid.Column="0" Grid.Row="0" Background="White" ToolTip="Clicca per controllare il computer" Click="SetActiveButton_Click" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,10">
                                         <Button.Content>
@@ -151,13 +151,11 @@
                                     </Button>
                                     <Label Grid.Column="1" Grid.Row="0" Content="{Binding Name}" HorizontalAlignment="Center" VerticalAlignment="Top" FontWeight="Bold"/>
                                     <CheckBox x:Name="connectCheckbox" IsChecked="{Binding IsCheckboxChecked}" IsEnabled="{Binding IsCheckboxEnabled}" Unchecked="connectCheckbox_Unchecked" Checked="connectCheckbox_Checked" Grid.Column="1" Grid.Row="0" ToolTip="Aggiungi il computer alla tua area di lavoro" HorizontalAlignment="Center" Style="{DynamicResource CheckBoxStyle1}" VerticalAlignment="Center"/>
-                                    <!--<Image Grid.Column="1" Grid.Row="0" Source="{Binding focusedImage}" Width="32" Height="32" ToolTip="Stai controllando questo computer!" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>-->
                                 </Grid>
                             </Border>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>
-                <!--</UserControl>-->
             </StackPanel>
 
         </Grid>
