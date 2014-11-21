@@ -40,6 +40,14 @@ namespace WpfApplication1 {
     public partial class FullScreenRemoteServerControl : System.Windows.Window, System.Windows.Markup.IComponentConnector {
         
         
+        #line 4 "..\..\FullScreenRemoteServerControl.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal WpfApplication1.FullScreenRemoteServerControl fullScreenRemoteServerControl;
+        
+        #line default
+        #line hidden
+        
+        
         #line 8 "..\..\FullScreenRemoteServerControl.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         internal System.Windows.Controls.Label controlPanelShortcutLabel;
@@ -102,15 +110,18 @@ namespace WpfApplication1 {
             switch (connectionId)
             {
             case 1:
-            this.controlPanelShortcutLabel = ((System.Windows.Controls.Label)(target));
+            this.fullScreenRemoteServerControl = ((WpfApplication1.FullScreenRemoteServerControl)(target));
             return;
             case 2:
-            this.switchServerShortcutLabel = ((System.Windows.Controls.Label)(target));
+            this.controlPanelShortcutLabel = ((System.Windows.Controls.Label)(target));
             return;
             case 3:
-            this.currentServerNameLabel = ((System.Windows.Controls.Label)(target));
+            this.switchServerShortcutLabel = ((System.Windows.Controls.Label)(target));
             return;
             case 4:
+            this.currentServerNameLabel = ((System.Windows.Controls.Label)(target));
+            return;
+            case 5:
             this.connectedComputerList = ((System.Windows.Controls.ListView)(target));
             return;
             }

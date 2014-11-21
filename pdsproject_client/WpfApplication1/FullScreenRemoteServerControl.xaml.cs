@@ -100,18 +100,19 @@ namespace WpfApplication1
                 }
             }
             this.currentServerNameLabel.Content = currentServer.ComputerName;
-            this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+            this.connectedComputerList.ItemsSource = this.computerList;
+            //this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
         }
 
-        private List<String> GetComputerNameArrayFromServer()
-        {
-            List<String> connComputers = new List<string>();
-            foreach (Server s in computerList)
-            {
-                connComputers.Add(s.ComputerName);
-            }
-            return connComputers;
-        }
+        //private List<String> GetComputerNameArrayFromServer()
+        //{
+        //    List<String> connComputers = new List<string>();
+        //    foreach (Server s in computerList)
+        //    {
+        //        connComputers.Add(s.ComputerName);
+        //    }
+        //    return connComputers;
+        //}
 
         private void Switch_Server_Event_Handler(object sender, ExecutedRoutedEventArgs e)
         {
@@ -122,8 +123,7 @@ namespace WpfApplication1
         {
             SwitchServerEventHandler handler = SwitchServeHandler;
             if (handler != null)
-            {
-                // Invoco il delegato 
+            {                
                 handler(this, eventArgs);
             }
         }
@@ -135,8 +135,7 @@ namespace WpfApplication1
             {
                 if (win is MainWindow)
                 {
-                    win.WindowState = System.Windows.WindowState.Normal;
-                    //win.Topmost = true;
+                    win.WindowState = System.Windows.WindowState.Normal;                    
                 }
             }
         }
@@ -163,6 +162,7 @@ namespace WpfApplication1
             this.currentServerNameLabel.Dispatcher.Invoke(new Action(() =>
             {
                 this.currentServerNameLabel.Content = currentServer.ComputerName;
+
             }));
 
         }
