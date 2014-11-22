@@ -216,9 +216,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="resources\images\connComputer.png" />
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="Bonjour">
       <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
       <VersionMajor>1</VersionMajor>
@@ -240,6 +237,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="resources\images\info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="resources\images\connComputer.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
