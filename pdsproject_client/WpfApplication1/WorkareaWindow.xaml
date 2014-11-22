@@ -1,7 +1,8 @@
 ﻿<Window x:Class="WpfApplication1.WorkareaWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="DIGITA UN NUMERO" Height="350" Width="450" Closing="Window_Closing" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        x:Name="workareaWindow"
+        Title="Cambia Computer" Height="350" Width="450" Closing="Window_Closing" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style x:Key="listboxStyle" TargetType="{x:Type ListBoxItem}">
             <Style.Resources>
@@ -11,8 +12,9 @@
             <EventSetter Event="MouseEnter" Handler="ListBoxItem_MouseEnter" />
         </Style>
     </Window.Resources>
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-
+    <Grid>
+        <Label Content="Digita il numero del computer che vuoi controllare" Height="Auto" Width="Auto" FontSize="18"/>        
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">     
         <ListBox Name="computerList" SelectionMode="Single" BorderBrush="Transparent" ItemsSource="{Binding ElementName=workareaWindow, Path=computerItemList}" ItemContainerStyle="{StaticResource listboxStyle}">
             <ListBox.ItemsPanel>     
                 <ItemsPanelTemplate>
@@ -39,5 +41,6 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+    </Grid>
     </Grid>
 </Window>

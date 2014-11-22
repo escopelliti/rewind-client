@@ -35,6 +35,7 @@ namespace WpfApplication1
             this.KeyDown += WorkareaWindow_KeyDown;
             this.mainWin = mainWin;
             this.computerItemList = channelMgr.GetComputerItemList();
+            this.computerList.ItemsSource = this.computerItemList;
         }
 
         private void WorkareaWindow_KeyDown(object sender, KeyEventArgs e)
