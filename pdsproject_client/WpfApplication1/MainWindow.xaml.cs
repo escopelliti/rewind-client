@@ -106,7 +106,12 @@ namespace WpfApplication1
 
         private void OpenFullScreenWindow(InterceptEvents ie, List<Hotkey> hotkeyList, ChannelManager channelMgr)
         {
-            fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), channelMgr.ConnectedServer, this);
+            List<String> computerStringList = new List<string>();
+            foreach (Server s in channelMgr.ConnectedServer)
+            {
+                computerStringList.Add(s.ComputerName);
+            }
+            fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), computerStringList, this);
             fullScreenWin.Show();
             this.WindowState = WindowState.Minimized;
         }

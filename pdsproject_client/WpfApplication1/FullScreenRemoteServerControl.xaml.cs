@@ -22,18 +22,18 @@ namespace WpfApplication1
     public partial class FullScreenRemoteServerControl : Window
     {
         private Server currentServer;
-        private ObservableCollection<Server> computerList;
+        private ObservableCollection<String> computerList;
         private InterceptEvents interceptEvent;
         public List<Hotkey> hotkeyList;
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
         private MainWindow mainWin;
 
-        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<Server> computerList, MainWindow mainWin)
+        public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<String> computerList, MainWindow mainWin)
         {
             this.currentServer = currentServer;
             // Forse non è supportato il costruttore così fatto DA PROVARE
-            this.computerList = new ObservableCollection<Server>(computerList);
+            this.computerList = new ObservableCollection<String>(computerList);
             this.interceptEvent = ie;
             this.hotkeyList = hotkeyList;
             this.mainWin = mainWin;
@@ -100,18 +100,19 @@ namespace WpfApplication1
                 }
             }
             this.currentServerNameLabel.Content = currentServer.ComputerName;
-            this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+            this.connectedComputerList.ItemsSource = this.computerList;
+            //this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
         }
 
-        private List<String> GetComputerNameArrayFromServer()
-        {
-            List<String> connComputers = new List<string>();
-            foreach (Server s in computerList)
-            {
-                connComputers.Add(s.ComputerName);
-            }
-            return connComputers;
-        }
+        //private List<String> GetComputerNameArrayFromServer()
+        //{
+        //    List<String> connComputers = new List<string>();
+        //    foreach (Server s in computerList)
+        //    {
+        //        connComputers.Add(s.ComputerName);
+        //    }
+        //    return connComputers;
+        //}
 
         private void Switch_Server_Event_Handler(object sender, ExecutedRoutedEventArgs e)
         {
@@ -122,8 +123,7 @@ namespace WpfApplication1
         {
             SwitchServerEventHandler handler = SwitchServeHandler;
             if (handler != null)
-            {
-                // Invoco il delegato 
+            {                
                 handler(this, eventArgs);
             }
         }
@@ -135,8 +135,7 @@ namespace WpfApplication1
             {
                 if (win is MainWindow)
                 {
-                    win.WindowState = System.Windows.WindowState.Normal;
-                    //win.Topmost = true;
+                    win.WindowState = System.Windows.WindowState.Normal;                    
                 }
             }
         }
@@ -145,7 +144,7 @@ namespace WpfApplication1
         {
             this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
             {
-                this.computerList.Add(s);
+                this.computerList.Add(s.ComputerName);
             }));
 
         }
@@ -154,7 +153,7 @@ namespace WpfApplication1
         {
             this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
             {
-                this.computerList.Remove(s);
+                this.computerList.Remove(s.ComputerName);
             }));
         }
 
@@ -163,6 +162,7 @@ namespace WpfApplication1
             this.currentServerNameLabel.Dispatcher.Invoke(new Action(() =>
             {
                 this.currentServerNameLabel.Content = currentServer.ComputerName;
+
             }));
 
         }
