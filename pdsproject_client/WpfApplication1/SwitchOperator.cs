@@ -39,13 +39,14 @@ namespace WpfApplication1
                 channelMgr.EndConnectionToCurrentServer();
                 channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
-                channelMgr.ResetTokenGen();                         
+                channelMgr.ResetTokenGen();
+                mainWin.SetServerActive(mainWin.FocusedComputerItem);         
                 return;
             }
 
             if (!dimensionOverflow)
             {
-                mainWin.Close();
+                mainWin.Dispatcher.Invoke(new Action(() => mainWin.Close())); 
                 clipboardMgr.ReceiveClipboard();
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();
@@ -56,11 +57,13 @@ namespace WpfApplication1
             }
             else
             {
-                mainWin.Close();
+                mainWin.Dispatcher.Invoke(new Action(() => mainWin.Close()));
                 ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(computerID, clipboardMgr, this, channelMgr);
                 confirmWin.Show();
                 System.Windows.Threading.Dispatcher.Run();
-            }            
+            }
+
+            mainWin.SetServerActive(mainWin.FocusedComputerItem);
         }
 
         public void OnSetNewServer(ServerEventArgs sea)

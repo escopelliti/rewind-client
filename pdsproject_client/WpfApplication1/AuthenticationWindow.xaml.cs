@@ -40,9 +40,10 @@ namespace WpfApplication1
         {
             mainWin.Dispatcher.Invoke(new Action(() =>
                {
+                   int index = mainWin.computerItemList.IndexOf(mainWin.FocusedComputerItem);
                    mainWin.computerItemList.Remove(mainWin.FocusedComputerItem);
                    mainWin.FocusedComputerItem.IsCheckboxChecked = false;
-                   mainWin.computerItemList.Add(mainWin.FocusedComputerItem);
+                   mainWin.computerItemList.Insert(index, mainWin.FocusedComputerItem);
                }));
             this.Close();
         }        

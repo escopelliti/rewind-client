@@ -46,7 +46,7 @@ namespace WpfApplication1
         public MainWindow()
         {
             InitializeComponent();
-
+            this.DataContext = this;
             InitTrayIcon();
             // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
             computerItemList = new ObservableCollection<ComputerItem>();
@@ -212,13 +212,7 @@ namespace WpfApplication1
             ComputerItem newComputerItem = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
             if (newComputerItem != null)
             {
-                this.computerList.Dispatcher.Invoke(new Action(() =>
-                {
-                    this.computerItemList.Remove(newComputerItem);
-                    newComputerItem.ComputerStateImage = @"resources/images/connConputer.png";
-                    newComputerItem.IsCheckboxEnabled = false;
-                    this.computerItemList.Add(newComputerItem);
-                }));
+                SetServerActive(newComputerItem);
             }            
         }
 
@@ -259,14 +253,7 @@ namespace WpfApplication1
                 return;
             }
 
-            this.computerList.Dispatcher.Invoke(new Action(() =>
-            {
-                this.computerItemList.Remove(FocusedComputerItem);
-                FocusedComputerItem.ComputerStateImage = @"resources/images/connComputer.png";
-                FocusedComputerItem.IsCheckboxEnabled = false;
-
-                this.computerItemList.Add(FocusedComputerItem);
-            }));
+            SetServerActive(FocusedComputerItem);
 
             Server currentServer = channelMgr.GetCurrentServer();
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
@@ -321,10 +308,7 @@ namespace WpfApplication1
                 }               
                 OpenFullScreenWindow(ie, l, channelMgr);
             }
-
-         
         }
-
 
         private void StartNewConnection(int p)
         {
@@ -344,15 +328,11 @@ namespace WpfApplication1
 
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {
+                int index = this.computerItemList.IndexOf(FocusedComputerItem);
                 this.computerItemList.Remove(FocusedComputerItem);
                 FocusedComputerItem.ComputerID = s.ServerID;
-                this.computerItemList.Add(FocusedComputerItem);
-            }));
-            this.computerList.Dispatcher.Invoke(new Action(() =>
-            {
-                this.computerItemList.Remove(FocusedComputerItem);
                 this.FocusedComputerItem.IsCheckboxChecked = true;
-                this.computerItemList.Add(FocusedComputerItem);
+                this.computerItemList.Insert(index,FocusedComputerItem);
             }));
             
             AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
@@ -375,9 +355,10 @@ namespace WpfApplication1
         {
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {
+                int index = this.computerItemList.IndexOf(FocusedComputerItem);
                 this.computerItemList.Remove(FocusedComputerItem);
                 this.FocusedComputerItem.IsCheckboxChecked = false;
-                this.computerItemList.Add(FocusedComputerItem);
+                this.computerItemList.Insert(index, FocusedComputerItem);
             }));   
             
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
@@ -426,9 +407,10 @@ namespace WpfApplication1
  	        ComputerItem ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {
+                int index = this.computerItemList.IndexOf(ci);
                 this.computerItemList.Remove(ci);
                 this.FocusedComputerItem.IsCheckboxChecked = false;
-                this.computerItemList.Add(ci);
+                this.computerItemList.Insert(index, ci);
             }));          
         }
 
@@ -441,9 +423,10 @@ namespace WpfApplication1
             }
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {
+                int index = this.computerItemList.IndexOf(FocusedComputerItem);
                 this.computerItemList.Remove(FocusedComputerItem);
                 this.FocusedComputerItem.IsCheckboxChecked = true;
-                this.computerItemList.Add(FocusedComputerItem);
+                this.computerItemList.Insert(index, FocusedComputerItem);
             }));
         }
 
@@ -477,6 +460,18 @@ namespace WpfApplication1
         {
             InfoWindow infoWnd = new InfoWindow();
             infoWnd.Show();
+        }
+
+        public void SetServerActive(ComputerItem newComputerItem)
+        {
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                int index = this.computerItemList.IndexOf(newComputerItem);
+                this.computerItemList.Remove(newComputerItem);
+                newComputerItem.ComputerStateImage = @"resources/images/connComputer.png";
+                newComputerItem.IsCheckboxEnabled = false;
+                this.computerItemList.Insert(index, newComputerItem);
+            }));
         }
     }
 }
