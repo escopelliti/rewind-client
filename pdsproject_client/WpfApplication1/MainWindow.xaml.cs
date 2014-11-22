@@ -49,7 +49,7 @@ namespace WpfApplication1
 
             InitTrayIcon();
             // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
-            computerItemList = new ObservableCollection<ComputerItem>();            
+            computerItemList = new ObservableCollection<ComputerItem>();
             computerList.ItemsSource = computerItemList;
             serverList = new List<Server>();
             configurationMgr = new ConfigurationManager();
@@ -193,6 +193,8 @@ namespace WpfApplication1
                 {
                     this.computerItemList.Remove(oldComputerItem);
                     oldComputerItem.ComputerStateImage = @"resources/images/off.png";
+                    oldComputerItem.IsCheckboxEnabled = true;
+
                     this.computerItemList.Add(oldComputerItem);
                 }));
             }
@@ -243,8 +245,6 @@ namespace WpfApplication1
             }
         }
 
-
-
         private void SetActiveButton_Click(object sender, RoutedEventArgs e)
         {
             if (!FocusedComputerItem.IsCheckboxChecked)
@@ -253,6 +253,15 @@ namespace WpfApplication1
                     ("Connettiti al computer prima di continuare", "Attenzione!", MessageBoxButton.OK,MessageBoxImage.Exclamation);
                 return;
             }
+
+            this.computerList.Dispatcher.Invoke(new Action(() =>
+            {
+                this.computerItemList.Remove(FocusedComputerItem);
+                FocusedComputerItem.ComputerStateImage = @"resources/images/connComputer.png";
+                FocusedComputerItem.IsCheckboxEnabled = false;
+
+                this.computerItemList.Add(FocusedComputerItem);
+            }));
 
             Server currentServer = channelMgr.GetCurrentServer();
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
@@ -308,15 +317,9 @@ namespace WpfApplication1
                 OpenFullScreenWindow(ie, l, channelMgr);
             }
 
-            this.computerList.Dispatcher.Invoke(new Action(() =>
-            {
-                this.computerItemList.Remove(FocusedComputerItem);
-                FocusedComputerItem.ComputerStateImage = @"resources/images/connComputer.png";
-                FocusedComputerItem.IsCheckboxEnabled = false;
-                this.computerItemList.Add(FocusedComputerItem);
-            }));
-            
+         
         }
+
 
         private void StartNewConnection(int p)
         {
@@ -390,7 +393,7 @@ namespace WpfApplication1
 
         private void ListBoxItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            FocusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;
+            FocusedComputerItem = (ComputerItem)(sender as ListBoxItem).Content;            
         }    
 
         private void ButtonModifyClick(object sender, RoutedEventArgs e)

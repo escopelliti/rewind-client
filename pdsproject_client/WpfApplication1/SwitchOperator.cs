@@ -37,7 +37,7 @@ namespace WpfApplication1
             {
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();
-                channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
+                channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.ResetTokenGen();                         
                 return;
@@ -45,16 +45,18 @@ namespace WpfApplication1
 
             if (!dimensionOverflow)
             {
+                mainWin.Close();
                 clipboardMgr.ReceiveClipboard();
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();
-                channelMgr.StartNewConnection(computerID);//OCCHIO GESTIONE EXCEPTIONS
+                channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));                
                 clipboardMgr.SendClipboard();
                 channelMgr.ResetTokenGen();                         
             }
             else
             {
+                mainWin.Close();
                 ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(computerID, clipboardMgr, this, channelMgr);
                 confirmWin.Show();
                 System.Windows.Threading.Dispatcher.Run();
