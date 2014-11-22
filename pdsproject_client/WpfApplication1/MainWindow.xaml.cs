@@ -470,10 +470,6 @@ namespace WpfApplication1
 
         private void ButtonInfoClick(object sender, RoutedEventArgs e)
         {
-
-            ProgressBar pb = new ProgressBar();
-            pb.ShowDialog();
-
             InfoWindow infoWnd = new InfoWindow();
             infoWnd.Show();
         }
