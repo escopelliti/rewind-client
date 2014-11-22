@@ -103,6 +103,7 @@ namespace WpfApplication1
                 switchThread.IsBackground = true;
                 switchThread.Start();
             }
+            this.Close();
         }
     }
 }
