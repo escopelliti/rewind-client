@@ -32,6 +32,7 @@ namespace WpfApplication1
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<String> computerList, MainWindow mainWin)
         {
             this.currentServer = currentServer;
+            this.DataContext = this;
             // Forse non è supportato il costruttore così fatto DA PROVARE
             this.computerList = new ObservableCollection<String>(computerList);
             this.interceptEvent = ie;
@@ -100,19 +101,8 @@ namespace WpfApplication1
                 }
             }
             this.currentServerNameLabel.Content = currentServer.ComputerName;
-            this.connectedComputerList.ItemsSource = this.computerList;
-            //this.connectedComputerList.ItemsSource = GetComputerNameArrayFromServer();
+            this.connectedComputerList.ItemsSource = this.computerList;            
         }
-
-        //private List<String> GetComputerNameArrayFromServer()
-        //{
-        //    List<String> connComputers = new List<string>();
-        //    foreach (Server s in computerList)
-        //    {
-        //        connComputers.Add(s.ComputerName);
-        //    }
-        //    return connComputers;
-        //}
 
         private void Switch_Server_Event_Handler(object sender, ExecutedRoutedEventArgs e)
         {
@@ -159,6 +149,7 @@ namespace WpfApplication1
 
         public void UpdateCurrentServer(Server s)
         {
+            currentServer = s;
             this.currentServerNameLabel.Dispatcher.Invoke(new Action(() =>
             {
                 this.currentServerNameLabel.Content = currentServer.ComputerName;
