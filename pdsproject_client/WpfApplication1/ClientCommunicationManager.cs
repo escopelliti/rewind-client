@@ -13,10 +13,10 @@ namespace CommunicationLibrary
     public class ClientCommunicationManager : ClientServerCommunicationManager
     {
         public Socket Connect(IPAddress ipAddress, ushort port, Socket socket)
-        {
+        {            
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
             socket.Connect(remoteEP);
-            return socket;
+            return socket;                      
         }        
     }
 }

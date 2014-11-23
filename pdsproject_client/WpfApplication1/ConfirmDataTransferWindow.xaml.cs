@@ -48,7 +48,7 @@ namespace WpfApplication1
             clipboardMgr.ReceiveClipboard();
             switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
-            this.channelMgr.StartNewConnection(computerID);//FAKE e OCCHIO GESTIONE EXCEPTIONS
+            this.channelMgr.StartNewConnection(computerID);
             switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));            
             clipboardMgr.SendClipboard();
 
@@ -83,6 +83,10 @@ namespace WpfApplication1
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+            switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
+            this.channelMgr.EndConnectionToCurrentServer();
+            this.channelMgr.StartNewConnection(computerID);
+            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
         }
     }
 }

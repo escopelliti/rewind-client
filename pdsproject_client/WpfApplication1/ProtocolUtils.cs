@@ -38,7 +38,7 @@ namespace Protocol
 
         public const ushort TOKEN_DIM = 16;
 
-        public const long CLIBPOARD_DIM_THRESHOLD = 1024 * 1024;
+        public const long CLIBPOARD_DIM_THRESHOLD = 5 * 1024 * 1024;
 
         public struct FileStruct
         {

@@ -322,8 +322,23 @@ namespace WpfApplication1
 
             if (s.GetChannel().GetCmdSocket() == null || s.GetChannel().GetDataSocket() == null)
             {
-                channelMgr.AssignCmdChannel(s);
-                channelMgr.AddServer(s);
+                try
+                {
+                    channelMgr.AssignCmdChannel(s);
+                    channelMgr.AddServer(s);
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show("Il computer sembra non rispondere!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    this.computerList.Dispatcher.Invoke(new Action(() =>
+                    {
+                        int index = this.computerItemList.IndexOf(FocusedComputerItem);
+                        this.computerItemList.Remove(FocusedComputerItem);
+                        this.FocusedComputerItem.IsCheckboxChecked = false;
+                        this.computerItemList.Insert(index, FocusedComputerItem);
+                    }));
+                    return;
+                }
             }
 
             this.computerList.Dispatcher.Invoke(new Action(() =>

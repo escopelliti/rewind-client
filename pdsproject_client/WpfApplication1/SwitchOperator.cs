@@ -40,7 +40,7 @@ namespace WpfApplication1
                 channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.ResetTokenGen();
-                mainWin.SetServerActive(mainWin.FocusedComputerItem);         
+                //mainWin.SetServerActive(mainWin.FocusedComputerItem);         
                 return;
             }
 
@@ -62,8 +62,7 @@ namespace WpfApplication1
                 confirmWin.Show();
                 System.Windows.Threading.Dispatcher.Run();
             }
-
-            mainWin.SetServerActive(mainWin.FocusedComputerItem);
+            //mainWin.SetServerActive(mainWin.FocusedComputerItem);
         }
 
         public void OnSetNewServer(ServerEventArgs sea)

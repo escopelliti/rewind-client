@@ -97,11 +97,27 @@ namespace WpfApplication1
         {
             if (focusedComputerItem != null) 
             {
-                SwitchOperator switchOp = new SwitchOperator(mainWin);
-                Thread switchThread = new Thread(() => switchOp.SwitchOperations(focusedComputerItem.ComputerID, channelMgr));
-                switchThread.SetApartmentState(ApartmentState.STA);
-                switchThread.IsBackground = true;
-                switchThread.Start();
+                try
+                {
+                    SwitchOperator switchOp = new SwitchOperator(mainWin);
+                    Thread switchThread = new Thread(() => switchOp.SwitchOperations(focusedComputerItem.ComputerID, channelMgr));
+                    switchThread.SetApartmentState(ApartmentState.STA);
+                    switchThread.IsBackground = true;                    
+                    switchThread.Start();
+                    switchFlag = true;
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return;
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    return;
+                }
             }
             this.Close();
         }

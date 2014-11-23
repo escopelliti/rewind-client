@@ -5,7 +5,7 @@
     <Grid>
         <Button Content="Cancel" HorizontalAlignment="Left" Click="CancelButton_Click" Margin="276,83,0,0" VerticalAlignment="Top" Width="50"/>
         <Button Content="OK" HorizontalAlignment="Left" Margin="345,83,0,0" Click="OKButton_Click" VerticalAlignment="Top" Width="50"/>
-        <Label Content="Il contenuto della clipboard supera i 10MB byte.&#xD;&#xA;Sei davvero sicuro di continuare?" x:Name="mexLabel" HorizontalAlignment="Left" Margin="11,8,0,0" VerticalAlignment="Top" FontSize="18"/>
+        <Label Content="Il contenuto della clipboard supera i 5 MB.&#xD;&#xA;Sei davvero sicuro di continuare?" x:Name="mexLabel" HorizontalAlignment="Left" Margin="11,8,0,0" VerticalAlignment="Top" FontSize="18"/>
 
     </Grid>
 </Window>

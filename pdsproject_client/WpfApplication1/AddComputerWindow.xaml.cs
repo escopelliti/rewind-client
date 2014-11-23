@@ -63,7 +63,10 @@ namespace WpfApplication1
     public class AddComputerViewModel : INotifyPropertyChanged
     {
         private string computerName = "Nome_computer";
-        private string byteIP = "0";
+        private string byteIP1 = "0";
+        private string byteIP2 = "0";
+        private string byteIP3 = "0";
+        private string byteIP4 = "0";
         private string cmdPort = "12000";
         private string dataPort = "12001";
 
@@ -95,11 +98,11 @@ namespace WpfApplication1
                 }
             }
         }
-        public String ByteIp
+        public String ByteIp1
         {
             get
             {
-                return byteIP;
+                return byteIP1;
             }
             set
             {
@@ -116,10 +119,97 @@ namespace WpfApplication1
                 {
                     throw new Exception("only numbers accepted");
                 }
-                if (byteIP != value)
+                if (byteIP1 != value)
                 {
-                    byteIP = value;
-                    OnPropertyChanged("ByteIP");
+                    byteIP1 = value;
+                    OnPropertyChanged("ByteIP1");
+                }
+            }
+        }
+
+        public String ByteIp2
+        {
+            get
+            {
+                return byteIP2;
+            }
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new Exception("can not be empty.");
+                }
+                if (value.Contains(" "))
+                {
+                    throw new Exception("no empty space");
+                }
+                string pattern = @"^[0-9]+$";
+                if (!Regex.IsMatch(value, pattern))
+                {
+                    throw new Exception("only numbers accepted");
+                }
+                if (byteIP2 != value)
+                {
+                    byteIP2 = value;
+                    OnPropertyChanged("ByteIP2");
+                }
+            }
+        }
+
+        public String ByteIp3
+        {
+            get
+            {
+                return byteIP3;
+            }
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new Exception("can not be empty.");
+                }
+                if (value.Contains(" "))
+                {
+                    throw new Exception("no empty space");
+                }
+                string pattern = @"^[0-9]+$";
+                if (!Regex.IsMatch(value, pattern))
+                {
+                    throw new Exception("only numbers accepted");
+                }
+                if (byteIP3 != value)
+                {
+                    byteIP3 = value;
+                    OnPropertyChanged("ByteIP3");
+                }
+            }
+        }
+
+        public String ByteIp4
+        {
+            get
+            {
+                return byteIP4;
+            }
+            set
+            {
+                if (String.IsNullOrEmpty(value))
+                {
+                    throw new Exception("can not be empty.");
+                }
+                if (value.Contains(" "))
+                {
+                    throw new Exception("no empty space");
+                }
+                string pattern = @"^[0-9]+$";
+                if (!Regex.IsMatch(value, pattern))
+                {
+                    throw new Exception("only numbers accepted");
+                }
+                if (byteIP4 != value)
+                {
+                    byteIP4 = value;
+                    OnPropertyChanged("ByteIP4");
                 }
             }
         }

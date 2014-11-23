@@ -237,8 +237,14 @@ namespace CommunicationLibrary
             currentServer = newServer;
             SendRequest(Protocol.ProtocolUtils.SET_RESET_FOCUS, Protocol.ProtocolUtils.FOCUS_ON);
             ReceiveAck();
-            AssignDataChannel(newServer);
-
+            try
+            {
+                AssignDataChannel(newServer);
+            }
+            catch (Exception e)
+            {
+                return;
+            }            
         }
 
         public void ResetTokenGen()
