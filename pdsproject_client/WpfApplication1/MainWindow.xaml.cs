@@ -234,7 +234,7 @@ namespace WpfApplication1
                 {
                     if (win is FullScreenRemoteServerControl)
                     {
-                        if (win.IsActive)
+                        if (win.IsVisible)
                         {
                             ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
                             break;
@@ -286,7 +286,7 @@ namespace WpfApplication1
             {
                 if (win is FullScreenRemoteServerControl)
                 {
-                    if (win.IsActive)
+                    if (win.IsVisible)
                     {
                         ((FullScreenRemoteServerControl)win).UpdateCurrentServer(s);
                         isWindowOpened = true;
@@ -357,7 +357,7 @@ namespace WpfApplication1
             {
                 if (win is FullScreenRemoteServerControl)
                 {
-                    if (win.IsActive)
+                    if (win.IsVisible)
                     {
                         ((FullScreenRemoteServerControl)win).AddServerToList(s);
                         break;
@@ -383,7 +383,7 @@ namespace WpfApplication1
             {
                 if (win is FullScreenRemoteServerControl)
                 {
-                    if (win.IsActive)
+                    if (win.IsVisible)
                     {
                         ((FullScreenRemoteServerControl)win).RemoveServerFromList(s);
                         break;

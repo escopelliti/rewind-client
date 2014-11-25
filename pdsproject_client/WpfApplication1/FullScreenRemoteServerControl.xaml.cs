@@ -49,7 +49,7 @@ namespace WpfApplication1
             {
                 if (win is MainWindow)
                 {
-                    if (win.IsActive)
+                    if (win.IsVisible)
                     {
                         win.WindowState = WindowState.Minimized;
                         break;

@@ -65,7 +65,7 @@ namespace WpfApplication1
             {
                 if (win is ProgressBar)
                 {
-                    if (win.IsActive)
+                    if (win.IsVisible)
                     {
                         ((ProgressBar)win).Close();
                         break;
