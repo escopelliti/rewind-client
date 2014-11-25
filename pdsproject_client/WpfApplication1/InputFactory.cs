@@ -63,108 +63,58 @@ namespace NativeInput
             Keys key = (Keys)Marshal.ReadInt32(lParam);
             string s = string.Empty;
             List<INPUT> inputToSend = new List<INPUT>();
-
-            INPUT keyboard_input = new INPUT();
-            keyboard_input.type = TYPE.INPUT_KEYBOARD;
-            keyboard_input.ki = new KEYBDINPUT();
-            
+         
             if (wParam == (IntPtr)KeyboardMessages.WM_KEYDOWN)
             {
                 
                 if ((Keyboard.GetKeyStates(Key.LeftCtrl) & KeyStates.Down) > 0 ||
                     (Keyboard.GetKeyStates(Key.RightCtrl) & KeyStates.Down) > 0)
                 {
-                    
-                    keyboard_input.ki.wVk = (VirtualKeyCode)Keys.LControlKey;
-                    keyboard_input.ki.wScan = 0;
-                    keyboard_input.ki.dwFlags = 0;
-                    keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
-                    inputToSend.Add(keyboard_input);
+
+                    inputToSend.Add(CreateKeyDownInput(Keys.LControlKey));
 
                     if ((Keyboard.GetKeyStates(Key.LeftShift) & KeyStates.Down) > 0 ||
-                    (Keyboard.GetKeyStates(Key.RightShift) & KeyStates.Down) > 0)
+                        (Keyboard.GetKeyStates(Key.RightShift) & KeyStates.Down) > 0)
                     {
-                        INPUT input_shift_down = new INPUT();
-                        input_shift_down.type = TYPE.INPUT_KEYBOARD;
-                        input_shift_down.ki = new KEYBDINPUT();
-                        input_shift_down.ki.wVk = (VirtualKeyCode)Keys.LShiftKey;
-                        input_shift_down.ki.wScan = 0;
-                        input_shift_down.ki.dwFlags = 0;
-                        input_shift_down.ki.dwExtraInfo = IntPtr.Zero;
-                        inputToSend.Add(input_shift_down);
+                        inputToSend.Add(CreateKeyDownInput(Keys.LShiftKey));
                     }
 
                     if ((Keyboard.GetKeyStates(Key.LeftAlt) & KeyStates.Down) > 0 ||
-                    (Keyboard.GetKeyStates(Key.RightAlt) & KeyStates.Down) > 0)
+                        (Keyboard.GetKeyStates(Key.RightAlt) & KeyStates.Down) > 0)
                     {
-                        INPUT input_alt_down = new INPUT();
-                        input_alt_down.type = TYPE.INPUT_KEYBOARD;
-                        input_alt_down.ki = new KEYBDINPUT();
-                        input_alt_down.ki.wVk = (VirtualKeyCode)Keys.LMenu;
-                        input_alt_down.ki.wScan = 0;
-                        input_alt_down.ki.dwFlags = 0;
-                        input_alt_down.ki.dwExtraInfo = IntPtr.Zero;
-                        inputToSend.Add(input_alt_down);
+                        inputToSend.Add(CreateKeyDownInput(Keys.LMenu));
                     }
 
-                    INPUT keyboard_input2 = new INPUT();
-                    keyboard_input2.type = TYPE.INPUT_KEYBOARD;
-                    keyboard_input2.ki = new KEYBDINPUT();
-                    keyboard_input2.ki.wVk = (VirtualKeyCode)key;
-                    keyboard_input2.ki.wScan = 0;
-                    keyboard_input2.ki.dwFlags = 0;
-                    keyboard_input2.ki.dwExtraInfo = IntPtr.Zero;
-                    inputToSend.Add(keyboard_input2);
+                    if (key != Keys.LControlKey && key != Keys.RControlKey)
+                    {
+                        inputToSend.Add(CreateKeyDownInput(key));
+                    }
 
-                    //Send modifier key up
-                    INPUT keyboard_input3 = new INPUT();
-                    keyboard_input3.type = TYPE.INPUT_KEYBOARD;
-                    keyboard_input3.ki = new KEYBDINPUT();
-                    keyboard_input3.ki.wVk = (VirtualKeyCode)key;
-                    keyboard_input3.ki.wScan = 0;
-                    keyboard_input3.ki.dwFlags = KeyboardFlag.KeyUp;
-                    keyboard_input3.ki.dwExtraInfo = IntPtr.Zero;
-                    inputToSend.Add(keyboard_input3);
+                    // send key up ?
+                    if (key != Keys.LControlKey && key != Keys.RControlKey)
+                    {
+                        inputToSend.Add(CreateKeyUpInput(key));
+                    }
 
                     if ((Keyboard.GetKeyStates(Key.LeftAlt) & KeyStates.Down) > 0 ||
-                    (Keyboard.GetKeyStates(Key.RightAlt) & KeyStates.Down) > 0) { 
-                        INPUT input_alt_up = new INPUT();
-                        input_alt_up.type = TYPE.INPUT_KEYBOARD;
-                        input_alt_up.ki = new KEYBDINPUT();
-                        input_alt_up.ki.wVk = (VirtualKeyCode)Keys.LMenu;
-                        input_alt_up.ki.wScan = 0;
-                        input_alt_up.ki.dwFlags = KeyboardFlag.KeyUp;
-                        input_alt_up.ki.dwExtraInfo = IntPtr.Zero;
-                        inputToSend.Add(input_alt_up);
+                        (Keyboard.GetKeyStates(Key.RightAlt) & KeyStates.Down) > 0) 
+                    {
+                        inputToSend.Add(CreateKeyUpInput(Keys.LMenu));
                     }
 
                     if ((Keyboard.GetKeyStates(Key.LeftShift) & KeyStates.Down) > 0 ||
-                   (Keyboard.GetKeyStates(Key.RightShift) & KeyStates.Down) > 0)
+                        (Keyboard.GetKeyStates(Key.RightShift) & KeyStates.Down) > 0)
                     {
-                        INPUT input_shift_up = new INPUT();
-                        input_shift_up.type = TYPE.INPUT_KEYBOARD;
-                        input_shift_up.ki = new KEYBDINPUT();
-                        input_shift_up.ki.wVk = (VirtualKeyCode)Keys.LShiftKey;
-                        input_shift_up.ki.wScan = 0;
-                        input_shift_up.ki.dwFlags = KeyboardFlag.KeyUp;
-                        input_shift_up.ki.dwExtraInfo = IntPtr.Zero;
-                        inputToSend.Add(input_shift_up);
+                        inputToSend.Add(CreateKeyUpInput(Keys.LShiftKey));
                     }
-  
-                    INPUT input_ctrl_up = new INPUT();
-                    input_ctrl_up.type = TYPE.INPUT_KEYBOARD;
-                    input_ctrl_up.ki = new KEYBDINPUT();
-                    input_ctrl_up.ki.wVk = (VirtualKeyCode)Keys.LControlKey;
-                    input_ctrl_up.ki.wScan = 0;
-                    input_ctrl_up.ki.dwFlags = KeyboardFlag.KeyUp;
-                    input_ctrl_up.ki.dwExtraInfo = IntPtr.Zero;
-                    inputToSend.Add(input_ctrl_up);
 
+                    inputToSend.Add(CreateKeyUpInput(Keys.LShiftKey));
                 }
 
                 // Send key down using unicode
                 else
                 {
+                   
                     if (IsUnicodeChar(key))
                     {
                         StringBuilder sb = new StringBuilder(1);
@@ -173,6 +123,9 @@ namespace NativeInput
                         s = sb.ToString(0, 1);
                         char[] f = s.ToCharArray();
 
+                        INPUT keyboard_input = new INPUT();
+                        keyboard_input.type = TYPE.INPUT_KEYBOARD;
+                        keyboard_input.ki = new KEYBDINPUT(); 
                         keyboard_input.ki.wVk = 0;
                         keyboard_input.ki.wScan = f[0];
                         keyboard_input.ki.dwFlags = KeyboardFlag.Unicode;
@@ -184,24 +137,45 @@ namespace NativeInput
                     // send Keydown using Virtualcode 
                     else
                     {
-                        keyboard_input.ki.wVk = (VirtualKeyCode)key;
-                        keyboard_input.ki.wScan = 0;
-                        keyboard_input.ki.dwFlags = 0;
-                        keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
-                        inputToSend.Add(keyboard_input);
+                        inputToSend.Add(CreateKeyDownInput(key));
+
                     }
                 }
             }
 
             //send keyup
-            else
+            if (wParam == (IntPtr)KeyboardMessages.WM_KEYUP)
             {
-                keyboard_input.ki.wVk = (VirtualKeyCode)key;
-                keyboard_input.ki.dwFlags = KeyboardFlag.KeyUp;
-                inputToSend.Add(keyboard_input);
+                inputToSend.Add(CreateKeyUpInput(key));
+
             }
 
             return inputToSend;
+        }
+
+        public INPUT CreateKeyDownInput(Keys key)
+        {
+            INPUT keyboard_input = new INPUT();
+            keyboard_input.type = TYPE.INPUT_KEYBOARD;
+            keyboard_input.ki = new KEYBDINPUT();
+            keyboard_input.ki.wVk = (VirtualKeyCode)key;
+            keyboard_input.ki.wScan = 0;
+            keyboard_input.ki.dwFlags = 0;
+            keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+            return keyboard_input;
+
+        }
+
+        public INPUT CreateKeyUpInput(Keys key)
+        {
+            INPUT keyboard_input = new INPUT();
+            keyboard_input.type = TYPE.INPUT_KEYBOARD;
+            keyboard_input.ki = new KEYBDINPUT();
+            keyboard_input.ki.wVk = (VirtualKeyCode)key;
+            keyboard_input.ki.wScan = 0;
+            keyboard_input.ki.dwFlags = KeyboardFlag.KeyUp;
+            keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+            return keyboard_input;
         }
 
         public INPUT CreateMouseInput(IntPtr wParam, IntPtr lParam)
@@ -220,17 +194,7 @@ namespace NativeInput
 
         }
 
-        public INPUT CreateKeyUpInput(Keys key)
-        {
-            INPUT keyboard_input = new INPUT();
-            keyboard_input.type = TYPE.INPUT_KEYBOARD;
-            keyboard_input.ki = new KEYBDINPUT();
-            keyboard_input.ki.wVk = (VirtualKeyCode)key;
-            keyboard_input.ki.wScan = 0;
-            keyboard_input.ki.dwFlags = 0;
-            keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
-            return keyboard_input;
-        }
+       
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         internal static extern short GetKeyState(int virtualKeyCode);

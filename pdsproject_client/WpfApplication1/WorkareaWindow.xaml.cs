@@ -89,6 +89,7 @@ namespace WpfApplication1
         {
             if (!switchFlag)
             {
+                InterceptEvents.ResetKModifier();
                 InterceptEvents.RestartCapture();
             }
         }

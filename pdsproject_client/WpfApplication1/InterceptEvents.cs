@@ -48,10 +48,6 @@ namespace WpfApplication1
             _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, 0);   
         }
 
-
-        [DllImport("kernel32.dll")]
-        public static extern IntPtr GetModuleHandle(string lpModuleName);
-
         public static void RestartCapture()
         {
             block = false;       
@@ -87,10 +83,30 @@ namespace WpfApplication1
         {
             if (!block)
             {
+
                 if (nCode >= 0)
                 {
+                    /////////////////
+                    List<INPUT> inputToSendArray = inputFactory.CreateKeyboardInput((IntPtr)wParam, (IntPtr)lParam);
+                    //INPUT keyboard_input = new INPUT();
+                    //keyboard_input.type = TYPE.INPUT_KEYBOARD;
+                    //keyboard_input.ki = new KEYBDINPUT();
+                    //keyboard_input.ki.wVk = (VirtualKeyCode)Keys.LControlKey; 
+                    //keyboard_input.ki.dwFlags = 0;
+                    //keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
+                    //inputToSendArray.Add(keyboard_input);
+                    
                     INPUT inputToSend = inputFactory.CreateMouseInput(wParam, lParam);
                     channelMgr.SendInputToSever(inputToSend);
+
+                    //inputToSendArray.Add(inputToSend);
+                    //foreach (INPUT inputToSend2 in inputToSendArray)
+                    //{
+                    //    channelMgr.SendInputToSever(inputToSend2);
+                    //}
+
+
+
                 }
                 return CallNextHookEx(hookID, nCode, wParam, lParam);
             }
@@ -99,11 +115,12 @@ namespace WpfApplication1
 
         public static void ResetKModifier()
         {
-            INPUT inputToSend = inputFactory.CreateKeyUpInput(Keys.Control);
+
+            INPUT inputToSend = inputFactory.CreateKeyUpInput(Keys.LControlKey);
             channelMgr.SendInputToSever(inputToSend);
-            inputToSend = inputFactory.CreateKeyUpInput(Keys.Shift);
+            inputToSend = inputFactory.CreateKeyUpInput(Keys.LShiftKey);
             channelMgr.SendInputToSever(inputToSend);
-            inputToSend = inputFactory.CreateKeyUpInput(Keys.Alt);
+            inputToSend = inputFactory.CreateKeyUpInput(Keys.LMenu);
             channelMgr.SendInputToSever(inputToSend);
         } 
 

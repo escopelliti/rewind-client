@@ -147,6 +147,7 @@ namespace WpfApplication1
             {
                 if (channelMgr.GetCurrentServer() != null)
                 {
+                    InterceptEvents.ResetKModifier();
                     InterceptEvents.RestartCapture();
                 }
                 this.WindowState = WindowState.Minimized;
