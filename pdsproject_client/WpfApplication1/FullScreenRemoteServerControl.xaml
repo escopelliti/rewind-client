@@ -8,6 +8,8 @@
             <Label x:Name="controlPanelShortcutLabel" Canvas.Left="256" Canvas.Top="82" Height="Auto" Width="Auto" FontSize="18"/>
             <Label Content="Cambia computer:" Canvas.Left="10" Canvas.Top="125" Height="Auto" Width="Auto" FontSize="18"/>
             <Label x:Name="switchServerShortcutLabel" Canvas.Left="256" Canvas.Top="126" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label Content="Incolla remoto:" Canvas.Left="10" Canvas.Top="35" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label x:Name="remotePasteShortcutLabel" Canvas.Left="256" Canvas.Top="35" Height="Auto" Width="Auto" FontSize="18"/>
             <Label Content="Sei attivo su:" Canvas.Left="10" Canvas.Top="167" Height="Auto" Width="Auto" FontSize="18"/>
             <Label x:Name="currentServerNameLabel" Canvas.Left="256" Canvas.Top="174" Height="Auto" Width="Auto" FontSize="18"/>
             <Label Content="Computer connessi:" Canvas.Left="10" Canvas.Top="205" Height="Auto" Width="Auto" FontSize="18"/>
@@ -22,7 +24,7 @@
                         <TextBlock Text="{Binding computerName}" FontWeight="Bold" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
-                           
+
             </ListView>
 
 

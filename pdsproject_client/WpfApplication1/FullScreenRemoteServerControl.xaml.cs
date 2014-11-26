@@ -77,6 +77,10 @@ namespace WpfApplication1
                         case Hotkey.OPEN_PANEL_CMD:
                             CommandBindings.Add(new CommandBinding(settings, Open_Panel_Event_Handler));
                             break;
+
+                        case Hotkey.REMOTE_PAST_CMD:
+                            CommandBindings.Add(new CommandBinding(settings, Send_Remote_Past_Request));
+                            break;
                     }
                 }
                 catch (Exception err)
@@ -86,6 +90,7 @@ namespace WpfApplication1
             }
         }
 
+       
         private void InitGUI()
         {
             foreach (Hotkey hotkey in hotkeyList)
@@ -97,6 +102,9 @@ namespace WpfApplication1
                         break;
                     case Hotkey.OPEN_PANEL_CMD:
                         this.controlPanelShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                    case Hotkey.REMOTE_PAST_CMD:
+                        this.remotePasteShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
                         break;
                 }
             }
@@ -117,6 +125,12 @@ namespace WpfApplication1
                 handler(this, eventArgs);
             }
         }
+
+        private void Send_Remote_Past_Request(object sender, RoutedEventArgs e)
+        {
+            mainWin.channelMgr.SendRequest(Protocol.ProtocolUtils.REMOTE_PASTE, string.Empty);
+        }
+
 
         private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)
         {

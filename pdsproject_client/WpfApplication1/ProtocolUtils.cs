@@ -32,6 +32,7 @@ namespace Protocol
         public const string FOCUS_ON = "FOCUS_ON";
         public const string FOCUS_OFF = "FOCUS_OFF";
         public const string TRY_AUTHENTICATE = "TRY_AUTHENTICATE";
+        public const string REMOTE_PASTE = "REMOTE_PASTE";
 
         public const string TMP_IMAGE_FILE = ".\\tmp.jpg";
         public const string TMP_DIR = ".\\tmp\\";

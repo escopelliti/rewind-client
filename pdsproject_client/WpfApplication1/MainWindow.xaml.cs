@@ -298,7 +298,7 @@ namespace WpfApplication1
 
             if(!isWindowOpened)
             {
-                List<Hotkey> l = configurationMgr.ReadConfiguration().hotkeyList;
+                List<Hotkey> hotkeyList = configurationMgr.ReadConfiguration().hotkeyList;
                 if (ie != null)
                 {
                     InterceptEvents.RestartCapture();
@@ -307,7 +307,7 @@ namespace WpfApplication1
                 {
                     ie = new InterceptEvents(channelMgr);
                 }               
-                OpenFullScreenWindow(ie, l, channelMgr);
+                OpenFullScreenWindow(ie, hotkeyList, channelMgr);
             }
         }
 

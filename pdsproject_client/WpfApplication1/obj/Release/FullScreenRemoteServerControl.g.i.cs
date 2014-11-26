@@ -66,13 +66,21 @@ namespace WpfApplication1 {
         
         #line 12 "..\..\FullScreenRemoteServerControl.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-        internal System.Windows.Controls.Label currentServerNameLabel;
+        internal System.Windows.Controls.Label remotePasteShortcutLabel;
         
         #line default
         #line hidden
         
         
         #line 14 "..\..\FullScreenRemoteServerControl.xaml"
+        [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
+        internal System.Windows.Controls.Label currentServerNameLabel;
+        
+        #line default
+        #line hidden
+        
+        
+        #line 16 "..\..\FullScreenRemoteServerControl.xaml"
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         internal System.Windows.Controls.ListView connectedComputerList;
         
@@ -119,9 +127,12 @@ namespace WpfApplication1 {
             this.switchServerShortcutLabel = ((System.Windows.Controls.Label)(target));
             return;
             case 4:
-            this.currentServerNameLabel = ((System.Windows.Controls.Label)(target));
+            this.remotePasteShortcutLabel = ((System.Windows.Controls.Label)(target));
             return;
             case 5:
+            this.currentServerNameLabel = ((System.Windows.Controls.Label)(target));
+            return;
+            case 6:
             this.connectedComputerList = ((System.Windows.Controls.ListView)(target));
             return;
             }
