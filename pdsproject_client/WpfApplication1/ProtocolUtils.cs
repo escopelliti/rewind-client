@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Collections.Concurrent;
 
 namespace Protocol
@@ -46,24 +41,6 @@ namespace Protocol
             public string name;
             public long size;
             public string dir;
-        }
-
-        public static void InitProtocolDictionary()
-        {
-            protocolDictionary[SET_CLIPBOARD_TEXT] = SET_CLIPBOARD_TEXT;
-            protocolDictionary[SET_CLIPBOARD_FILES] = TRANSFER_FILES;
-            protocolDictionary[SET_CLIPBOARD_IMAGE] = TRANSFER_IMAGE;
-            protocolDictionary[TRANSFER_IMAGE] = TMP_IMAGE_FILE;
-
-            protocolDictionary[GET_CLIPBOARD_DIMENSION] = GET_CLIPBOARD_DIMENSION;
-            protocolDictionary[GET_CLIPBOARD_CONTENT] = GET_CLIPBOARD_CONTENT;
-            protocolDictionary[GET_CLIPBOARD_FILES] = GET_CLIPBOARD_FILES;
-            protocolDictionary[GET_CLIPBOARD_IMG] = GET_CLIPBOARD_IMG;
-            protocolDictionary[SET_RESET_FOCUS] = SET_RESET_FOCUS;
-            protocolDictionary[FOCUS_ON] = FOCUS_ON;
-            protocolDictionary[FOCUS_OFF] = FOCUS_OFF;
-        }
-
-
+        }      
     }
 }
