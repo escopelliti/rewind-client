@@ -131,14 +131,12 @@ namespace NativeInput
                         keyboard_input.ki.dwFlags = KeyboardFlag.Unicode;
                         keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
                         inputToSend.Add(keyboard_input);
-
                     }
 
                     // send Keydown using Virtualcode 
                     else
                     {
                         inputToSend.Add(CreateKeyDownInput(key));
-
                     }
                 }
             }
@@ -147,7 +145,6 @@ namespace NativeInput
             if (wParam == (IntPtr)KeyboardMessages.WM_KEYUP)
             {
                 inputToSend.Add(CreateKeyUpInput(key));
-
             }
 
             return inputToSend;
@@ -163,7 +160,6 @@ namespace NativeInput
             keyboard_input.ki.dwFlags = 0;
             keyboard_input.ki.dwExtraInfo = IntPtr.Zero;
             return keyboard_input;
-
         }
 
         public INPUT CreateKeyUpInput(Keys key)
@@ -191,10 +187,7 @@ namespace NativeInput
                 mouse_input.mi.mouseData = mouse_input.mi.mouseData >> 16;
             }
             return mouse_input;
-
         }
-
-       
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         internal static extern short GetKeyState(int virtualKeyCode);
