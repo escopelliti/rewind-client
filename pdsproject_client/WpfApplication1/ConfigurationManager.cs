@@ -12,30 +12,13 @@ namespace WpfApplication1
     {
         public string path { get; set; }
         
-
         public ConfigurationManager() 
         {
             path = @"../../resources/config.json";
             
             if (!File.Exists(path))
             {
-                CreateConfigurationFile();
-            }
-            
-        }
-
-        public void CreateConfigurationFile()
-        {
-            Configuration stdConfiguration = createStdConfiguration();
-            string s = JsonConvert.SerializeObject(stdConfiguration, Formatting.Indented);
-
-            using (FileStream fs = new FileStream(path, FileMode.CreateNew))
-            {
-                using (StreamWriter outfile = new StreamWriter(fs))
-                {
-                    outfile.Write(s);
-                }
-                
+                WriteConfigFile(createStdConfiguration());
             }
         }
 
@@ -51,19 +34,32 @@ namespace WpfApplication1
             return stdConfiguration;
         }
 
-        
         public Configuration ReadConfiguration()
         {
             Configuration config = new Configuration();
             string confRead = string.Empty;
 
-            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
+            try
             {
-                using (StreamReader infile = new StreamReader(fs))
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read))
                 {
-                    confRead = infile.ReadToEnd(); 
+                    using (StreamReader infile = new StreamReader(fs))
+                    {
+                        confRead = infile.ReadToEnd();
+                    }
                 }
             }
+            catch(FileNotFoundException) 
+            {
+                config = createStdConfiguration();
+                WriteConfigFile(config);
+                return config;
+            }
+            catch(Exception)
+            {
+                return createStdConfiguration();
+            }
+
             config = JsonConvert.DeserializeObject<Configuration>(confRead);
             return config;
         }
@@ -73,7 +69,6 @@ namespace WpfApplication1
             Configuration config = new Configuration();
             config = ReadConfiguration();
 
-
             Hotkey toRemove = config.hotkeyList.Find(x => x.Command == newHotkey.Command);
             if (toRemove != null)
             {
@@ -81,12 +76,10 @@ namespace WpfApplication1
             }
 
             config.hotkeyList.Add(newHotkey);
-
-            UpdateConfigFile(config);
-            
+            WriteConfigFile(config);
         }
 
-        public void UpdateConfigFile(Configuration newConfig)
+        public void WriteConfigFile(Configuration newConfig)
         {
             string s = JsonConvert.SerializeObject(newConfig, Formatting.Indented);
 
@@ -94,9 +87,16 @@ namespace WpfApplication1
             {
                 using (StreamWriter outfile = new StreamWriter(fs))
                 {
-                    outfile.Write(s);
-                }
+                    try 
+                    {
+                        outfile.Write(s);
+                    }
 
+                    catch(Exception ex)
+                    {
+                        return;
+                    }
+                }
             }
         }
     }
