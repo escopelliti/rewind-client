@@ -25,15 +25,15 @@ namespace CommunicationLibrary
             {
                 socket.Send(toSend);
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 return;
             }
-            catch (ObjectDisposedException ex)
+            catch (ObjectDisposedException)
             {
                 return;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }

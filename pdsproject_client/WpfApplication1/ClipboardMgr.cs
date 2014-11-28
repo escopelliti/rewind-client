@@ -30,48 +30,7 @@ namespace WpfApplication1
         {            
             currentContent = String.Empty;
             filesToReceive = new List<ProtocolUtils.FileStruct>();
-        }
-
-        //private void ReceiveDataForClipboard(Object source, Object param)
-        //{
-        //    RequestState requestState = (RequestState)param;
-        //    string filename = ProtocolUtils.protocolDictionary[requestState.type];
-        //    using (var stream = new FileStream(filename, FileMode.Append))
-        //    {
-        //        stream.Write(requestState.data, 0, requestState.data.Length);
-        //        stream.Close();
-        //        //chi chiama questa funziona chiamera questa send
-        //        //server.Send(Convert.FromBase64String(requestState.token), requestState.client.GetSocket());
-        //    }
-        //    if (new FileInfo(filename).Length >= Convert.ToInt64(requestState.stdRequest[ProtocolUtils.CONTENT].ToString()))
-        //    {
-
-        //        //CHI CHIAMA QUESTO METODO DEVE FARE QUESTA COSA
-        //        //RequestState value = new RequestState();
-        //        //if (!requestDictionary.TryRemove(requestState.token, out value))
-        //        //{//custom exception would be better than this
-        //        //    throw new Exception("Request not present in the dictionary");
-        //        //}
-
-        //        //TODO : AVOID CONDITIONAL TEST
-        //        if (requestState.type == ProtocolUtils.TRANSFER_IMAGE)
-        //        {
-        //            CreateImageForClipboard(filename);
-        //        }
-        //    }
-        //}
-
-        //private void CreateImageForClipboard(string filename)
-        //{
-        //    Image image = null;
-        //    using (var ms = new MemoryStream(File.ReadAllBytes(filename)))
-        //    {
-        //        image = Image.FromStream(ms);
-        //    }
-        //    File.Delete(filename);
-        //    this.image = image;
-        //    //MainForm.mainForm.Invoke(MainForm.clipboardImageDelegate, image);
-        //}
+        }        
 
         private void MoveByteToFiles()
         {
@@ -84,6 +43,13 @@ namespace WpfApplication1
             {
 
                 byte[] bufferData = this.ChannelMgr.ReceiveData();
+                if (bufferData == null)
+                {
+                    ResetClassValues();
+                    currentContent = "NONE";
+                    return;
+                }
+
                 using (var stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append))
                 {
                     stream.Write(bufferData, 0, bufferData.Length);
@@ -101,8 +67,6 @@ namespace WpfApplication1
                             break;
                         }
                         currentFile = filesToReceive.ElementAt(currentFileNum);
-                        
-
                     }
 
                 }    
@@ -230,8 +194,8 @@ namespace WpfApplication1
                 {
                     case ProtocolUtils.SET_CLIPBOARD_FILES:
                         NewClipboardFileToPaste((JObject)receivedJson[ProtocolUtils.CONTENT]);
-                        MoveByteToFiles();
                         currentContent = ProtocolUtils.SET_CLIPBOARD_FILES;
+                        MoveByteToFiles();                        
                         break;
                     case ProtocolUtils.SET_CLIPBOARD_TEXT:
                         this.Text = (String) receivedJson[ProtocolUtils.CONTENT];
@@ -260,8 +224,13 @@ namespace WpfApplication1
             {                    
                     this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_IMG, String.Empty);
                     byte[] bufferData = this.ChannelMgr.ReceiveData();
-                    System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);                    
-                    offset += bufferData.Length;   
+                    if (bufferData == null)
+                    {
+                        currentContent = "NONE";
+                        return;
+                    }
+                    System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);
+                    offset += bufferData.Length;                    
             }                                    
         }
 
@@ -295,6 +264,8 @@ namespace WpfApplication1
                     break;
                 case ProtocolUtils.SET_CLIPBOARD_IMAGE:
                     SendClipboardImg();
+                    break;
+                default:
                     break;
             }
             
