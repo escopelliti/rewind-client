@@ -91,7 +91,7 @@ namespace Discovery
                 server.GetChannel().ipAddress = address;
                 OnNewComputer(server);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return;
             }
@@ -108,11 +108,6 @@ namespace Discovery
             System.Windows.MessageBox.Show("Operation returned an error code " + error, "Error");
         }
 
-        //
-        // ServiceLost
-        //
-        // Called by DNSServices core as a result of a Browse call
-        //
         public void
         ServiceLost
                     (
@@ -135,11 +130,11 @@ namespace Discovery
                     server.GetChannel().GetDataSocket().Shutdown(System.Net.Sockets.SocketShutdown.Both);
                     server.GetChannel().GetDataSocket().Close();
                 }
-                catch (NullReferenceException nre)
+                catch (NullReferenceException)
                 {
                     //nothing to close;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //nothing to do
                 }
@@ -156,12 +151,6 @@ namespace Discovery
             }
         }
 
-        //
-        // ServiceResolved
-        //
-        // Called by DNSServices core as a result of DNSService.Resolve()
-        // call
-        //
         public void ServiceResolved
                     (
                     DNSSDService sref,
@@ -225,7 +214,7 @@ namespace Discovery
                 m_resolver.Stop();
                 m_resolver = null;
             }
-            catch (Exception stopEx)
+            catch (Exception)
             {
                 //already stopped - nothing to do;
                 return;

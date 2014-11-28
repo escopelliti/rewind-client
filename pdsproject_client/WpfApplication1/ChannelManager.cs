@@ -136,6 +136,10 @@ namespace CommunicationLibrary
         {
             s.ServerID = FindFreeIdServer();
             s.Authenticated = false;
+            if (this.ConnectedServer.Find(x => x.ComputerName == s.ComputerName) != null)
+            {
+                return;
+            }
             if (s.GetChannel() == null) {
                 AssignCmdChannel(s);
             }
