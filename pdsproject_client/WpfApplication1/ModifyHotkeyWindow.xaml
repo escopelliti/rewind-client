@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStartupLocation="CenterScreen"
-        Title="Modifica le shortcut" Height="300" Width="300" ResizeMode="NoResize">
+        Title="Modifica le shortcut" Height="414.926" Width="300" ResizeMode="NoResize">
     <Grid>
 
         <ComboBox Name="SwitchServeComboBox" HorizontalAlignment="Left" Margin="23,92,0,0" VerticalAlignment="Top" Width="120">
@@ -15,12 +15,15 @@
                 </LinearGradientBrush>
             </ComboBox.Background>
         </ComboBox>
-        <ComboBox Name="OpenPanelComboBox" HorizontalAlignment="Left" Margin="23,182,0,0" VerticalAlignment="Top" Width="120"/>
-        <Label Content="Cambia computer" HorizontalAlignment="Left" Margin="14,61,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
-        <Label Content="Shortcut : " HorizontalAlignment="Left" Margin="14,12,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
-        <Label Content="Apri pannello" HorizontalAlignment="Left" Margin="14,153,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
-        <Label Name="OpenPanelKeyLabel" HorizontalAlignment="Left" Margin="178,179,0,0" VerticalAlignment="Top" Width="95" Height="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Cursor="Hand" BorderThickness="1" ToolTip="Tasto della Shortcut"/>
+        <ComboBox Name="OpenPanelComboBox" HorizontalAlignment="Left" Margin="23,165,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox x:Name="RemotePasteComboBox" HorizontalAlignment="Left" Margin="23,240,0,0" VerticalAlignment="Top" Width="120"/>
+        <Label Content="Shortcut" HorizontalAlignment="Left" Margin="14,12,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
+        <Label Content="Cambia computer :" HorizontalAlignment="Left" Margin="14,61,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
         <Label Name="SwitchServerKeyLabel" HorizontalAlignment="Left" Margin="178,89,0,0" VerticalAlignment="Top" Width="95" Height="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Cursor="Hand" BorderThickness="1" ToolTip="Tasto della Shortcut"/>
+        <Label Content="Apri pannello :" HorizontalAlignment="Left" Margin="14,136,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
+        <Label Name="OpenPanelKeyLabel" HorizontalAlignment="Left" Margin="178,162,0,0" VerticalAlignment="Top" Width="95" Height="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Cursor="Hand" BorderThickness="1" ToolTip="Tasto della Shortcut"/>
+        <Label Content="Incolla remoto :" HorizontalAlignment="Left" Margin="14,211,0,0" VerticalAlignment="Top" Width="auto" FontSize="16"/>
+        <Label x:Name="RemotePasteKeyLabel" HorizontalAlignment="Left" Margin="178,237,0,0" VerticalAlignment="Top" Width="95" Height="30" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}" Cursor="Hand" BorderThickness="1" ToolTip="Tasto della Shortcut"/>
 
         <Button Click="ButtonChangeComputerClick" Background="White" ToolTip="Premi per registrare un tasto" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="178,61,0,0">
             <Button.Content>
@@ -29,16 +32,22 @@
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button Click="ButtonOpenPanelClick" Background="White" ToolTip="Premi per registrare un tasto" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="178,153,0,0">
+        <Button Click="ButtonOpenPanelClick" Background="White" ToolTip="Premi per registrare un tasto" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="178,136,0,0">
             <Button.Content>
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Image Source="resources/images/rec.png" Height="17" Width="43" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.719,2.045"/>
                 </StackPanel>
             </Button.Content>
         </Button>
-        <Button Content="Cancel" Click="ButtonCancelClick" HorizontalAlignment="Left" Margin="210,229,0,0" VerticalAlignment="Top" Width="64"/>
-        <Button Content="Ok" Click="ButtonOkClick" HorizontalAlignment="Left" Margin="130,229,0,0" VerticalAlignment="Top" Width="64"/>
+        <Button Click="ButtonRemotePasteClick" Background="White" ToolTip="Premi per registrare un tasto" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="178,211,0,0">
+            <Button.Content>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Image Source="resources/images/rec.png" Height="17" Width="43" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.719,2.045"/>
+                </StackPanel>
+            </Button.Content>
+        </Button>        
+        <Button Content="Cancel" Click="ButtonCancelClick" HorizontalAlignment="Left" Margin="210,325,0,0" VerticalAlignment="Top" Width="64"/>
+        <Button Content="Ok" Click="ButtonOkClick" HorizontalAlignment="Left" Margin="130,325,0,0" VerticalAlignment="Top" Width="64"/>
         <Button Content="Default" Click="ButtonDefaultClick" HorizontalAlignment="Left" Margin="209,18,0,0" VerticalAlignment="Top" Width="64"/>
-
     </Grid>
 </Window>
