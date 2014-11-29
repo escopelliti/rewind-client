@@ -9,6 +9,8 @@ using System.Net.Sockets;
 using Protocol;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Threading;
+using System.Net;
 
 namespace CommunicationLibrary
 {
@@ -27,6 +29,79 @@ namespace CommunicationLibrary
             tokenGen = new TokenGenerator();
         }
 
+        public void OpenServerSocket()
+        {
+            ServerCommunicationManager scm = new ServerCommunicationManager();
+            Socket serverSocket = scm.CreateSocket(ProtocolType.Tcp);
+            serverSocket = scm.Listen(Dns.GetHostName(), 40000, serverSocket);
+            if (serverSocket == null)
+            {
+                //Non siamo riusciti ad aprire una serversocket sul client forse sarebbe bene riavviare l'applicazione;
+            }
+            else
+            {
+                while (true)
+                {
+                    Socket clientSocket = scm.Accept(serverSocket);
+                    Thread checkThread = new Thread(() => IsDstReacheable(clientSocket));
+                    checkThread.Start();
+                }
+            }
+        }
+
+        private void IsDstReacheable(Socket clientSocket)
+        {
+            byte[] byteRead = new byte[4];
+            int timeToWait = 10;
+            clientSocket.ReceiveTimeout = 10000;
+            bool channelIsOpened = true;
+
+            while (channelIsOpened)
+            {
+                try
+                {
+                    int byteReadNum = ccm.Receive(byteRead, clientSocket);
+                    if (byteReadNum > 0)
+                    {
+                        timeToWait = BitConverter.ToInt32(byteRead, 0);
+                        clientSocket.ReceiveTimeout = timeToWait;
+                        clientSocket.Send(new byte[1]);
+                        Thread.Sleep(10000);
+                    }
+
+                    else
+                    {
+                        //destination unreacheable
+                        CloseChannel(clientSocket);
+                        channelIsOpened = false;
+                    }
+                }
+                catch (Exception)
+                {
+                    //destination unreacheable
+                    CloseChannel(clientSocket);
+                    channelIsOpened = false;
+                }
+            }
+        }
+
+        private void CloseChannel(Socket clientSocket)
+        {
+            ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+            Socket dataSocket = currentServer.GetChannel().GetDataSocket();
+            if (dataSocket != null)
+            {
+                ccm.Shutdown(dataSocket, SocketShutdown.Both);
+            }
+            ccm.Shutdown(clientSocket, SocketShutdown.Both);
+            ccm.Close(clientSocket);
+            if (currentServer != null)
+            {
+                ConnectedServer.Remove(currentServer);
+            }
+
+        }
+        
         public void OnLostComputerConnection(object sender, object param)
         {
             Server server = (Server)param;
@@ -77,23 +152,41 @@ namespace CommunicationLibrary
             if (ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket()) <= 0)
             {
                 DeleteServer(currentServer, SocketShutdown.Both);
-                currentServer = null;
                 foreach (Window win in System.Windows.Application.Current.Windows)
                 {
                     if (win is FullScreenRemoteServerControl)
                     {
+                        ((FullScreenRemoteServerControl)win).MainWin.OnLostComputerConnection(this, currentServer);
                         ((FullScreenRemoteServerControl)win).Close();
                     }
                 }
+                currentServer = null;
                 InterceptEvents.StopCapture();
             }
         }
 
         public void AssignCmdChannel(Server s)
         {
+            int retry = 3;
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            cmdSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().CmdPort, cmdSocket);            
-            s.GetChannel().SetCmdSocket(cmdSocket);
+            while (retry > 0)
+            {
+                cmdSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().CmdPort, cmdSocket);
+                if (cmdSocket == null)
+                {
+                    retry--;
+                }
+                else
+                {
+                    s.GetChannel().SetCmdSocket(cmdSocket);
+                    break;
+                }
+            }
+
+            if (cmdSocket == null) 
+            {
+                throw new NullReferenceException();
+            }
         }
 
         public void AssignDataChannel(Server s)
@@ -141,7 +234,15 @@ namespace CommunicationLibrary
                 return;
             }
             if (s.GetChannel() == null) {
-                AssignCmdChannel(s);
+                try
+                {
+                    AssignCmdChannel(s);
+                }
+                catch (Exception) 
+                {
+                    System.Windows.MessageBox.Show("Il computer sembra non rispondere!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
             }
             ConnectedServer.Add(s);
         }
