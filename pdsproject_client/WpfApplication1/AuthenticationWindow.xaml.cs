@@ -30,6 +30,7 @@ namespace WpfApplication1
         public AuthenticationWindow(Server toAuthenticate, ChannelManager channelMgr, MainWindow mainWin)
         {
             InitializeComponent();
+            FocusManager.SetFocusedElement(container, pswBox);
             this.toAuthenticate = toAuthenticate;
             this.channelMgr = channelMgr;
             this.mainWin = mainWin;
