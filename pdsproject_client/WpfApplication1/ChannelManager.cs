@@ -9,6 +9,8 @@ using System.Net.Sockets;
 using Protocol;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Threading;
+using System.Net;
 
 namespace CommunicationLibrary
 {
@@ -25,8 +27,80 @@ namespace CommunicationLibrary
             ccm = new ClientCommunicationManager();
             ConnectedServer = new List<Server>();
             tokenGen = new TokenGenerator();
+            Thread ServerSocket = new Thread(() => OpenServerSocket());
+            ServerSocket.Start();
+
         }
 
+        private void OpenServerSocket()
+        {
+            ServerCommunicationManager scm = new ServerCommunicationManager();
+            Socket serverSocket = scm.CreateSocket(ProtocolType.Tcp);
+            serverSocket = scm.Listen(Dns.GetHostName(), 40000, serverSocket);
+            if (serverSocket == null)
+            {
+                //Non siamo riusciti ad aprire una serversocket sul client forse sarebbe bene riavviare l'applicazione;
+            }
+            else
+            {
+                while (true)
+                {
+                    Socket clientSocket = scm.Accept(serverSocket);
+                    Thread checkThread = new Thread(() => IsDstReacheable(clientSocket));
+                    checkThread.Start();
+                }
+            }
+        }
+
+        private void IsDstReacheable(Socket clientSocket)
+        {
+            byte[] byteRead = new byte[1];
+            int timeToWait = 10;
+            clientSocket.ReceiveTimeout = timeToWait*10000;
+            bool channelIsOpened = true;
+
+            while (channelIsOpened)
+            {
+                try
+                {
+                    int byteReadNum = ccm.Receive(byteRead, clientSocket);
+                    if (byteReadNum > 0)
+                    {
+                        timeToWait = Convert.ToInt32(byteRead);
+                        clientSocket.ReceiveTimeout = timeToWait;
+                        clientSocket.Send(new byte[1]);
+                    }
+
+                    else
+                    {
+                        CloseChannel();
+                        ccm.Shutdown(clientSocket, SocketShutdown.Both);
+                        ccm.Close(clientSocket);
+                        channelIsOpened = false;
+                    }
+                }
+                catch (Exception)
+                {
+                    //destination unreacheable
+                    CloseChannel();
+                    ccm.Shutdown(clientSocket, SocketShutdown.Both);
+                    ccm.Close(clientSocket);
+                    channelIsOpened = false;
+                }
+
+            }
+        }
+
+        private void CloseChannel()
+        {
+            ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+            Socket dataSocket = currentServer.GetChannel().GetDataSocket();
+            if (dataSocket != null)
+            {
+                ccm.Shutdown(dataSocket, SocketShutdown.Both);
+            }
+
+        }
         public void OnLostComputerConnection(object sender, object param)
         {
             Server server = (Server)param;
@@ -91,9 +165,26 @@ namespace CommunicationLibrary
 
         public void AssignCmdChannel(Server s)
         {
+            int retry = 3;
             Socket cmdSocket = ccm.CreateSocket(ProtocolType.Tcp);
-            cmdSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().CmdPort, cmdSocket);            
-            s.GetChannel().SetCmdSocket(cmdSocket);
+            while (retry > 0)
+            {
+                cmdSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().CmdPort, cmdSocket);
+                if (cmdSocket == null)
+                {
+                    retry--;
+                }
+                else
+                {
+                    s.GetChannel().SetCmdSocket(cmdSocket);
+                    break;
+                }
+            }
+
+            if (cmdSocket == null) 
+            {
+                throw new NullReferenceException();
+            }
         }
 
         public void AssignDataChannel(Server s)
@@ -141,7 +232,15 @@ namespace CommunicationLibrary
                 return;
             }
             if (s.GetChannel() == null) {
-                AssignCmdChannel(s);
+                try
+                {
+                    AssignCmdChannel(s);
+                }
+                catch (Exception) 
+                {
+                    System.Windows.MessageBox.Show("Il computer sembra non rispondere!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
             }
             ConnectedServer.Add(s);
         }

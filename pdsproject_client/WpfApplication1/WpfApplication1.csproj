@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="ProtocolUtils.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="ServerCommunicationManager.cs" />
     <Compile Include="ServerEventArgs.cs" />
     <Compile Include="ServiceDiscovery.cs" />
     <Compile Include="StandardRequest.cs" />
