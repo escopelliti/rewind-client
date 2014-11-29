@@ -278,10 +278,10 @@ namespace WpfApplication1
             foreach (ProtocolUtils.FileStruct fileStruct in filesToReceive)
             {
                 string currenFilePath = ProtocolUtils.TMP_DIR + fileStruct.dir + "\\" + fileStruct.name;
-                byte[] bytesFileToSend = new byte[1024];
+                byte[] bytesFileToSend = new byte[4096];
                 if (File.Exists(currenFilePath))
                 {
-                    byte[] bytesFile = new byte[1024 - TokenGenerator.TOKEN_DIM];
+                    byte[] bytesFile = new byte[4096 - TokenGenerator.TOKEN_DIM];
                     using (var stream = new FileStream(currenFilePath, FileMode.Open))
                     {
                         int bytesRead;
