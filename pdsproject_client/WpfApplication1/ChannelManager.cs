@@ -87,18 +87,19 @@ namespace CommunicationLibrary
 
         private void CloseChannel(Socket clientSocket)
         {
-            ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
-            Socket dataSocket = currentServer.GetChannel().GetDataSocket();
-            if (dataSocket != null)
+            if (currentServer != null)
             {
-                ccm.Shutdown(dataSocket, SocketShutdown.Both);
+                ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+                Socket dataSocket = currentServer.GetChannel().GetDataSocket();
+                if (dataSocket != null)
+                {
+                    ccm.Shutdown(dataSocket, SocketShutdown.Both);
+                }
+
+                ConnectedServer.Remove(currentServer);
             }
             ccm.Shutdown(clientSocket, SocketShutdown.Both);
             ccm.Close(clientSocket);
-            if (currentServer != null)
-            {
-                ConnectedServer.Remove(currentServer);
-            }
 
         }
         
