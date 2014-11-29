@@ -263,9 +263,14 @@ namespace WpfApplication1
 
             if (currentServer == null)
             {
+
                 Thread startConnection = new Thread(() => StartNewConnection(s.ServerID));
                 startConnection.IsBackground = true;
                 startConnection.Start();
+                
+                Thread ServerSocket = new Thread(() => channelMgr.OpenServerSocket());
+                ServerSocket.Start();
+
             }
             else
             {
@@ -315,6 +320,7 @@ namespace WpfApplication1
 
         private void StartNewConnection(int p)
         {
+
             channelMgr.StartNewConnection(FocusedComputerItem.ComputerID);
             this.Dispatcher.Invoke(new Action(() => WindowState = WindowState.Minimized));
         }

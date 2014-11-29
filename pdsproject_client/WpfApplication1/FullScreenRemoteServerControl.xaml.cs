@@ -27,7 +27,7 @@ namespace WpfApplication1
         public List<Hotkey> hotkeyList;
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
-        private MainWindow mainWin;
+        public MainWindow MainWin{get;set;}
 
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<String> computerList, MainWindow mainWin)
         {
@@ -37,7 +37,7 @@ namespace WpfApplication1
             this.computerList = new ObservableCollection<String>(computerList);
             this.interceptEvent = ie;
             this.hotkeyList = hotkeyList;
-            this.mainWin = mainWin;
+            this.MainWin = mainWin;
             InitializeComponent();
             InitGUI();
             RegisterHotkey();
@@ -71,7 +71,7 @@ namespace WpfApplication1
                         case Hotkey.SWITCH_SERVER_CMD:
                             CommandBindings.Add(new CommandBinding(settings, Switch_Server_Event_Handler));
                             // Istanzio il delegato dell'evento
-                            SwitchServeHandler = new SwitchServerEventHandler(mainWin.OnSwitch);
+                            SwitchServeHandler = new SwitchServerEventHandler(MainWin.OnSwitch);
                             break;
 
                         case Hotkey.OPEN_PANEL_CMD:
@@ -128,7 +128,7 @@ namespace WpfApplication1
 
         private void Send_Remote_Past_Request(object sender, RoutedEventArgs e)
         {
-            mainWin.channelMgr.SendRequest(Protocol.ProtocolUtils.REMOTE_PASTE, string.Empty);
+            MainWin.channelMgr.SendRequest(Protocol.ProtocolUtils.REMOTE_PASTE, string.Empty);
         }
 
 

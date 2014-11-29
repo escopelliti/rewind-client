@@ -27,12 +27,9 @@ namespace CommunicationLibrary
             ccm = new ClientCommunicationManager();
             ConnectedServer = new List<Server>();
             tokenGen = new TokenGenerator();
-            Thread ServerSocket = new Thread(() => OpenServerSocket());
-            ServerSocket.Start();
-
         }
 
-        private void OpenServerSocket()
+        public void OpenServerSocket()
         {
             ServerCommunicationManager scm = new ServerCommunicationManager();
             Socket serverSocket = scm.CreateSocket(ProtocolType.Tcp);
@@ -54,9 +51,9 @@ namespace CommunicationLibrary
 
         private void IsDstReacheable(Socket clientSocket)
         {
-            byte[] byteRead = new byte[1];
+            byte[] byteRead = new byte[4];
             int timeToWait = 10;
-            clientSocket.ReceiveTimeout = timeToWait*10000;
+            clientSocket.ReceiveTimeout = 10000;
             bool channelIsOpened = true;
 
             while (channelIsOpened)
@@ -66,32 +63,29 @@ namespace CommunicationLibrary
                     int byteReadNum = ccm.Receive(byteRead, clientSocket);
                     if (byteReadNum > 0)
                     {
-                        timeToWait = Convert.ToInt32(byteRead);
+                        timeToWait = BitConverter.ToInt32(byteRead, 0);
                         clientSocket.ReceiveTimeout = timeToWait;
                         clientSocket.Send(new byte[1]);
+                        Thread.Sleep(10000);
                     }
 
                     else
                     {
-                        CloseChannel();
-                        ccm.Shutdown(clientSocket, SocketShutdown.Both);
-                        ccm.Close(clientSocket);
+                        //destination unreacheable
+                        CloseChannel(clientSocket);
                         channelIsOpened = false;
                     }
                 }
                 catch (Exception)
                 {
                     //destination unreacheable
-                    CloseChannel();
-                    ccm.Shutdown(clientSocket, SocketShutdown.Both);
-                    ccm.Close(clientSocket);
+                    CloseChannel(clientSocket);
                     channelIsOpened = false;
                 }
-
             }
         }
 
-        private void CloseChannel()
+        private void CloseChannel(Socket clientSocket)
         {
             ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
             Socket dataSocket = currentServer.GetChannel().GetDataSocket();
@@ -99,8 +93,15 @@ namespace CommunicationLibrary
             {
                 ccm.Shutdown(dataSocket, SocketShutdown.Both);
             }
+            ccm.Shutdown(clientSocket, SocketShutdown.Both);
+            ccm.Close(clientSocket);
+            if (currentServer != null)
+            {
+                ConnectedServer.Remove(currentServer);
+            }
 
         }
+        
         public void OnLostComputerConnection(object sender, object param)
         {
             Server server = (Server)param;
@@ -151,14 +152,15 @@ namespace CommunicationLibrary
             if (ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket()) <= 0)
             {
                 DeleteServer(currentServer, SocketShutdown.Both);
-                currentServer = null;
                 foreach (Window win in System.Windows.Application.Current.Windows)
                 {
                     if (win is FullScreenRemoteServerControl)
                     {
+                        ((FullScreenRemoteServerControl)win).MainWin.OnLostComputerConnection(this, currentServer);
                         ((FullScreenRemoteServerControl)win).Close();
                     }
                 }
+                currentServer = null;
                 InterceptEvents.StopCapture();
             }
         }
