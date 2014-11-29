@@ -142,7 +142,7 @@ namespace CommunicationLibrary
 
         public void ReceiveAck()
         {
-            ccm.Receive(new byte[16], currentServer.GetChannel().GetCmdSocket());
+            ccm.Receive(new byte[1], currentServer.GetChannel().GetCmdSocket());
         }
 
         public void SendInputToSever(NativeInput.INPUT inputToSend)
