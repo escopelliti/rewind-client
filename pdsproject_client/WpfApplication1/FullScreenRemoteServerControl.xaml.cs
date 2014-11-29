@@ -83,7 +83,7 @@ namespace WpfApplication1
                             break;
                     }
                 }
-                catch (Exception err)
+                catch (Exception)
                 {
                     //handle exception error
                 }
@@ -161,8 +161,10 @@ namespace WpfApplication1
             }));
         }
 
-        public void UpdateCurrentServer(Server s)
+        public void UpdateCurrentServer(Object sender, Object ea)
         {
+            ServerEventArgs sea = (ServerEventArgs)ea;
+            Server s = sea.Server;
             currentServer = s;
             this.currentServerNameLabel.Dispatcher.Invoke(new Action(() =>
             {
@@ -170,6 +172,6 @@ namespace WpfApplication1
 
             }));
 
-        }
+        }      
     }
 }

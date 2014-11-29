@@ -55,7 +55,7 @@ namespace WpfApplication1
             {
                 auth = authMgr.Authenticate(toAuthenticate, hashString);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 mainWin.ExitFromApplication();
             }

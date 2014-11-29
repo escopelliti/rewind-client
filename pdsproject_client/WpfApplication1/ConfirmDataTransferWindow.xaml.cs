@@ -26,7 +26,6 @@ namespace WpfApplication1
         private ChannelManager channelMgr;
         private int computerID;
         private ClipboardMgr clipboardMgr;
-        private ProgressBar progress;
 
         public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, SwitchOperator switchOp, ChannelManager channelMgr)
         {
@@ -39,49 +38,40 @@ namespace WpfApplication1
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
-
-            Thread startConnection = new Thread(() => StartProgressBar());
+            Thread startConnection = new Thread(() => Switch());
+            startConnection.SetApartmentState(ApartmentState.STA);
             startConnection.IsBackground = true;
             startConnection.Start();
-            
+            this.Close();
+        }
+
+        private void Switch()
+        {            
             clipboardMgr.ReceiveClipboard();
             switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);
-            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));            
+            switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             clipboardMgr.SendClipboard();
-
-            //Se non funziona così...
-            progress.Close();
-            // ...prova...
-            //CloseProgressBar();
-            
+            CloseProgressBar();
+            channelMgr.ResetTokenGen();                         
         }
 
         private void CloseProgressBar()
         {
-            foreach (Window win in System.Windows.Application.Current.Windows)
+            switchOp.mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
             {
-                if (win is ProgressBar)
-                {
-                    if (win.IsVisible)
-                    {
-                        ((ProgressBar)win).Close();
-                        break;
-                    }
-                }
-            }
-        }
-
-        private void StartProgressBar()
-        {
-            this.progress = new ProgressBar();
-            progress.Show();
-        }
+                switchOp.mainWin.fullScreenWin.clipboardTransferLabel.Visibility = System.Windows.Visibility.Hidden;
+            }));
+            switchOp.mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                switchOp.mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Hidden;
+            }));
+        }        
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
+            CloseProgressBar();
             this.Close();
             switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();

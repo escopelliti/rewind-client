@@ -101,9 +101,6 @@
     <Compile Include="ModifyHotkeyWindow.xaml.cs">
       <DependentUpon>ModifyHotkeyWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ProgressBar.xaml.cs">
-      <DependentUpon>ProgressBar.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ProtocolUtils.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerEventArgs.cs" />
@@ -151,10 +148,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ModifyHotkeyWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ProgressBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

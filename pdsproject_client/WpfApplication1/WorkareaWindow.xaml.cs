@@ -57,22 +57,22 @@ namespace WpfApplication1
                     if (ci == null)
                         return;                    
                     SwitchOperator switchOp = new SwitchOperator(mainWin);
-                    Thread switchThread = new Thread(() => switchOp.SwitchOperations(ci.ComputerID, channelMgr));
+                    Thread switchThread = new Thread(() => switchOp.ExecSwitch(ci.ComputerID, channelMgr));
                     switchThread.SetApartmentState(ApartmentState.STA);
                     switchThread.IsBackground = true;
                     switchThread.Start();
                     switchFlag = true;
                     this.Close();
                 }
-                catch (InvalidOperationException ex)
+                catch (InvalidOperationException)
                 {
                     return;
                 }
-                catch (ArgumentOutOfRangeException ex)
+                catch (ArgumentOutOfRangeException)
                 {
                     return;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return;
                 }
@@ -101,21 +101,21 @@ namespace WpfApplication1
                 try
                 {
                     SwitchOperator switchOp = new SwitchOperator(mainWin);
-                    Thread switchThread = new Thread(() => switchOp.SwitchOperations(focusedComputerItem.ComputerID, channelMgr));
+                    Thread switchThread = new Thread(() => switchOp.ExecSwitch(focusedComputerItem.ComputerID, channelMgr));
                     switchThread.SetApartmentState(ApartmentState.STA);
                     switchThread.IsBackground = true;                    
                     switchThread.Start();
                     switchFlag = true;
                 }
-                catch (InvalidOperationException ex)
+                catch (InvalidOperationException)
                 {
                     return;
                 }
-                catch (ArgumentOutOfRangeException ex)
+                catch (ArgumentOutOfRangeException)
                 {
                     return;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     return;
                 }

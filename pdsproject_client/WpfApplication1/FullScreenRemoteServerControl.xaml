@@ -26,7 +26,8 @@
                 </ListView.ItemTemplate>
 
             </ListView>
-
+            <Label x:Name="clipboardTransferLabel" Visibility="Hidden" Content="Trasferimento del contenuto della clipboard" Canvas.Left="195" Canvas.Top="417" Height="Auto" Width="Auto" FontSize="18"/>
+            <ProgressBar x:Name="clipboardTransferProgressBar" Visibility="Hidden" HorizontalAlignment="Center" Canvas.Left="195" Canvas.Top="456" Height="25" VerticalAlignment="Center" Width="358" IsIndeterminate="True"/>
 
         </Canvas>
 

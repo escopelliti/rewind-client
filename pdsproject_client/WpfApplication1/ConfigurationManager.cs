@@ -92,7 +92,7 @@ namespace WpfApplication1
                         outfile.Write(s);
                     }
 
-                    catch(Exception ex)
+                    catch(Exception)
                     {
                         return;
                     }

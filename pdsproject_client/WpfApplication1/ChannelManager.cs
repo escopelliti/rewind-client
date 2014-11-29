@@ -245,7 +245,7 @@ namespace CommunicationLibrary
             {
                 AssignDataChannel(newServer);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return;
             }            

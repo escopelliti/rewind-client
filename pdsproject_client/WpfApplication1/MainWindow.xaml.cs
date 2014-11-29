@@ -109,6 +109,8 @@ namespace WpfApplication1
             List<String> computerStringList = new List<string>();
             foreach (Server s in channelMgr.ConnectedServer)
             {
+                if (!s.Authenticated)
+                    continue;
                 computerStringList.Add(s.ComputerName);
             }
             fullScreenWin = new FullScreenRemoteServerControl(ie, hotkeyList, channelMgr.GetCurrentServer(), computerStringList, this);
@@ -275,7 +277,7 @@ namespace WpfApplication1
                 }
                 //verifico che il computer su cui voglio attivare il focus è connesso
                 SwitchOperator switchOp = new SwitchOperator(this);
-                Thread switchThread = new Thread(() => switchOp.SwitchOperations(FocusedComputerItem.ComputerID, channelMgr));
+                Thread switchThread = new Thread(() => switchOp.ExecSwitch(FocusedComputerItem.ComputerID, channelMgr));
                 switchThread.SetApartmentState(ApartmentState.STA);
                 switchThread.IsBackground = true;
                 switchThread.Start();
@@ -289,7 +291,7 @@ namespace WpfApplication1
                 {
                     if (win.IsVisible)
                     {
-                        ((FullScreenRemoteServerControl)win).UpdateCurrentServer(s);
+                        ((FullScreenRemoteServerControl)win).UpdateCurrentServer(this, new ServerEventArgs(s));
                         isWindowOpened = true;
                         break;
                     }
@@ -328,7 +330,7 @@ namespace WpfApplication1
                     channelMgr.AssignCmdChannel(s);
                     channelMgr.AddServer(s);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     System.Windows.MessageBox.Show("Il computer sembra non rispondere!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
                     this.computerList.Dispatcher.Invoke(new Action(() =>
@@ -419,8 +421,8 @@ namespace WpfApplication1
         }    
     
         public void Forbidden(Server s)
-        {
- 	        ComputerItem ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();
+        {            
+            ComputerItem ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {
                 int index = this.computerItemList.IndexOf(ci);

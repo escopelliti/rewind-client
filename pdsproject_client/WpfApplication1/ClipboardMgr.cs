@@ -130,9 +130,9 @@ namespace WpfApplication1
                 files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
                 filesToReceive.AddRange(files);
             }
-            catch (NullReferenceException ex)
+            catch (NullReferenceException)
             {
-                ;
+                //nothing to do
             }
             foreach (var prop in contentJson)
             {
@@ -167,9 +167,9 @@ namespace WpfApplication1
             {
                 files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
                 filesToReceive.AddRange(files);
-            } catch (NullReferenceException ex)
+            } catch (NullReferenceException)
             {
-                ;
+                //nothing to do
             }
 
             foreach (var prop in contentJson)

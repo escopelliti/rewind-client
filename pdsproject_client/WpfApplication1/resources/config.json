@@ -9,6 +9,11 @@
       "KModifier": 2,
       "Key": 6,
       "Command": "OPEN_PANEL"
+    },
+    {
+      "KModifier": 2,
+      "Key": 59,
+      "Command": "REMOTE_PAST"
     }
   ]
 }

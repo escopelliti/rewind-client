@@ -46,11 +46,11 @@ namespace CommunicationLibrary
             {
                 bytesRead = socket.Receive(bytes);
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 return 0;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return 0;
             }
@@ -63,11 +63,11 @@ namespace CommunicationLibrary
             {
                 socket.Shutdown(shutdownMode);
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 return;
             }
-            catch (ObjectDisposedException ex)
+            catch (ObjectDisposedException)
             {
                 return;
             }
@@ -79,7 +79,7 @@ namespace CommunicationLibrary
             {
                 socket.Close();
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 return;
             }

@@ -13,17 +13,18 @@ namespace WpfApplication1
         public event SetNewServerOnGUIEventHandler setNewServerOnGUIHandler;
         public delegate void ResetServerStateOnGUIEventHandler(Object sender, Object param);
         public event ResetServerStateOnGUIEventHandler resetServerStateOnGUIHandler;
-        private MainWindow mainWin;
+        public MainWindow mainWin { get; set; }
 
         public SwitchOperator(MainWindow mainWin)
         {
             this.mainWin = mainWin;
             this.resetServerStateOnGUIHandler += mainWin.OnEndConnectionToServer;
             this.setNewServerOnGUIHandler += mainWin.OnSetNewServer;
+            this.setNewServerOnGUIHandler += mainWin.fullScreenWin.UpdateCurrentServer;            
             this.setNewServerOnGUIHandler += InterceptEvents.OnSetNewServer;
         }
 
-        public void SwitchOperations(int computerID,ChannelManager channelMgr)
+        public void ExecSwitch(int computerID,ChannelManager channelMgr)
         {
 
             ClipboardMgr clipboardMgr = new ClipboardMgr();
@@ -33,17 +34,16 @@ namespace WpfApplication1
             {
                 dimensionOverflow = clipboardMgr.GetClipboardDimensionOverFlow();
             }
-            catch (Exception ex) 
+            catch (Exception) 
             {
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();
                 channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.ResetTokenGen();
-                //mainWin.SetServerActive(mainWin.FocusedComputerItem);         
                 return;
             }
-
+            StartProgressBar();
             if (!dimensionOverflow)
             {
                 mainWin.Dispatcher.Invoke(new Action(() => mainWin.Close())); 
@@ -53,16 +53,41 @@ namespace WpfApplication1
                 channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));                
                 clipboardMgr.SendClipboard();
-                channelMgr.ResetTokenGen();                         
+                CloseProgressBar();
+                channelMgr.ResetTokenGen();                     
             }
             else
             {
                 mainWin.Dispatcher.Invoke(new Action(() => mainWin.Close()));
                 ConfirmDataTransferWindow confirmWin = new ConfirmDataTransferWindow(computerID, clipboardMgr, this, channelMgr);
-                confirmWin.Show();
+                confirmWin.Show();                
                 System.Windows.Threading.Dispatcher.Run();
             }
-            //mainWin.SetServerActive(mainWin.FocusedComputerItem);
+            
+        }
+
+        private void CloseProgressBar()
+        {
+            mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                mainWin.fullScreenWin.clipboardTransferLabel.Visibility = System.Windows.Visibility.Hidden;
+            }));
+            mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Hidden;
+            }));
+        }
+
+        private void StartProgressBar()
+        {
+            mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                mainWin.fullScreenWin.clipboardTransferLabel.Visibility = System.Windows.Visibility.Visible;
+            }));
+            mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            {
+                mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Visible;
+            }));
         }
 
         public void OnSetNewServer(ServerEventArgs sea)
