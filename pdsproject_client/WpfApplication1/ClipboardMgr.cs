@@ -91,37 +91,6 @@ namespace WpfApplication1
 
         }
 
-
-        //private void NewClipboardFileToPaste(Object source, Object param)
-        //{
-        //    //leggere il JSON e preparare il lavoro per i file e le cartelle che arrivano
-        //    DeleteFileDirContent(ProtocolUtils.TMP_DIR);
-        //    RequestState requestState = (RequestState)param;
-
-        //    JObject contentJson = (JObject)requestState.stdRequest[ProtocolUtils.CONTENT];
-
-        //    List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
-        //    files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
-        //    filesToReceive.AddRange(files);
-        //    foreach (ProtocolUtils.FileStruct fileStruct in files)
-        //    {
-        //        fileDropList.Add(ProtocolUtils.TMP_DIR + fileStruct.name);
-        //    }
-
-        //    foreach (var prop in contentJson)
-        //    {
-        //        if (prop.Key != ProtocolUtils.FILE)
-        //        {
-        //            Directory.CreateDirectory(ProtocolUtils.TMP_DIR + prop.Key);
-        //            CreateClipboardContent((JObject)contentJson[prop.Key], prop.Key);
-        //            fileDropList.Add(ProtocolUtils.TMP_DIR + prop.Key);
-        //        }
-        //    }
-
-
-        //}
-
-        //
         private void CreateClipboardContent(JObject contentJson, string dir)
         {
             string path = dir;
@@ -143,19 +112,6 @@ namespace WpfApplication1
                 }
             }
         }
-
-
-        //private void NewClipboardDataToPaste(Object source, Object param)
-        //{
-        //    //XDocument xRequest = ((Request)param).xRequest;
-        //    JObject stdRequest = ((RequestState)param).stdRequest;
-        //    MainForm.mainForm.Invoke(MainForm.clipboardTextDelegate, stdRequest[ProtocolUtils.CONTENT].ToString());
-        //    RequestState value = new RequestState();
-        //    if (!requestDictionary.TryRemove(((RequestState)param).token, out value))
-        //    {//custom exception would be better than this
-        //        throw new Exception("Request not present in the dictionary");
-        //    }
-        //}
 
         private void NewClipboardFileToPaste(JObject contentJson)
         {
@@ -206,6 +162,13 @@ namespace WpfApplication1
                         currentContent = ProtocolUtils.SET_CLIPBOARD_IMAGE;
                         NewClipboardDataToPaste();
                         break;
+                    case ProtocolUtils.SET_CLIPBOARD_AUDIO:
+                        this.Data = new byte[(int)receivedJson[ProtocolUtils.CONTENT]];
+                        currentContent = ProtocolUtils.SET_CLIPBOARD_AUDIO;
+                        NewClipboardDataToPaste();
+                        break;
+                    default:
+                        break;
                 }
 
             }
@@ -213,24 +176,18 @@ namespace WpfApplication1
 
         private void NewClipboardDataToPaste()
         {           
-            string filename = String.Empty;
-            if (currentContent == ProtocolUtils.SET_CLIPBOARD_IMAGE)
-            {
-                filename = ProtocolUtils.TMP_IMAGE_FILE;
-                //chiedo di mandarmi l'immagine e ricevo i dati;
-            }
             int offset = 0;
             while (offset < Data.Length)
             {                    
-                    this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_IMG, String.Empty);
-                    byte[] bufferData = this.ChannelMgr.ReceiveData();
-                    if (bufferData == null)
-                    {
-                        currentContent = "NONE";
-                        return;
-                    }
-                    System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);
-                    offset += bufferData.Length;                    
+                this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_DATA, String.Empty);
+                byte[] bufferData = this.ChannelMgr.ReceiveData();
+                if (bufferData == null)
+                {
+                    currentContent = "NONE";
+                    return;
+                }
+                System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);
+                offset += bufferData.Length;                    
             }                                    
         }
 
@@ -263,7 +220,10 @@ namespace WpfApplication1
                     SendClipboardText();
                     break;
                 case ProtocolUtils.SET_CLIPBOARD_IMAGE:
-                    SendClipboardImg();
+                    SendClipboardData(Protocol.ProtocolUtils.SET_CLIPBOARD_IMAGE);
+                    break;
+                case ProtocolUtils.SET_CLIPBOARD_AUDIO:
+                    SendClipboardData(Protocol.ProtocolUtils.SET_CLIPBOARD_AUDIO);
                     break;
                 default:
                     break;
@@ -271,11 +231,11 @@ namespace WpfApplication1
             
         }
 
-        private void SendClipboardImg()
+        private void SendClipboardData(String requestType)
         {
             this.ChannelMgr.AssignNewToken();
             StandardRequest sr = new StandardRequest();
-            sr.type = Protocol.ProtocolUtils.SET_CLIPBOARD_IMAGE;
+            sr.type = requestType;
             sr.content = Data.Length;
             string toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
@@ -342,7 +302,7 @@ namespace WpfApplication1
 
         public void ResetClassValues()
         {
-            this.currentContent = null;
+            this.currentContent = "NONE";
             this.receivedJson = null;
             this.Data = null;
             this.filesToReceive.Clear();

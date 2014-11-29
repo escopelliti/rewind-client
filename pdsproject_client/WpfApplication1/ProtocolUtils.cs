@@ -17,12 +17,15 @@ namespace Protocol
         public const string SET_CLIPBOARD_TEXT = "CLIPBOARD_TEXT";
         public const string SET_CLIPBOARD_FILES = "CLIPBOARD_FILES";
         public const string SET_CLIPBOARD_IMAGE = "CLIPBOARD_IMAGE";
+        public const string SET_CLIPBOARD_AUDIO = "CLIPBOARD_AUDIO";
         public const string TRANSFER_FILES = "BEGIN_TRANSFER_FILES";
         public const string TRANSFER_IMAGE = "BEGIN_TRANSFER_IMAGE";
         public const string GET_CLIPBOARD_DIMENSION = "GET_CLIPBOARD_DIMENSION";
         public const string GET_CLIPBOARD_CONTENT = "GET_CLIPBOARD_CONTENT";
         public const string GET_CLIPBOARD_FILES = "GET_CLIPBOARD_FILES";
         public const string GET_CLIPBOARD_IMG = "GET_CLIPBOARD_IMG";
+        public const string GET_CLIPBOARD_AUDIO = "GET_CLIPBOARD_AUDIO";
+        public const string GET_CLIPBOARD_DATA = "GET_CLIPBOARD_DATA";
         public const string SET_RESET_FOCUS = "SET_RESET_FOCUS";
         public const string FOCUS_ON = "FOCUS_ON";
         public const string FOCUS_OFF = "FOCUS_OFF";
