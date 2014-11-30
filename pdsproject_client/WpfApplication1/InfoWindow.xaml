@@ -1,56 +1,59 @@
 ﻿<Window x:Class="WpfApplication1.InfoWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="InfoWindow" Height="401.493" Width="528.359" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="InfoWindow" Height="401.493" Width="528.359" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Background="White" Icon="resources/images/logoAppIco.ico">
     <ScrollViewer>
         <Grid>
             <Label HorizontalAlignment="Center" Margin="0,0,0,0" VerticalAlignment="Center" Height="auto" Width="auto" >
-                <TextBlock xml:space="preserve">
+                <TextBlock xml:space="preserve" Foreground="Black">
+                    <TextBlock.Background>
+                        <ImageBrush Stretch="Uniform" ImageSource="resources/images/info.png" Opacity="0.2"/>
+                    </TextBlock.Background>
 Progetto sviluppato da:
     Alberto Cannavò 
     Enrico Scopelliti
                     
 Credits:
-                    
-connComputer.png
-    Autore : Nick Frost
-    Licenza : Creative Commons (Attribution 3.0 Unported)
-    Link : http://creativecommons.org/licenses/by/3.0/
+    Image                
+        Autore : Nick Frost
+        Licenza : Creative Commons (Attribution 3.0 Unported)
+        Link : http://creativecommons.org/licenses/by/3.0/
 
-exit.png
-    Autore : Visual Pharm
-    Licenza : Creative Commons Attribution-No Derivative Works 3.0 Unported 
-    Link : http://creativecommons.org/licenses/by-nd/3.0/
+        Autore : Visual Pharm
+        Licenza : Creative Commons Attribution-No Derivative Works 3.0 Unported 
+        Link : http://creativecommons.org/licenses/by-nd/3.0/
 
-hotkey.png
-    Autore: Gnome Project
-    Licenza : GPL 
-    Link : http://www.gnu.org/copyleft/gpl.html
+        Autore: Gnome Project
+        Licenza : GPL 
+        Link : http://www.gnu.org/copyleft/gpl.html
 
-off.png
-    Autore : Stefania Servidio
-    Licenza : Creative Commons (Attribution 3.0 Unported)
-    Link : http://creativecommons.org/licenses/by/3.0/
+        Autore : Stefania Servidio
+        Licenza : Creative Commons (Attribution 3.0 Unported)
+        Link : http://creativecommons.org/licenses/by/3.0/
 
-rec.png
-    Autore : Alessandro Rei
-    Licenza : GPL 
-    Link : http://www.gnu.org/copyleft/gpl.html
+        Autore : Alessandro Rei
+        Licenza : GPL 
+        Link : http://www.gnu.org/copyleft/gpl.html
 	
-plus.png
-    Autore : Lokas Software
-    Licenza : Creative Commons (Attribution 3.0 Unported)
-    Link : http://creativecommons.org/licenses/by/3.0/
+        Autore : Lokas Software
+        Licenza : Creative Commons (Attribution 3.0 Unported)
+        Link : http://creativecommons.org/licenses/by/3.0/
 
-blinkingIcon.png
-    Autore : Bằng Nguyễn Anh
-    Licenza : Creative Commons (Attribution 3.0 Unported) 
-    Link : http://creativecommons.org/licenses/by/3.0/
+        Autore : Bằng Nguyễn Anh
+        Licenza : Creative Commons (Attribution 3.0 Unported) 
+        Link : http://creativecommons.org/licenses/by/3.0/
 
-info.png
-    Autore : Sergio Sánchez López
-    Licenza : GPL 
-    Link : http://www.gnu.org/copyleft/gpl.html        
+        Autore : Sergio Sánchez López
+        Licenza : GPL 
+        Link : http://www.gnu.org/copyleft/gpl.html
+                    
+        Autore : IconFinder
+        Licenza : Creative Commons
+        Link : http://creativecommons.org/licenses/by/3.0/
+
+    Librerie esterne
+        Bonjour
+        Json
                 </TextBlock>
             </Label>
         </Grid>

@@ -71,7 +71,7 @@ namespace WpfApplication1
             this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
             
             MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
-            MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
+            MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/LogoAppIco.ico");
             MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
             MyNotifyIcon.ContextMenu = this.contextMenu1;
         }

@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CommunicationLibrary;
 using System.Threading;
+using System.Windows.Interop;
+using System.Drawing;
 
 namespace WpfApplication1
 {
@@ -30,6 +32,7 @@ namespace WpfApplication1
         public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, SwitchOperator switchOp, ChannelManager channelMgr)
         {
             InitializeComponent();
+            img.Source = Imaging.CreateBitmapSourceFromHIcon(SystemIcons.Warning.Handle,Int32Rect.Empty,BitmapSizeOptions.FromEmptyOptions()); 
             this.computerID = computerID;
             this.clipboardMgr = clipboardMgr;
             this.channelMgr = channelMgr;
