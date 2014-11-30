@@ -55,8 +55,13 @@ namespace Authentication
                 {
                     toAuthenticate.Authenticated = false;
                     mainWin.Forbidden(toAuthenticate);
+                    throw ex;   
+                }
+                catch (Exception ex)
+                {
+                    toAuthenticate.Authenticated = false;
+                    mainWin.Forbidden(toAuthenticate);
                     throw ex;
-                   
                 }
                 
             }

@@ -47,15 +47,8 @@ namespace KeyboardMouseController.NativeInput
                 (key >= Keys.Oem1 && key <= Keys.Oem102))
             {
                     return true;
-            }
-            
+            }            
             else return false;
-        }
-
-        public static Keys GetKeyFromLparam(IntPtr lParam){
-            Keys key = (Keys)Marshal.ReadInt32(lParam);
-            return key;
-
         }
 
         public List<INPUT> CreateKeyboardInput(IntPtr wParam, IntPtr lParam)

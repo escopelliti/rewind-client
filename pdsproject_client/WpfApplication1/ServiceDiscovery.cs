@@ -9,18 +9,18 @@ namespace Discovery
 {
     public class ServiceDiscovery
     {
-        private Bonjour.DNSSDEventManager m_eventManager = null;
+        private Bonjour.DNSSDEventManager eventManager = null;
 
         //Service object
-        private Bonjour.DNSSDService m_service = null;
-        private Bonjour.DNSSDService m_service2 = null;
+        private Bonjour.DNSSDService dataService = null;
+        private Bonjour.DNSSDService cmdService = null;
         
         //Browser object which browses the network for a service type
-        private Bonjour.DNSSDService m_browser = null;
-        private Bonjour.DNSSDService m_browser2 = null;
+        private Bonjour.DNSSDService browser1 = null;
+        private Bonjour.DNSSDService browser2 = null;
 
         //Resolver object which contains the results of a resolved domain name or a query record
-        private Bonjour.DNSSDService m_resolver = null;
+        private Bonjour.DNSSDService resolver = null;
 
         private List<Server> serverList;
         private MainWindow mainWindow;
@@ -52,33 +52,31 @@ namespace Discovery
 
         private void SetupEventManager()
         {
-            m_eventManager = new DNSSDEventManager();
-            m_eventManager.ServiceFound += new _IDNSSDEvents_ServiceFoundEventHandler(this.ServiceFound);
-            m_eventManager.ServiceLost += new _IDNSSDEvents_ServiceLostEventHandler(this.ServiceLost);
-            m_eventManager.ServiceResolved += new _IDNSSDEvents_ServiceResolvedEventHandler(this.ServiceResolved);
-            m_eventManager.QueryRecordAnswered += new _IDNSSDEvents_QueryRecordAnsweredEventHandler(this.QueryAnswered);
-            m_eventManager.OperationFailed += new _IDNSSDEvents_OperationFailedEventHandler(this.OperationFailed);
+            eventManager = new DNSSDEventManager();
+            eventManager.ServiceFound += new _IDNSSDEvents_ServiceFoundEventHandler(this.ServiceFound);
+            eventManager.ServiceLost += new _IDNSSDEvents_ServiceLostEventHandler(this.ServiceLost);
+            eventManager.ServiceResolved += new _IDNSSDEvents_ServiceResolvedEventHandler(this.ServiceResolved);
+            eventManager.QueryRecordAnswered += new _IDNSSDEvents_QueryRecordAnsweredEventHandler(this.QueryRecordAnswered);
+            eventManager.OperationFailed += new _IDNSSDEvents_OperationFailedEventHandler(this.OperationFailed);
         }
-
-
 
         private void BrowseServers()
         {
             try
             {
-                m_service = new Bonjour.DNSSDService();
-                m_service2 = new Bonjour.DNSSDService();
-                m_browser = m_service.Browse(0, 0, "_dataListening._tcp", null, m_eventManager);
-                m_browser2 = m_service2.Browse(0, 0, "_cmdListening._tcp", null, m_eventManager);
+                dataService = new Bonjour.DNSSDService();
+                cmdService = new Bonjour.DNSSDService();
+                browser1 = dataService.Browse(0, 0, "_dataListening._tcp", null, eventManager);
+                browser2 = cmdService.Browse(0, 0, "_cmdListening._tcp", null, eventManager);
             }
             catch
             {
-                System.Windows.MessageBox.Show("Browse Failed", "Error");
+                System.Windows.MessageBox.Show("Si è riscontrato un grave problema. Prova a riavviare l'applicazione.", "Ops..", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                Environment.Exit(-1);
             }
         }
 
-        public void QueryAnswered(DNSSDService service, DNSSDFlags flags, uint ifIndex,
-            String fullName, DNSSDRRType rrtype, DNSSDRRClass rrclass, Object rdata, uint ttl)
+        public void QueryRecordAnswered(DNSSDService service, DNSSDFlags flags, uint ifIndex, String fullName, DNSSDRRType rrtype, DNSSDRRClass rrclass, Object rdata, uint ttl)
         {
             try
             {
@@ -92,52 +90,38 @@ namespace Discovery
             catch (Exception)
             {
                 return;
-            }
-            
+            }            
         }
 
-        public void
-       OperationFailed
-                   (
-                   DNSSDService service,
-                   DNSSDError error
-                   )
+        public void OperationFailed(DNSSDService service, DNSSDError error)
         {
-            System.Windows.MessageBox.Show("Operation returned an error code " + error, "Error");
+            System.Windows.MessageBox.Show("Si è riscontrato un grave problema. Prova a riavviare l'applicazione.", "Ops..", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            Environment.Exit(-1);
         }
 
-        public void
-        ServiceLost
-                    (
-                    DNSSDService sref,
-                    DNSSDFlags flags,
-                    uint ifIndex,
-                    String serviceName,
-                    String regType,
-                    String domain
-                    )
+        public void ServiceLost (DNSSDService sref, DNSSDFlags flags, uint ifIndex, String serviceName, String regType, String domain)
         {
-            Server server = this.serverList.Find(x => serviceName.Contains(x.ComputerName));
-            if (server != null)
+            try 
             {
-                this.serverList.Remove(server);
-                try 
+                Server server = this.serverList.Find(x => serviceName.Contains(x.ComputerName));
+                if (server != null)
                 {
+                    this.serverList.Remove(server);                
                     server.GetChannel().GetCmdSocket().Shutdown(System.Net.Sockets.SocketShutdown.Both);
                     server.GetChannel().GetCmdSocket().Close();                                   
                     server.GetChannel().GetDataSocket().Shutdown(System.Net.Sockets.SocketShutdown.Both);
                     server.GetChannel().GetDataSocket().Close();
                 }
-                catch (NullReferenceException)
-                {
-                    //nothing to close;
-                }
-                catch (Exception)
-                {
-                    //nothing to do
-                }
                 OnDisconnettedComputerService(server);
             }
+            catch (NullReferenceException)
+            {
+                //nothing to close;
+            }
+            catch (Exception)
+            {
+                //nothing to do
+            }          
         }
 
         private void OnDisconnettedComputerService(Server server)
@@ -149,21 +133,10 @@ namespace Discovery
             }
         }
 
-        public void ServiceResolved
-                    (
-                    DNSSDService sref,
-                    DNSSDFlags flags,
-                    uint ifIndex,
-                    String fullName,
-                    String hostName,
-                    ushort port,
-                    TXTRecord txtRecord
-                    )
+        public void ServiceResolved(DNSSDService sref, DNSSDFlags flags, uint ifIndex, String fullName, String hostName, ushort port, TXTRecord txtRecord)
         {            
             String hostname = hostName.Substring(0, hostName.IndexOf("."));
-
-            Server server = this.serverList.Find(x => x.ComputerName == hostname);
-           
+            Server server = this.serverList.Find(x => x.ComputerName == hostname);           
             Channel channel;
             if (server == null)
             {
@@ -185,14 +158,11 @@ namespace Discovery
             server.SetChannel(channel);
             server.Authenticated = false;
             this.serverList.Add(server);
-            //
-            // Now query for the IP address associated with "hostName"
-            //
             if (channel.CmdPort != 0 && channel.DataPort != 0)
             {
                 try
                 {
-                    m_resolver = m_service.QueryRecord(0, ifIndex, hostName, DNSSDRRType.kDNSSDType_A, DNSSDRRClass.kDNSSDClass_IN, m_eventManager);
+                    resolver = dataService.QueryRecord(0, ifIndex, hostName, DNSSDRRType.kDNSSDType_A, DNSSDRRClass.kDNSSDClass_IN, eventManager);
                 }
                 catch
                 {
@@ -205,12 +175,12 @@ namespace Discovery
         {
             try 
             {
-                m_browser.Stop();
-                m_browser = null;
-                m_service.Stop();
-                m_service = null;
-                m_resolver.Stop();
-                m_resolver = null;
+                browser1.Stop();
+                browser1 = null;
+                dataService.Stop();
+                dataService = null;
+                resolver.Stop();
+                resolver = null;
             }
             catch (Exception)
             {
@@ -220,17 +190,9 @@ namespace Discovery
             
         }
 
-        public void ServiceFound (
-                    DNSSDService sref,
-                    DNSSDFlags flags,
-                    uint ifIndex,
-                    String serviceName,
-                    String regType,
-                    String domain)
-        {
-                //resolve the name in order to obtain the IP Address and port
-            m_resolver = m_service.Resolve(0, ifIndex, serviceName, regType, domain, m_eventManager);
-        }
-        
+        public void ServiceFound (DNSSDService sref, DNSSDFlags flags, uint ifIndex, String serviceName, String regType, String domain)
+        {                
+            resolver = dataService.Resolve(0, ifIndex, serviceName, regType, domain, eventManager);
+        }        
     }
 }

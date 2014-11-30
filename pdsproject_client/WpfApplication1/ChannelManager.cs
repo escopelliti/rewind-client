@@ -32,14 +32,14 @@ namespace ConnectionModule
             tokenGen = new TokenGenerator();
         }
 
-        public void OpenServerSocket()
+        public void OpenControlConnection()
         {
             ServerCommunicationManager scm = new ServerCommunicationManager();
             Socket serverSocket = scm.CreateSocket(ProtocolType.Tcp);
             serverSocket = scm.Listen(Dns.GetHostName(), 40000, serverSocket);
             if (serverSocket == null)
             {
-                //Non siamo riusciti ad aprire una serversocket sul client forse sarebbe bene riavviare l'applicazione;
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             else
             {
@@ -103,7 +103,6 @@ namespace ConnectionModule
             }
             ccm.Shutdown(clientSocket, SocketShutdown.Both);
             ccm.Close(clientSocket);
-
         }
         
         public void OnLostComputerConnection(object sender, object param)
@@ -130,17 +129,29 @@ namespace ConnectionModule
         {
             byte[] data = new byte[16];
             int bytesRead = ccm.Receive(data, currentServer.GetChannel().GetCmdSocket());
-            byte[] dimension = new byte[bytesRead];
-            System.Buffer.BlockCopy(data, 0, dimension, 0, bytesRead);
-            return BitConverter.ToInt64(dimension, 0);
+            if (bytesRead > 0)
+            {
+                byte[] dimension = new byte[bytesRead];
+                System.Buffer.BlockCopy(data, 0, dimension, 0, bytesRead);
+                return BitConverter.ToInt64(dimension, 0);
+            }
+            return 0;
         }
 
         public void SendBytes(byte[] jsonToSend)
         {
-            byte[] toSend = new byte[jsonToSend.Length + TokenGenerator.TOKEN_DIM];            
-            System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
-            System.Buffer.BlockCopy(jsonToSend, 0, toSend, TokenGenerator.TOKEN_DIM, jsonToSend.Length);
-            ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
+            byte[] toSend = new byte[jsonToSend.Length + TokenGenerator.TOKEN_DIM];
+            try
+            {
+                System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
+                System.Buffer.BlockCopy(jsonToSend, 0, toSend, TokenGenerator.TOKEN_DIM, jsonToSend.Length);
+                ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
+            }
+            catch (Exception)
+            {
+                ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+                ccm.Close(currentServer.GetChannel().GetCmdSocket());
+            }            
         }
 
         public void ReceiveAck()
@@ -156,14 +167,23 @@ namespace ConnectionModule
             if (ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket()) <= 0)
             {
                 DeleteServer(currentServer, SocketShutdown.Both);
-                foreach (Window win in System.Windows.Application.Current.Windows)
+                try
                 {
-                    if (win is FullScreenRemoteServerControl)
+                    foreach (Window win in System.Windows.Application.Current.Windows)
                     {
-                        ((FullScreenRemoteServerControl)win).MainWin.OnLostComputerConnection(this, currentServer);
-                        ((FullScreenRemoteServerControl)win).Close();
+                        if (win is FullScreenRemoteServerControl)
+                        {
+                            ((FullScreenRemoteServerControl)win).MainWin.OnLostComputerConnection(this, currentServer);
+                            ((FullScreenRemoteServerControl)win).Close();
+                        }
                     }
                 }
+                catch (Exception)
+                {
+                    currentServer = null;
+                    InterceptEvents.StopCapture();
+                    return;
+                }                
                 currentServer = null;
                 InterceptEvents.StopCapture();
             }
@@ -198,9 +218,17 @@ namespace ConnectionModule
             s = ConnectedServer.Find(x => x.ServerID == s.ServerID);
             if (s != null)
             {
-                Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
-                dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
-                s.GetChannel().SetDataSocket(dataSocket);
+                try
+                {
+                    Socket dataSocket = ccm.CreateSocket(ProtocolType.Tcp);
+                    dataSocket = ccm.Connect(s.GetChannel().ipAddress, s.GetChannel().DataPort, dataSocket);
+                    s.GetChannel().SetDataSocket(dataSocket);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("C'è un problema nell'instaurare la connessione con l'altro computer.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Environment.Exit(-1);
+                }                
             }            
         }
  
@@ -327,16 +355,26 @@ namespace ConnectionModule
             StandardRequest stdReq = new StandardRequest();
             stdReq.type = requestType;
             stdReq.content = content;
-            string jsonTosend = JsonConvert.SerializeObject(stdReq);
-            byte[] requestToSend = Encoding.Unicode.GetBytes(jsonTosend);
-            byte[] toSend = new byte[requestToSend.Length + TokenGenerator.TOKEN_DIM];
-            CurrentToken = tokenGen.GetNewToken();
-            System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
-            System.Buffer.BlockCopy(requestToSend, 0, toSend, TokenGenerator.TOKEN_DIM, requestToSend.Length);
-            ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
+            try
+            {
+                string jsonTosend = JsonConvert.SerializeObject(stdReq);
+                byte[] requestToSend = Encoding.Unicode.GetBytes(jsonTosend);
+                byte[] toSend = new byte[requestToSend.Length + TokenGenerator.TOKEN_DIM];
+                CurrentToken = tokenGen.GetNewToken();
+                System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
+                System.Buffer.BlockCopy(requestToSend, 0, toSend, TokenGenerator.TOKEN_DIM, requestToSend.Length);
+                ccm.Send(toSend, currentServer.GetChannel().GetCmdSocket());
+            }
+            catch (Exception)
+            {                
+                ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+                ccm.Close(currentServer.GetChannel().GetCmdSocket());
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        public void AssignNewToken() {
+        public void AssignNewToken() 
+        {
             CurrentToken = tokenGen.GetNewToken();
         }
 

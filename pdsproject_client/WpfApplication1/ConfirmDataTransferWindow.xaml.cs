@@ -40,8 +40,15 @@ namespace Views
         }
 
         private void Switch()
-        {            
-            clipboardMgr.ReceiveClipboard();
+        {
+            try
+            {
+                clipboardMgr.ReceiveClipboard();
+            }
+            catch (Exception)
+            {
+                CloseProgressBar();
+            }            
             switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);
@@ -57,7 +64,7 @@ namespace Views
             {
                 switchOp.mainWin.fullScreenWin.clipboardTransferLabel.Visibility = System.Windows.Visibility.Hidden;
             }));
-            switchOp.mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            switchOp.mainWin.fullScreenWin.clipboardTransferProgressBar.Dispatcher.Invoke(new Action(() =>
             {
                 switchOp.mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Hidden;
             }));

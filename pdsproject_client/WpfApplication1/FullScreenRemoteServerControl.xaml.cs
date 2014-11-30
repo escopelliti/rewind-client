@@ -28,8 +28,7 @@ namespace Views
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<String> computerList, MainWindow mainWin)
         {
             this.currentServer = currentServer;
-            this.DataContext = this;
-            // Forse non è supportato il costruttore così fatto DA PROVARE
+            this.DataContext = this;            
             this.computerList = new ObservableCollection<String>(computerList);
             this.interceptEvent = ie;
             this.hotkeyList = hotkeyList;
@@ -37,22 +36,7 @@ namespace Views
             InitializeComponent();
             InitGUI();
             RegisterHotkey();
-        }
-
-        private void MinimizedControlPanel()
-        {
-            foreach (Window win in System.Windows.Application.Current.Windows)
-            {
-                if (win is MainWindow)
-                {
-                    if (win.IsVisible)
-                    {
-                        win.WindowState = WindowState.Minimized;
-                        break;
-                    }
-                }
-            }
-        }
+        }      
 
         private void RegisterHotkey()
         {
@@ -81,11 +65,10 @@ namespace Views
                 }
                 catch (Exception)
                 {
-                    //handle exception error
+                    MessageBox.Show("Scorciatoie non disponibili per la sessione attuale!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }
-
        
         private void InitGUI()
         {
@@ -113,7 +96,7 @@ namespace Views
             OnSwitch(new EventArgs());
         }
 
-        protected virtual void OnSwitch(EventArgs eventArgs)
+        private void OnSwitch(EventArgs eventArgs)
         {
             SwitchServerEventHandler handler = SwitchServeHandler;
             if (handler != null)
@@ -128,17 +111,26 @@ namespace Views
             InterceptEvents.ResetKModifier();
         }
 
-
         private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)
         {
             InterceptEvents.StopCapture();
-            foreach (Window win in System.Windows.Application.Current.Windows)
+            try
             {
-                if (win is MainWindow)
+                foreach (Window win in System.Windows.Application.Current.Windows)
                 {
-                    win.WindowState = System.Windows.WindowState.Normal;                    
+                    if (win is MainWindow)
+                    {
+                        win.WindowState = System.Windows.WindowState.Normal;
+                    }
                 }
             }
+            catch (Exception)
+            {
+                MessageBox.Show("C'è stato un problema. Prova a riavviare l'applicazione. ", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //nothing to do
+                return;
+            }
+            
         }
 
         public void AddServerToList(Server s)
@@ -147,7 +139,6 @@ namespace Views
             {
                 this.computerList.Add(s.ComputerName);
             }));
-
         }
 
         public void RemoveServerFromList(Server s)

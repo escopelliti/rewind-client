@@ -28,16 +28,25 @@ namespace Views
 
         private void InitializeGui()
         {
-            Configuration config = confMgr.ReadConfiguration();
-            Hotkey h = config.hotkeyList.Find(x => x.Command == Hotkey.SWITCH_SERVER_CMD);
-            SwitchServerKeyLabel.Content = h.Key;
-            SwitchServeComboBox.SelectedItem = h.KModifier;
-            h = config.hotkeyList.Find(x => x.Command == Hotkey.OPEN_PANEL_CMD);
-            OpenPanelKeyLabel.Content = h.Key;
-            OpenPanelComboBox.SelectedItem = h.KModifier;
-            h = config.hotkeyList.Find(x => x.Command == Hotkey.REMOTE_PAST_CMD);
-            RemotePasteKeyLabel.Content = h.Key;
-            RemotePasteComboBox.SelectedItem = h.KModifier;
+            try
+            {
+                Configuration config = confMgr.ReadConfiguration();
+                Hotkey h = config.hotkeyList.Find(x => x.Command == Hotkey.SWITCH_SERVER_CMD);
+                SwitchServerKeyLabel.Content = h.Key;
+                SwitchServeComboBox.SelectedItem = h.KModifier;
+                h = config.hotkeyList.Find(x => x.Command == Hotkey.OPEN_PANEL_CMD);
+                OpenPanelKeyLabel.Content = h.Key;
+                OpenPanelComboBox.SelectedItem = h.KModifier;
+                h = config.hotkeyList.Find(x => x.Command == Hotkey.REMOTE_PAST_CMD);
+                RemotePasteKeyLabel.Content = h.Key;
+                RemotePasteComboBox.SelectedItem = h.KModifier;
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("La modifica delle scorciatoie non è disponibile al momento. Riprova al riavvio dell'applicazione.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
+                this.Close();
+            }
+            
         }
 
         private void InitializeComboBox()
@@ -134,18 +143,26 @@ namespace Views
 
         private void ButtonDefaultClick(object sender, RoutedEventArgs e) 
         {
-            Configuration stdConfig = confMgr.createStdConfiguration();
-            Hotkey h = stdConfig.hotkeyList.Find(x=>x.Command==Hotkey.SWITCH_SERVER_CMD);
-            SwitchServerKeyLabel.Content = h.Key;
-            SwitchServeComboBox.SelectedItem = h.KModifier;
-            h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.OPEN_PANEL_CMD);
-            OpenPanelKeyLabel.Content = h.Key;
-            OpenPanelComboBox.SelectedItem = h.KModifier;
-            h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.REMOTE_PAST_CMD);
-            RemotePasteKeyLabel.Content = h.Key;
-            RemotePasteComboBox.SelectedItem = h.KModifier;
+            try
+            {
+                Configuration stdConfig = confMgr.createStdConfiguration();
+                Hotkey h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.SWITCH_SERVER_CMD);
+                SwitchServerKeyLabel.Content = h.Key;
+                SwitchServeComboBox.SelectedItem = h.KModifier;
+                h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.OPEN_PANEL_CMD);
+                OpenPanelKeyLabel.Content = h.Key;
+                OpenPanelComboBox.SelectedItem = h.KModifier;
+                h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.REMOTE_PAST_CMD);
+                RemotePasteKeyLabel.Content = h.Key;
+                RemotePasteComboBox.SelectedItem = h.KModifier;
+            }
+            catch (Exception)
+            {
+                System.Windows.MessageBox.Show
+                    ("Problema nel ripristino delle impostazioni. Riprova più tardi.", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                this.Close();
+            }            
         }
-
 
         private void ButtonOkClick(object sender, RoutedEventArgs e)
         {

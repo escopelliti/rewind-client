@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Windows;
 
 using Protocol;
 using ConnectionModule;
@@ -35,8 +36,18 @@ namespace Clipboard
             int currentFileNum = 0;
             this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
             long dim = 0;
-            ProtocolUtils.FileStruct currentFile = filesToReceive.ElementAt(currentFileNum);
-            //stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append);
+            ProtocolUtils.FileStruct currentFile;
+            try
+            {
+                currentFile = filesToReceive.ElementAt(currentFileNum);
+            }
+            catch (Exception)
+            {
+                this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
             while (currentFileNum < filesToReceive.Count)
             {
 
@@ -47,8 +58,9 @@ namespace Clipboard
                     currentContent = "NONE";
                     return;
                 }
-
-                using (var stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append))
+                try
+                {
+                    using (var stream = new FileStream(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name, FileMode.Append))
                 {
                     stream.Write(bufferData, 0, bufferData.Length);
                     dim += bufferData.Length;
@@ -67,6 +79,13 @@ namespace Clipboard
                         currentFile = filesToReceive.ElementAt(currentFileNum);
                     }
 
+                }
+                }
+                catch (Exception)
+                {
+                    this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }    
             }
             this.ChannelMgr.ReceiveAck();
@@ -93,11 +112,16 @@ namespace Clipboard
         {
             string path = dir;
             List<ProtocolUtils.FileStruct> files = new List<ProtocolUtils.FileStruct>();
-            try {
+            try
+            {
                 files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
                 filesToReceive.AddRange(files);
             }
             catch (NullReferenceException)
+            {
+                //nothing to do
+            }
+            catch (Exception)
             {
                 //nothing to do
             }
@@ -121,7 +145,12 @@ namespace Clipboard
             {
                 files = JsonConvert.DeserializeObject<List<ProtocolUtils.FileStruct>>(contentJson[ProtocolUtils.FILE].ToString());
                 filesToReceive.AddRange(files);
-            } catch (NullReferenceException)
+            } 
+            catch (NullReferenceException)
+            {
+                //nothing to do
+            }
+            catch (Exception)
             {
                 //nothing to do
             }
@@ -142,33 +171,44 @@ namespace Clipboard
             byte[] buffer = this.ChannelMgr.ReceiveData();
             if (buffer != null)
             {
-                receivedJson = JObject.Parse(Encoding.Unicode.GetString(buffer));
-                string type = receivedJson[ProtocolUtils.TYPE].ToString();
+                string type = null;
+                JObject contentJson = null;
+                Object content = null;
+                try
+                {
+                    receivedJson = JObject.Parse(Encoding.Unicode.GetString(buffer));
+                    type = receivedJson[ProtocolUtils.TYPE].ToString();
+                    contentJson = (JObject)receivedJson[ProtocolUtils.CONTENT];
+                    content = receivedJson[ProtocolUtils.CONTENT];
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }                
                 switch (type)
                 {
                     case ProtocolUtils.SET_CLIPBOARD_FILES:
-                        NewClipboardFileToPaste((JObject)receivedJson[ProtocolUtils.CONTENT]);
+                        NewClipboardFileToPaste(contentJson);
                         currentContent = ProtocolUtils.SET_CLIPBOARD_FILES;
                         MoveByteToFiles();                        
                         break;
                     case ProtocolUtils.SET_CLIPBOARD_TEXT:
-                        this.Text = (String) receivedJson[ProtocolUtils.CONTENT];
+                        this.Text = content.ToString();
                         currentContent = ProtocolUtils.SET_CLIPBOARD_TEXT;
                         break;
                     case ProtocolUtils.SET_CLIPBOARD_IMAGE:
-                        this.Data = new byte[(int)receivedJson[ProtocolUtils.CONTENT]];
+                        this.Data = new byte[(int)content];
                         currentContent = ProtocolUtils.SET_CLIPBOARD_IMAGE;
                         NewClipboardDataToPaste();
                         break;
                     case ProtocolUtils.SET_CLIPBOARD_AUDIO:
-                        this.Data = new byte[(int)receivedJson[ProtocolUtils.CONTENT]];
+                        this.Data = new byte[(int)content];
                         currentContent = ProtocolUtils.SET_CLIPBOARD_AUDIO;
                         NewClipboardDataToPaste();
                         break;
                     default:
                         break;
                 }
-
             }
         }
 
@@ -184,7 +224,16 @@ namespace Clipboard
                     currentContent = "NONE";
                     return;
                 }
-                System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);
+                try
+                {
+                    System.Buffer.BlockCopy(bufferData, 0, Data, offset, bufferData.Length);
+                }
+                catch (Exception)
+                {
+                    this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }                
                 offset += bufferData.Length;                    
             }                                    
         }
@@ -236,6 +285,12 @@ namespace Clipboard
             sr.type = requestType;
             sr.content = Data.Length;
             string toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
+            if (toSend == null)
+            {
+                this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
             this.ChannelMgr.ReceiveAck();
             int offset = 0;
@@ -246,8 +301,18 @@ namespace Clipboard
                 {
                     dim = Data.Length - offset;
                 }
-                byte[] chunk = new byte[dim];                
-                System.Buffer.BlockCopy(Data, offset, chunk, 0, dim);
+                byte[] chunk = new byte[dim];
+                try
+                {
+                    System.Buffer.BlockCopy(Data, offset, chunk, 0, dim);
+                }
+                catch (Exception)
+                {
+                    this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                
                 offset += dim;
                 this.ChannelMgr.SendBytes(chunk);
                 this.ChannelMgr.ReceiveAck();
@@ -261,6 +326,12 @@ namespace Clipboard
             sr.content = this.Text;
             sr.type = ProtocolUtils.SET_CLIPBOARD_TEXT;
             string toSend = JSON.JSONFactory.CreateJSONStandardRequest(sr);
+            if (toSend == null)
+            {
+                this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
             this.ChannelMgr.ReceiveAck();
         }
@@ -268,8 +339,20 @@ namespace Clipboard
         private void SendClipboardFiles()
         {
             String[] fileDropListArray = RetrieveFileDropListArray();
+            if (fileDropListArray == null)
+            {
+                this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;            
+            }
             this.ChannelMgr.AssignNewToken();
             string toSend = JSON.JSONFactory.CreateFileTransferJSONRequest(Protocol.ProtocolUtils.SET_CLIPBOARD_FILES, fileDropListArray);
+            if (toSend == null)
+            {
+                this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
             this.ChannelMgr.ReceiveAck();
             byte[] token = this.ChannelMgr.CurrentToken;
@@ -280,19 +363,28 @@ namespace Clipboard
                 if (File.Exists(currenFilePath))
                 {
                     byte[] bytesFile = new byte[4096 - TokenGenerator.TOKEN_DIM];
-                    using (var stream = new FileStream(currenFilePath, FileMode.Open))
+                    try
                     {
-                        int bytesRead;
-                        while ((bytesRead = stream.Read(bytesFile, 0, bytesFile.Length)) > 0)
+                        using (var stream = new FileStream(currenFilePath, FileMode.Open))
                         {
-                            byte[] byteToSend = new byte[bytesRead + TokenGenerator.TOKEN_DIM];
-                            System.Buffer.BlockCopy(token, 0, byteToSend, 0, TokenGenerator.TOKEN_DIM);
-                            System.Buffer.BlockCopy(bytesFile, 0, byteToSend, TokenGenerator.TOKEN_DIM, bytesRead);
+                            int bytesRead;
+                            while ((bytesRead = stream.Read(bytesFile, 0, bytesFile.Length)) > 0)
+                            {
+                                byte[] byteToSend = new byte[bytesRead + TokenGenerator.TOKEN_DIM];
+                                System.Buffer.BlockCopy(token, 0, byteToSend, 0, TokenGenerator.TOKEN_DIM);
+                                System.Buffer.BlockCopy(bytesFile, 0, byteToSend, TokenGenerator.TOKEN_DIM, bytesRead);
 
-                            this.ChannelMgr.SendBytes(byteToSend);
-                            this.ChannelMgr.ReceiveAck();
+                                this.ChannelMgr.SendBytes(byteToSend);
+                                this.ChannelMgr.ReceiveAck();
+                            }
+
                         }
-
+                    }
+                    catch (Exception)
+                    {
+                        this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
+                        MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;                           
                     }
                 }
             }           
@@ -309,19 +401,25 @@ namespace Clipboard
 
         private string[] RetrieveFileDropListArray()
         {
-            StringCollection strColl = new StringCollection();            
-            foreach (String fullNameFiles in Directory.GetFiles(ProtocolUtils.TMP_DIR))
+            StringCollection strColl = new StringCollection();
+            String[] fileDropList;
+            try
             {
-                //FileInfo fileInfo = new FileInfo(fullNameFiles);
-                strColl.Add(fullNameFiles);
+                foreach (String fullNameFiles in Directory.GetFiles(ProtocolUtils.TMP_DIR))
+                {
+                    strColl.Add(fullNameFiles);
+                }
+                foreach (String fullNameDir in Directory.GetDirectories(ProtocolUtils.TMP_DIR))
+                {
+                    strColl.Add(fullNameDir);
+                }
+                fileDropList = new String[strColl.Count];
+                strColl.CopyTo(fileDropList, 0);
             }
-            foreach (String fullNameDir in Directory.GetDirectories(ProtocolUtils.TMP_DIR)) 
+            catch (Exception)
             {
-                //DirectoryInfo dir = new DirectoryInfo(fullNameDir);
-                strColl.Add(fullNameDir);
+                return null;
             }
-            String[] fileDropList = new String[strColl.Count];
-            strColl.CopyTo(fileDropList, 0);
             return fileDropList;
         }
     }

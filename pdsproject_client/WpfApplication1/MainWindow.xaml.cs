@@ -33,9 +33,9 @@ namespace MainApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        private System.Windows.Forms.NotifyIcon MyNotifyIcon;
-        private System.Windows.Forms.ContextMenu contextMenu1;
-        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.NotifyIcon trayIcon;
+        private System.Windows.Forms.ContextMenu menu;
+        private System.Windows.Forms.MenuItem menuItem;
         private bool exit = false;
         private Discovery.ServiceDiscovery sd;
         public ObservableCollection<ComputerItem> computerItemList { get; set; }
@@ -50,8 +50,7 @@ namespace MainApp
         {
             InitializeComponent();
             this.DataContext = this;
-            InitTrayIcon();
-            // I server su cui è attiva l'applicazione socperti dal modulo di discovery vengono aggiunti alla lista computerItemList
+            InitTrayIcon();            
             computerItemList = new ObservableCollection<ComputerItem>();
             computerList.ItemsSource = computerItemList;
             serverList = new List<Server>();
@@ -62,21 +61,19 @@ namespace MainApp
 
         private void InitTrayIcon()
         {
-            this.contextMenu1 = new System.Windows.Forms.ContextMenu();
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-
-            // Initialize contextMenu1 
-            this.contextMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem1 });
-
-            // Initialize menuItem1 
-            this.menuItem1.Index = 0;
-            this.menuItem1.Text = "Exit";
-            this.menuItem1.Click += new System.EventHandler(this.menuItem1_Click);
+            this.menu = new System.Windows.Forms.ContextMenu();
+            this.menuItem = new System.Windows.Forms.MenuItem();
             
-            MyNotifyIcon = new System.Windows.Forms.NotifyIcon();
-            MyNotifyIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
-            MyNotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
-            MyNotifyIcon.ContextMenu = this.contextMenu1;
+            this.menu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem });
+            
+            this.menuItem.Index = 0;
+            this.menuItem.Text = "Exit";
+            this.menuItem.Click += new System.EventHandler(this.menuItem_Click);
+            
+            trayIcon = new System.Windows.Forms.NotifyIcon();
+            trayIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
+            trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
+            trayIcon.ContextMenu = this.menu;
         }
 
         private void StartDiscovery()
@@ -87,7 +84,15 @@ namespace MainApp
         public void OnNewComputerConnected(Object sender, Object param) {
 
             Server newServer = (Server)param;
-            Server oldServer = serverList.Find(x => x.ComputerName.Equals(newServer.ComputerName));
+            Server oldServer = null;
+            try
+            {
+               oldServer = serverList.Find(x => x.ComputerName.Equals(newServer.ComputerName));
+            }
+            catch (ArgumentNullException)
+            {
+                oldServer = null;
+            }
             if (oldServer != null)
             {
                 this.serverList.Remove(oldServer);
@@ -123,14 +128,14 @@ namespace MainApp
         
         private void OpenWorkareaWindow()
         {
-            if (channelMgr.GetCurrentServer() != null)
+            if (channelMgr.ConnectedServer.Count >= 2)
             {
                 WorkareaWindow wk = new WorkareaWindow(channelMgr, this);
                 wk.ShowDialog();
             }
             else
             {
-                System.Windows.MessageBox.Show("Non hai ancora un computer attivo. Selezionane uno!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                System.Windows.MessageBox.Show("Connetti un altro computer dal pannello di controllo!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
         }
 
@@ -162,7 +167,7 @@ namespace MainApp
             this.sd.Stop();
         }
 
-        private void menuItem1_Click(object Sender, EventArgs e)
+        private void menuItem_Click(object Sender, EventArgs e)
         {
             exit = true;
             this.Close();
@@ -172,23 +177,17 @@ namespace MainApp
         {
             this.WindowState = WindowState.Normal;
         }
-
-        //TO BE CHANGED
+        
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == WindowState.Minimized)
             {
-                this.ShowInTaskbar = false;
-
-                //TO BE CHANGED
-                //MyNotifyIcon.BalloonTipTitle = "Minimize Sucessful";
-                //MyNotifyIcon.BalloonTipText = "Minimized the app ";
-                //MyNotifyIcon.ShowBalloonTip(400);
-                MyNotifyIcon.Visible = true;
+                this.ShowInTaskbar = false;              
+                trayIcon.Visible = true;
             }
             else if (this.WindowState == WindowState.Normal)
             {
-                MyNotifyIcon.Visible = false;
+                trayIcon.Visible = false;
                 this.ShowInTaskbar = true;
             }
         }
@@ -215,7 +214,14 @@ namespace MainApp
         {
             ServerEventArgs sea = (ServerEventArgs)ea;
             Server server = sea.Server;
-            ComputerItem newComputerItem = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+            ComputerItem newComputerItem = null;
+            try
+            {
+               newComputerItem = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+            }
+            catch (ArgumentNullException) {
+                newComputerItem = null;
+            }            
             if (newComputerItem != null)
             {
                 SetServerActive(newComputerItem);
@@ -228,7 +234,15 @@ namespace MainApp
             serverList.Remove(server);
             if (computerItemList.Count != 0)
             {
-                ComputerItem toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+                ComputerItem toRemove = null;
+                try
+                {
+                    toRemove = this.computerItemList.Where(x => x.Name == server.ComputerName).First<ComputerItem>();
+                }
+                catch (Exception)
+                {
+                    toRemove = null;
+                }
                 if (toRemove != null)
                 {
                     this.computerList.Dispatcher.Invoke(new Action(() =>
@@ -236,17 +250,24 @@ namespace MainApp
                         this.computerItemList.Remove(toRemove);
                     }));
                 }
-                foreach (Window win in System.Windows.Application.Current.Windows)
+                try
                 {
-                    if (win is FullScreenRemoteServerControl)
+                    foreach (Window win in System.Windows.Application.Current.Windows)
                     {
-                        if (win.IsVisible)
+                        if (win is FullScreenRemoteServerControl)
                         {
-                            ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
-                            break;
+                            if (win.IsVisible)
+                            {
+                                ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
+                                break;
+                            }
                         }
                     }
                 }
+                catch (Exception)
+                {
+                    //nothing to do; error on retrieving current opened windows;
+                }                
             }
         }
 
@@ -261,7 +282,7 @@ namespace MainApp
 
             SetServerActive(FocusedComputerItem);
 
-            Server currentServer = channelMgr.GetCurrentServer();
+            Server currentServer = channelMgr.GetCurrentServer();            
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
 
             if (currentServer == null)
@@ -271,8 +292,8 @@ namespace MainApp
                 startConnection.IsBackground = true;
                 startConnection.Start();
                 
-                Thread ServerSocket = new Thread(() => channelMgr.OpenServerSocket());
-                ServerSocket.Start();
+                Thread connectionControlThread = new Thread(() => channelMgr.OpenControlConnection());
+                connectionControlThread.Start();
 
             }
             else
@@ -293,37 +314,46 @@ namespace MainApp
             }
             //al momento con c'è alcun focus settato sui server
             bool isWindowOpened = false;
-            foreach (Window win in System.Windows.Application.Current.Windows)
+            try
             {
-                if (win is FullScreenRemoteServerControl)
+                foreach (Window win in System.Windows.Application.Current.Windows)
                 {
-                    if (win.IsVisible)
+                    if (win is FullScreenRemoteServerControl)
                     {
-                        ((FullScreenRemoteServerControl)win).UpdateCurrentServer(this, new ServerEventArgs(s));
-                        isWindowOpened = true;
-                        break;
+                        if (win.IsVisible)
+                        {
+                            ((FullScreenRemoteServerControl)win).UpdateCurrentServer(this, new ServerEventArgs(s));
+                            isWindowOpened = true;
+                            break;
+                        }
                     }
                 }
-            }
 
-            if(!isWindowOpened)
-            {
-                List<Hotkey> hotkeyList = configurationMgr.ReadConfiguration().hotkeyList;
-                if (ie != null)
+                if (!isWindowOpened)
                 {
-                    InterceptEvents.RestartCapture();
+                    List<Hotkey> hotkeyList = configurationMgr.ReadConfiguration().hotkeyList;
+                    if (ie != null)
+                    {
+                        InterceptEvents.RestartCapture();
+                    }
+                    else
+                    {
+                        ie = new InterceptEvents(channelMgr);
+                    }
+                    OpenFullScreenWindow(ie, hotkeyList, channelMgr);
                 }
-                else
-                {
-                    ie = new InterceptEvents(channelMgr);
-                }               
-                OpenFullScreenWindow(ie, hotkeyList, channelMgr);
             }
+            catch (Exception)
+            {
+                System.Windows.MessageBox.Show
+                    ("C'è stato qualche problema nell'iniziare la sessione. E' consigliabile riavviare l'applicazione.", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
+            
         }
 
         private void StartNewConnection(int p)
         {
-
             channelMgr.StartNewConnection(FocusedComputerItem.ComputerID);
             this.Dispatcher.Invoke(new Action(() => WindowState = WindowState.Minimized));
         }
@@ -359,23 +389,39 @@ namespace MainApp
                 this.computerItemList.Remove(FocusedComputerItem);
                 FocusedComputerItem.ComputerID = s.ServerID;
                 this.FocusedComputerItem.IsCheckboxChecked = true;
-                this.computerItemList.Insert(index,FocusedComputerItem);
+                try
+                {
+                    this.computerItemList.Insert(index, FocusedComputerItem);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    this.computerItemList.Insert(0, FocusedComputerItem);
+                }
+                
             }));
             
             AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
             a.ShowDialog();
-                                
-            foreach (Window win in System.Windows.Application.Current.Windows)
+
+            try
             {
-                if (win is FullScreenRemoteServerControl)
+                foreach (Window win in System.Windows.Application.Current.Windows)
                 {
-                    if (win.IsVisible)
+                    if (win is FullScreenRemoteServerControl)
                     {
-                        ((FullScreenRemoteServerControl)win).AddServerToList(s);
-                        break;
+                        if (win.IsVisible)
+                        {
+                            ((FullScreenRemoteServerControl)win).AddServerToList(s);
+                            break;
+                        }
                     }
                 }
-            }  
+            }
+            catch (Exception)
+            {
+                //error retrieving current windows
+                return;
+            }              
         }
 
         private void connectCheckbox_Unchecked(object sender, RoutedEventArgs e)
@@ -385,23 +431,38 @@ namespace MainApp
                 int index = this.computerItemList.IndexOf(FocusedComputerItem);
                 this.computerItemList.Remove(FocusedComputerItem);
                 this.FocusedComputerItem.IsCheckboxChecked = false;
-                this.computerItemList.Insert(index, FocusedComputerItem);
+                try
+                {
+                    this.computerItemList.Insert(index, FocusedComputerItem);                    
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    this.computerItemList.Insert(0, FocusedComputerItem);
+                }
             }));   
             
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
             channelMgr.DeleteServer(s, System.Net.Sockets.SocketShutdown.Send);
 
-            foreach (Window win in System.Windows.Application.Current.Windows)
+            try
             {
-                if (win is FullScreenRemoteServerControl)
+                foreach (Window win in System.Windows.Application.Current.Windows)
                 {
-                    if (win.IsVisible)
+                    if (win is FullScreenRemoteServerControl)
                     {
-                        ((FullScreenRemoteServerControl)win).RemoveServerFromList(s);
-                        break;
+                        if (win.IsVisible)
+                        {
+                            ((FullScreenRemoteServerControl)win).RemoveServerFromList(s);
+                            break;
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+                //error retrieving current windows
+                return;
+            } 
         }
 
         private void ListBoxItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -411,33 +472,42 @@ namespace MainApp
 
         private void ButtonModifyClick(object sender, RoutedEventArgs e)
         {
-            bool isWindowOpen = false;
-
-            foreach (Window win in System.Windows.Application.Current.Windows)
-            {
-                if (win is ModifyHotkeyWindow)
-                {
-                    isWindowOpen = true;
-                    win.Activate();
-                }
-            }
-
-            if (!isWindowOpen)
-            {
-                ModifyHotkeyWindow w = new ModifyHotkeyWindow();
-                w.Show();
-            }
+            ModifyHotkeyWindow w = new ModifyHotkeyWindow();
+            w.ShowDialog();
         }    
     
         public void Forbidden(Server s)
-        {            
-            ComputerItem ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();
+        {
+            ComputerItem ci = null;
+            try
+            {
+                ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();                
+            }
+            catch (ArgumentNullException)
+            {
+                ci = null;
+            }
+            catch (InvalidOperationException)
+            {
+                ci = null;
+            }
+            if (ci == null)
+            {
+                return;
+            }
             this.computerList.Dispatcher.Invoke(new Action(() =>
             {
                 int index = this.computerItemList.IndexOf(ci);
                 this.computerItemList.Remove(ci);
                 this.FocusedComputerItem.IsCheckboxChecked = false;
-                this.computerItemList.Insert(index, ci);
+                try
+                {
+                    this.computerItemList.Insert(index, ci);
+                }
+                catch (Exception)
+                {
+                    this.computerItemList.Insert(0, ci);
+                }
             }));          
         }
 
@@ -453,7 +523,14 @@ namespace MainApp
                 int index = this.computerItemList.IndexOf(FocusedComputerItem);
                 this.computerItemList.Remove(FocusedComputerItem);
                 this.FocusedComputerItem.IsCheckboxChecked = true;
-                this.computerItemList.Insert(index, FocusedComputerItem);
+                try
+                {
+                    this.computerItemList.Insert(index, FocusedComputerItem);
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    this.computerItemList.Insert(0, FocusedComputerItem);
+                }
             }));
         }
 
@@ -461,32 +538,38 @@ namespace MainApp
         {
             Thread exit = new Thread(() => ExitFromApplication());
             exit.IsBackground = true;
-            exit.Start();
-            
+            exit.Start();            
         }
 
         public void ExitFromApplication()
         {
-            if (channelMgr.GetCurrentServer() != null)
+            try
             {
-                channelMgr.EndConnectionToCurrentServer();
-                channelMgr.SetCurrentServer(null);
-            }
-            
-            Server[] toRemove = new Server[channelMgr.ConnectedServer.Count];
-            channelMgr.ConnectedServer.CopyTo(toRemove,0);
+                if (channelMgr.GetCurrentServer() != null)
+                {
+                    channelMgr.EndConnectionToCurrentServer();
+                    channelMgr.SetCurrentServer(null);
+                }
 
-            foreach (Server s in toRemove)
-            {
-                channelMgr.DeleteServer(s, System.Net.Sockets.SocketShutdown.Both);
+                Server[] toRemove = new Server[channelMgr.ConnectedServer.Count];
+                channelMgr.ConnectedServer.CopyTo(toRemove, 0);
+
+                foreach (Server s in toRemove)
+                {
+                    channelMgr.DeleteServer(s, System.Net.Sockets.SocketShutdown.Both);
+                }
+                this.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.Shutdown(); }));
             }
-            this.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.Shutdown(); }));
+            catch (Exception)
+            {
+                Environment.Exit(-1);
+            }
         }
 
         private void ButtonInfoClick(object sender, RoutedEventArgs e)
         {
             InfoWindow infoWnd = new InfoWindow();
-            infoWnd.Show();
+            infoWnd.ShowDialog();
         }
 
         public void SetServerActive(ComputerItem newComputerItem)
@@ -497,7 +580,14 @@ namespace MainApp
                 this.computerItemList.Remove(newComputerItem);
                 newComputerItem.ComputerStateImage = @"resources/images/connComputer.png";
                 newComputerItem.IsCheckboxEnabled = false;
-                this.computerItemList.Insert(index, newComputerItem);
+                try
+                {
+                    this.computerItemList.Insert(index, newComputerItem);
+                }
+                catch (Exception)
+                {
+                    this.computerItemList.Insert(0, newComputerItem);
+                }
             }));
         }
     }

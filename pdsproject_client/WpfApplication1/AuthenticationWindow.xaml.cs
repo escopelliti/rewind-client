@@ -37,10 +37,19 @@ namespace Views
         {
             mainWin.Dispatcher.Invoke(new Action(() =>
                {
-                   int index = mainWin.computerItemList.IndexOf(mainWin.FocusedComputerItem);
-                   mainWin.computerItemList.Remove(mainWin.FocusedComputerItem);
-                   mainWin.FocusedComputerItem.IsCheckboxChecked = false;
-                   mainWin.computerItemList.Insert(index, mainWin.FocusedComputerItem);
+                   try
+                   {
+                       int index = mainWin.computerItemList.IndexOf(mainWin.FocusedComputerItem);
+                       mainWin.computerItemList.Remove(mainWin.FocusedComputerItem);
+                       mainWin.FocusedComputerItem.IsCheckboxChecked = false;
+                       mainWin.computerItemList.Insert(index, mainWin.FocusedComputerItem);
+                   }
+                   catch (Exception)
+                   {
+                       MessageBox.Show("C'è stato un problema nella rimozione di " + mainWin.FocusedComputerItem.Name + ".", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                       this.Close();
+                   }
+                   
                }));
             this.Close();
         }        
@@ -72,14 +81,25 @@ namespace Views
             String psw = this.pswBox.Password;
             if (psw != String.Empty && psw != null)
             {
-                byte[] bytes = Encoding.UTF8.GetBytes(psw);
-                SHA256Managed hashstring = new SHA256Managed();
-                byte[] hash = hashstring.ComputeHash(bytes);
-                StringBuilder stringBuilder = new StringBuilder();
-                foreach (byte b in hash)
+                StringBuilder stringBuilder = null;
+                try
                 {
-                    stringBuilder.AppendFormat("{0:X2}", b);
+                    byte[] bytes = Encoding.UTF8.GetBytes(psw);
+                    SHA256Managed hashstring = new SHA256Managed();
+                    byte[] hash = hashstring.ComputeHash(bytes);
+                    stringBuilder = new StringBuilder();
+                    foreach (byte b in hash)
+                    {
+                        stringBuilder.AppendFormat("{0:X2}", b);
+                    }
                 }
+                catch (Exception)
+                {
+                    BrushConverter bc = new BrushConverter();
+                    this.pswBox.Background = (Brush)bc.ConvertFrom("#FFFF7F7F");
+                    return;
+                }
+                
                 string hashString = stringBuilder.ToString();
                 Thread authThread = new Thread(() => StartAuthentication(hashString));
                 authThread.Start();                

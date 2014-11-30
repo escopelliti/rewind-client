@@ -27,7 +27,14 @@ namespace Protocol
             }
             token = guid.ToByteArray();
             byte[] resizedToken = new byte[TOKEN_DIM];
-            System.Buffer.BlockCopy(token, TOKEN_DIM, resizedToken, 0, TOKEN_DIM);
+            try
+            {
+                System.Buffer.BlockCopy(token, TOKEN_DIM, resizedToken, 0, TOKEN_DIM);
+            }
+            catch (Exception)
+            {
+                return new byte[] { 0, 1, 0, 1 };
+            }
             return resizedToken;
         }
     }

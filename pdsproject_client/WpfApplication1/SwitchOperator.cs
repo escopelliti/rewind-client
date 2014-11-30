@@ -48,8 +48,15 @@ namespace Switch
             StartProgressBar();
             if (!dimensionOverflow)
             {
-                mainWin.Dispatcher.Invoke(new Action(() => mainWin.Close())); 
-                clipboardMgr.ReceiveClipboard();
+                mainWin.Dispatcher.Invoke(new Action(() => mainWin.Close()));
+                try
+                {
+                    clipboardMgr.ReceiveClipboard();
+                }
+                catch (Exception)
+                {
+                    CloseProgressBar();
+                }
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();
                 channelMgr.StartNewConnection(computerID);
@@ -74,7 +81,7 @@ namespace Switch
             {
                 mainWin.fullScreenWin.clipboardTransferLabel.Visibility = System.Windows.Visibility.Hidden;
             }));
-            mainWin.fullScreenWin.clipboardTransferLabel.Dispatcher.Invoke(new Action(() =>
+            mainWin.fullScreenWin.clipboardTransferProgressBar.Dispatcher.Invoke(new Action(() =>
             {
                 mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Hidden;
             }));
