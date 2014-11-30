@@ -129,6 +129,7 @@ namespace WpfApplication1
         private void Send_Remote_Past_Request(object sender, RoutedEventArgs e)
         {
             MainWin.channelMgr.SendRequest(Protocol.ProtocolUtils.REMOTE_PASTE, string.Empty);
+            InterceptEvents.ResetKModifier();
         }
 
 
