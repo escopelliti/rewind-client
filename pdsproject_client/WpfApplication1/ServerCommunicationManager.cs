@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace CommunicationLibrary
+namespace ConnectionModule.CommunicationLibrary
 {
     class ServerCommunicationManager : ClientServerCommunicationManager
     {
@@ -18,11 +18,11 @@ namespace CommunicationLibrary
                 socket.Listen(100);
                 return socket;
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
                 return null;
             }
-            catch (Exception e)
+            catch (Exception)
             {                
                 return null;
             }
@@ -46,11 +46,11 @@ namespace CommunicationLibrary
             {
                 return serverSocket.Accept();
             }
-            catch (SocketException se)
+            catch (SocketException)
             {
                 return null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

@@ -11,10 +11,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using CommunicationLibrary;
 using System.Threading;
 
-namespace WpfApplication1
+using ConnectionModule;
+using Switch;
+using Clipboard;
+using GenericDataStructure;
+
+namespace Views
 {
     /// <summary>
     /// Logica di interazione per ConfirmDataTransferWindow.xaml

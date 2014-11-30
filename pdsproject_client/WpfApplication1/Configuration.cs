@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using KeyboardMouseController;
 
-namespace WpfApplication1
+namespace ClientConfiguration
 {
     public class Configuration {
 
@@ -14,6 +12,5 @@ namespace WpfApplication1
         }
         
         public List<Hotkey> hotkeyList { get; set; }
-
     }
 }

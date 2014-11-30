@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using WpfApplication1;
 using System.Net.Sockets;
 using Protocol;
 using System.Collections.ObjectModel;
@@ -12,7 +11,13 @@ using System.Windows;
 using System.Threading;
 using System.Net;
 
-namespace CommunicationLibrary
+using ConnectionModule.CommunicationLibrary;
+using KeyboardMouseController.HookMgr;
+using KeyboardMouseController.NativeInput;
+using Views.ViewsPOCO;
+using Views;
+
+namespace ConnectionModule
 {
     public class ChannelManager
     {
@@ -145,7 +150,7 @@ namespace CommunicationLibrary
             ccm.Receive(new byte[1], currentServer.GetChannel().GetCmdSocket());
         }
 
-        public void SendInputToSever(NativeInput.INPUT inputToSend)
+        public void SendInputToSever(INPUT inputToSend)
         {
             string json = JsonConvert.SerializeObject(inputToSend);
             byte[] toSend = Encoding.Unicode.GetBytes(json);

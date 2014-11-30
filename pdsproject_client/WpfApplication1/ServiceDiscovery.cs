@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Bonjour;
-using WpfApplication1;
-using CommunicationLibrary;
+using MainApp;
+using ConnectionModule;
 
 namespace Discovery
 {
@@ -166,12 +163,12 @@ namespace Discovery
 
             Server server = this.serverList.Find(x => x.ComputerName == hostname);
            
-            CommunicationLibrary.Channel channel;
+            Channel channel;
             if (server == null)
             {
                 server = new Server();
                 server.ComputerName = hostname;
-                channel = new CommunicationLibrary.Channel();
+                channel = new Channel();
             }  else {
                 this.serverList.Remove(server);
                 channel = server.GetChannel();

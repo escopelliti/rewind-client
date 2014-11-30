@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace CommunicationLibrary
+namespace ConnectionModule
 {
     public class Server
     {
@@ -18,7 +14,7 @@ namespace CommunicationLibrary
             serverID = 0;
         }
 
-        public UInt16 ServerID
+        public ushort ServerID
         {
             get { return serverID; }
             set { serverID = value; }

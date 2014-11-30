@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 
 
-namespace NativeInput
+namespace KeyboardMouseController.NativeInput
 {
     public class InputFactory
     {

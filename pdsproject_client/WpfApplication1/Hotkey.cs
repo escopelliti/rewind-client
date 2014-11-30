@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 
 
-namespace WpfApplication1
+namespace KeyboardMouseController
 {
     public class Hotkey
     {

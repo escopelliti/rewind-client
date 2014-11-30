@@ -11,11 +11,16 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Text.RegularExpressions;
-using CommunicationLibrary;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
-namespace WpfApplication1
+using MainApp;
+using ConnectionModule;
+using Views.ViewsPOCO;
+using Switch;
+using KeyboardMouseController.HookMgr;
+
+namespace Views
 {
     /// <summary>
     /// Logica di interazione per WorkareaWindow.xaml

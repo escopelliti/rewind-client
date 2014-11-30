@@ -1,4 +1,4 @@
-﻿<Window x:Class="WpfApplication1.AddComputerWindow"
+﻿<Window x:Class="Views.AddComputerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Aggiungi Computer" Height="278.456" Width="375.957" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">

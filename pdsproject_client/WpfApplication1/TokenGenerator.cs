@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace WpfApplication1
+namespace Protocol
 {
     public class TokenGenerator
     {
         private List<Guid> tokenList;
-        public const ushort TOKEN_DIM = 16;
+        public const ushort TOKEN_DIM = 4;
         public TokenGenerator()
         {
             this.tokenList = new List<Guid>();
@@ -29,7 +26,9 @@ namespace WpfApplication1
                 guid = Guid.NewGuid();
             }
             token = guid.ToByteArray();
-            return token;
+            byte[] resizedToken = new byte[TOKEN_DIM];
+            System.Buffer.BlockCopy(token, TOKEN_DIM, resizedToken, 0, TOKEN_DIM);
+            return resizedToken;
         }
     }
 }

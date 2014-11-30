@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using CommunicationLibrary;
+using ConnectionModule;
 using Protocol;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WpfApplication1;
+using MainApp;
 
 namespace Authentication
 {

@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 //struttura di riferimento
 //http://msdn.microsoft.com/en-us/library/windows/desktop/ms646270(v=vs.85).aspx
 
-namespace NativeInput
+namespace KeyboardMouseController.NativeInput
 {
 
     [StructLayout(LayoutKind.Explicit)]

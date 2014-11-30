@@ -14,7 +14,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace WpfApplication1
+using MainApp;
+using ConnectionModule;
+
+namespace Views
 {
     /// <summary>
     /// Logica di interazione per AddComputerWindow.xaml
@@ -48,9 +51,9 @@ namespace WpfApplication1
             string dataPort = this.dataPortTextBox.Text;
 
             this.Close();
-            CommunicationLibrary.Server newServer = new CommunicationLibrary.Server();
+            Server newServer = new Server();
             newServer.ComputerName = computerName;
-            CommunicationLibrary.Channel channel = new CommunicationLibrary.Channel();
+            Channel channel = new Channel();
             channel.CmdPort = Convert.ToUInt16(cmdPort);
             channel.DataPort = Convert.ToUInt16(dataPort);
             channel.ipAddress = System.Net.IPAddress.Parse(ip);
@@ -72,7 +75,6 @@ namespace WpfApplication1
 
         public AddComputerViewModel()
         {
-               
         }
 
         public string Name

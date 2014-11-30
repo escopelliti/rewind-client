@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommunicationLibrary;
 
-namespace WpfApplication1
+using ConnectionModule;
+using GenericDataStructure;
+using Views;
+using MainApp;
+using Clipboard;
+using KeyboardMouseController.HookMgr;
+
+namespace Switch
 {
     public class SwitchOperator
     {

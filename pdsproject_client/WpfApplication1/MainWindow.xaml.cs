@@ -12,16 +12,24 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using CommunicationLibrary;
 using System.Windows.Interop;
-
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Threading;
 using System.Collections.ObjectModel;
 
-namespace WpfApplication1
+using ConnectionModule;
+using Views.ViewsPOCO;
+using Views;
+using ClientConfiguration;
+using KeyboardMouseController.HookMgr;
+using Discovery;
+using KeyboardMouseController;
+using GenericDataStructure;
+using Switch;
+
+namespace MainApp
 {
 
     

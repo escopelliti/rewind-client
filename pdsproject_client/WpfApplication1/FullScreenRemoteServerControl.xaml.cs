@@ -12,9 +12,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using CommunicationLibrary;
 
-namespace WpfApplication1
+using ConnectionModule;
+using KeyboardMouseController.HookMgr;
+using MainApp;
+using KeyboardMouseController;
+using GenericDataStructure;
+
+namespace Views
 {
     /// <summary>
     /// Logica di interazione per FullScreenRemoteServerControl.xaml

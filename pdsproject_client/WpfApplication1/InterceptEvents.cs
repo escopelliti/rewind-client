@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Forms;
-using CommunicationLibrary;
-using NativeInput;
 
-using System.Threading;
+using ConnectionModule;
+using KeyboardMouseController.NativeInput;
 
-namespace WpfApplication1
+namespace KeyboardMouseController.HookMgr
 {
     public class InterceptEvents
     {
@@ -22,13 +17,13 @@ namespace WpfApplication1
         private const int WH_MOUSE_LL = 14;
         private static bool block = false;
 
-        private static IntPtr hookID = IntPtr.Zero;
+        private static IntPtr keyboardHookHandle = IntPtr.Zero;
         private delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private static LowLevelKeyboardProc _proc;
+        private static LowLevelKeyboardProc keyboardProc;
 
-        private static IntPtr _hookID_ = IntPtr.Zero;
+        private static IntPtr mouseHookHandle = IntPtr.Zero;
         private delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
-        private static LowLevelMouseProc _proc_;
+        private static LowLevelMouseProc mouseProc;
 
         private static InputFactory inputFactory;
         private static ChannelManager channelMgr;
@@ -36,16 +31,16 @@ namespace WpfApplication1
         public InterceptEvents(ChannelManager ChannelManager)
         {
             channelMgr = ChannelManager;
-            _proc += HookCallback;
-            _proc_ += HookCallbackMouse;
+            keyboardProc += HookCallback;
+            mouseProc += HookCallbackMouse;
             inputFactory = new InputFactory();            
             StartCapture(); 
         }
 
         private static void StartCapture()
         {
-            hookID = SetWindowsHookEx(WH_KEYBOARD_LL, _proc, IntPtr.Zero, 0);
-            _hookID_ = SetWindowsHookEx(WH_MOUSE_LL, _proc_, IntPtr.Zero, 0);   
+            keyboardHookHandle = SetWindowsHookEx(WH_KEYBOARD_LL, keyboardProc, IntPtr.Zero, 0);
+            mouseHookHandle = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, IntPtr.Zero, 0);   
         }
 
         public static void RestartCapture()
@@ -73,7 +68,7 @@ namespace WpfApplication1
                         return (IntPtr)1;
                 }
 
-                return CallNextHookEx(hookID, nCode, wParam, lParam);
+                return CallNextHookEx(keyboardHookHandle, nCode, wParam, lParam);
             }
             return IntPtr.Zero;
         }
@@ -87,7 +82,7 @@ namespace WpfApplication1
                     INPUT inputToSend = inputFactory.CreateMouseInput(wParam, lParam);
                     channelMgr.SendInputToSever(inputToSend);
                 }
-                return CallNextHookEx(hookID, nCode, wParam, lParam);
+                return CallNextHookEx(keyboardHookHandle, nCode, wParam, lParam);
             }
             return IntPtr.Zero;
         }        

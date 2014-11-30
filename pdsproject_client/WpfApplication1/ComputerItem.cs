@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace WpfApplication1
+namespace Views.ViewsPOCO
 {
     public class ComputerItem
     {
@@ -15,5 +11,4 @@ namespace WpfApplication1
         public bool IsCheckboxEnabled { get; set; }
         public bool IsCheckboxChecked { get; set; }
     }
-
 }

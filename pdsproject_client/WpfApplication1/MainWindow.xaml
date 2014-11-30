@@ -1,4 +1,4 @@
-﻿<Window x:Class="WpfApplication1.MainWindow"
+﻿<Window x:Class="MainApp.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"        
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Name="mainWindow"

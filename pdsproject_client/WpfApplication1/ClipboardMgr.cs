@@ -7,12 +7,12 @@ using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
 using Protocol;
-using CommunicationLibrary;
+using ConnectionModule;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Collections.Specialized;
 
-namespace WpfApplication1
+namespace Clipboard
 {
     public class ClipboardMgr
     {

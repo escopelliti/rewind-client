@@ -11,11 +11,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using CommunicationLibrary;
 using System.Threading;
 using System.Security.Cryptography;
 
-namespace WpfApplication1
+using ConnectionModule;
+using MainApp;
+
+namespace Views
 {
     /// <summary>
     /// Logica di interazione per AuthenticationWindow.xaml

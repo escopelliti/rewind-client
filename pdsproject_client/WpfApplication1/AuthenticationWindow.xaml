@@ -1,4 +1,4 @@
-﻿<Window x:Class="WpfApplication1.AuthenticationWindow"
+﻿<Window x:Class="Views.AuthenticationWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Inserisci la password" Height="182.089" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
