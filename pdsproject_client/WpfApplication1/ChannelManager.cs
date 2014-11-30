@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using System.Net.Sockets;
-using Protocol;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Threading;
 using System.Net;
 
+using Newtonsoft.Json;
 using ConnectionModule.CommunicationLibrary;
 using KeyboardMouseController.HookMgr;
 using KeyboardMouseController.NativeInput;
 using Views.ViewsPOCO;
 using Views;
+using Protocol;
 
 namespace ConnectionModule
 {

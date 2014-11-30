@@ -8,7 +8,7 @@ using Protocol;
 
 namespace JSON
 {
-    class JSONFactory
+    public class JSONFactory
     {
         public static string currentDir = ".\\";
 
