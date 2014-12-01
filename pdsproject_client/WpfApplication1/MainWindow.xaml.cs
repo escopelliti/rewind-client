@@ -389,6 +389,8 @@ namespace MainApp
                     }));
                     return;
                 }
+
+
             }
 
             this.computerList.Dispatcher.Invoke(new Action(() =>
