@@ -350,9 +350,9 @@ namespace MainApp
             }
             catch (Exception)
             {
-                System.Windows.MessageBox.Show
-                    ("C'è stato qualche problema nell'iniziare la sessione. E' consigliabile riavviare l'applicazione.", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Error);
-
+                //System.Windows.MessageBox.Show
+                //    ("C'è stato qualche problema nell'iniziare la sessione. E' consigliabile riavviare l'applicazione.", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
             }
             
         }
