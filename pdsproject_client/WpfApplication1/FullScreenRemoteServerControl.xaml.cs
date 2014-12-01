@@ -24,6 +24,9 @@ namespace Views
         public delegate void SwitchServerEventHandler(Object sender, Object param);
         public event SwitchServerEventHandler SwitchServeHandler;
         public MainWindow MainWin{get;set;}
+        public CommandBinding SwitchCmdBinding { get;set;}
+        public CommandBinding RemotePasteCmdBinding { get; set; }
+
 
         public FullScreenRemoteServerControl(InterceptEvents ie, List<Hotkey> hotkeyList, Server currentServer, List<String> computerList, MainWindow mainWin)
         {
@@ -49,7 +52,8 @@ namespace Views
                     switch (h.Command)
                     {
                         case Hotkey.SWITCH_SERVER_CMD:
-                            CommandBindings.Add(new CommandBinding(settings, Switch_Server_Event_Handler));
+                            SwitchCmdBinding = new CommandBinding(settings,Switch_Server_Event_Handler);
+                            CommandBindings.Add(SwitchCmdBinding);
                             // Istanzio il delegato dell'evento
                             SwitchServeHandler = new SwitchServerEventHandler(MainWin.OnSwitch);
                             break;
@@ -59,7 +63,8 @@ namespace Views
                             break;
 
                         case Hotkey.REMOTE_PAST_CMD:
-                            CommandBindings.Add(new CommandBinding(settings, Send_Remote_Past_Request));
+                            RemotePasteCmdBinding = new CommandBinding(settings, Send_Remote_Past_Request);
+                            CommandBindings.Add(RemotePasteCmdBinding);
                             break;
                     }
                 }

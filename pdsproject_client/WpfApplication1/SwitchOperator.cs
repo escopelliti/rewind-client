@@ -32,6 +32,15 @@ namespace Switch
             ClipboardMgr clipboardMgr = new ClipboardMgr();
             clipboardMgr.ChannelMgr = channelMgr;
             bool dimensionOverflow = false;
+
+            mainWin.fullScreenWin.Dispatcher.Invoke(new Action(() =>
+            {
+                mainWin.fullScreenWin.CommandBindings.Remove(mainWin.fullScreenWin.SwitchCmdBinding);
+                mainWin.fullScreenWin.CommandBindings.Remove(mainWin.fullScreenWin.RemotePasteCmdBinding);
+            
+            }));
+
+            
             try
             {
                 dimensionOverflow = clipboardMgr.GetClipboardDimensionOverFlow();
@@ -85,6 +94,14 @@ namespace Switch
             {
                 mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Hidden;
             }));
+
+            mainWin.fullScreenWin.Dispatcher.Invoke(new Action(() =>
+            {
+                mainWin.fullScreenWin.CommandBindings.Add(mainWin.fullScreenWin.SwitchCmdBinding);
+                mainWin.fullScreenWin.CommandBindings.Add(mainWin.fullScreenWin.RemotePasteCmdBinding);
+            }));
+
+            
         }
 
         private void StartProgressBar()
