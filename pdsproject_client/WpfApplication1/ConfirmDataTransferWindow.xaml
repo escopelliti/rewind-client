@@ -1,11 +1,12 @@
 ﻿<Window x:Class="Views.ConfirmDataTransferWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Vuoi continuare con questa operazione?" Height="146.91" Width="431.537" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Vuoi continuare con questa operazione?" Height="146.91" Width="466.537" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Icon="resources/images/logoAppIco.ico">
     <Grid>
-        <Button Content="Cancel" HorizontalAlignment="Left" Click="CancelButton_Click" Margin="276,83,0,0" VerticalAlignment="Top" Width="50"/>
-        <Button Content="OK" HorizontalAlignment="Left" Margin="345,83,0,0" Click="OKButton_Click" VerticalAlignment="Top" Width="50"/>
+        <Button Content="Cancel" HorizontalAlignment="Left" Click="CancelButton_Click" Margin="297,83,0,0" VerticalAlignment="Top" Width="60"/>
+        <Button Content="OK" HorizontalAlignment="Left" Margin="381,83,0,0" Click="OKButton_Click" VerticalAlignment="Top" Width="60"/>
         <Label Content="Il contenuto della clipboard supera i 5 MB.&#xD;&#xA;Sei davvero sicuro di continuare?" x:Name="mexLabel" HorizontalAlignment="Left" Margin="11,8,0,0" VerticalAlignment="Top" FontSize="18"/>
+        <Image x:Name="img" HorizontalAlignment="Left" Height="46" Margin="381,20,0,0" VerticalAlignment="Top" Width="53"/>
 
     </Grid>
 </Window>

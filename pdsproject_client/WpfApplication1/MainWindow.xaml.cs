@@ -50,7 +50,7 @@ namespace MainApp
         {
             InitializeComponent();
             this.DataContext = this;
-            InitTrayIcon();            
+            InitTrayIcon();
             computerItemList = new ObservableCollection<ComputerItem>();
             computerList.ItemsSource = computerItemList;
             serverList = new List<Server>();
@@ -63,15 +63,15 @@ namespace MainApp
         {
             this.menu = new System.Windows.Forms.ContextMenu();
             this.menuItem = new System.Windows.Forms.MenuItem();
-            
+
             this.menu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.menuItem });
-            
+
             this.menuItem.Index = 0;
             this.menuItem.Text = "Exit";
             this.menuItem.Click += new System.EventHandler(this.menuItem_Click);
             
             trayIcon = new System.Windows.Forms.NotifyIcon();
-            trayIcon.Icon = new System.Drawing.Icon(@"../../resources/images/Computers.ico");
+            trayIcon.Icon = new System.Drawing.Icon(@"../../resources/images/LogoAppIco.ico");
             trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
             trayIcon.ContextMenu = this.menu;
         }
@@ -177,12 +177,12 @@ namespace MainApp
         {
             this.WindowState = WindowState.Normal;
         }
-        
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
             if (this.WindowState == WindowState.Minimized)
             {
-                this.ShowInTaskbar = false;              
+                this.ShowInTaskbar = false;
                 trayIcon.Visible = true;
             }
             else if (this.WindowState == WindowState.Normal)
@@ -257,22 +257,22 @@ namespace MainApp
                 }
                 try
                 {
-                    foreach (Window win in System.Windows.Application.Current.Windows)
+                foreach (Window win in System.Windows.Application.Current.Windows)
+                {
+                    if (win is FullScreenRemoteServerControl)
                     {
-                        if (win is FullScreenRemoteServerControl)
+                        if (win.IsVisible)
                         {
-                            if (win.IsVisible)
-                            {
-                                ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
-                                break;
-                            }
+                            ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
+                            break;
                         }
                     }
                 }
+            }
                 catch (Exception)
                 {
                     //nothing to do; error on retrieving current opened windows;
-                }                
+        }
             }
         }
 
@@ -287,7 +287,7 @@ namespace MainApp
 
             SetServerActive(FocusedComputerItem);
 
-            Server currentServer = channelMgr.GetCurrentServer();            
+            Server currentServer = channelMgr.GetCurrentServer();
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
 
             if (currentServer == null)
@@ -321,32 +321,32 @@ namespace MainApp
             bool isWindowOpened = false;
             try
             {
-                foreach (Window win in System.Windows.Application.Current.Windows)
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
                 {
-                    if (win is FullScreenRemoteServerControl)
+                    if (win.IsVisible)
                     {
-                        if (win.IsVisible)
-                        {
-                            ((FullScreenRemoteServerControl)win).UpdateCurrentServer(this, new ServerEventArgs(s));
-                            isWindowOpened = true;
-                            break;
-                        }
+                        ((FullScreenRemoteServerControl)win).UpdateCurrentServer(this, new ServerEventArgs(s));
+                        isWindowOpened = true;
+                        break;
                     }
                 }
+            }
 
                 if (!isWindowOpened)
+            {
+                List<Hotkey> hotkeyList = configurationMgr.ReadConfiguration().hotkeyList;
+                if (ie != null)
                 {
-                    List<Hotkey> hotkeyList = configurationMgr.ReadConfiguration().hotkeyList;
-                    if (ie != null)
-                    {
-                        InterceptEvents.RestartCapture();
-                    }
-                    else
-                    {
-                        ie = new InterceptEvents(channelMgr);
-                    }
-                    OpenFullScreenWindow(ie, hotkeyList, channelMgr);
+                    InterceptEvents.RestartCapture();
                 }
+                else
+                {
+                    ie = new InterceptEvents(channelMgr);
+                }               
+                OpenFullScreenWindow(ie, hotkeyList, channelMgr);
+            }
             }
             catch (Exception)
             {
@@ -373,7 +373,7 @@ namespace MainApp
                 {
                     if (s.GetChannel().GetCmdSocket() == null)
                     {
-                        channelMgr.AssignCmdChannel(s);
+                    channelMgr.AssignCmdChannel(s);
                     }                    
                     channelMgr.AddServer(s);
                 }
@@ -410,26 +410,26 @@ namespace MainApp
             
             AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
             a.ShowDialog();
-
+                                
             try
             {
-                foreach (Window win in System.Windows.Application.Current.Windows)
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
                 {
-                    if (win is FullScreenRemoteServerControl)
+                    if (win.IsVisible)
                     {
-                        if (win.IsVisible)
-                        {
-                            ((FullScreenRemoteServerControl)win).AddServerToList(s);
-                            break;
-                        }
+                        ((FullScreenRemoteServerControl)win).AddServerToList(s);
+                        break;
                     }
+                }
                 }
             }
             catch (Exception)
             {
                 //error retrieving current windows
                 return;
-            }              
+            }  
         }
 
         private void connectCheckbox_Unchecked(object sender, RoutedEventArgs e)
@@ -441,7 +441,7 @@ namespace MainApp
                 this.FocusedComputerItem.IsCheckboxChecked = false;
                 try
                 {
-                    this.computerItemList.Insert(index, FocusedComputerItem);                    
+                this.computerItemList.Insert(index, FocusedComputerItem);
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -454,23 +454,23 @@ namespace MainApp
 
             try
             {
-                foreach (Window win in System.Windows.Application.Current.Windows)
+            foreach (Window win in System.Windows.Application.Current.Windows)
+            {
+                if (win is FullScreenRemoteServerControl)
                 {
-                    if (win is FullScreenRemoteServerControl)
+                    if (win.IsVisible)
                     {
-                        if (win.IsVisible)
-                        {
-                            ((FullScreenRemoteServerControl)win).RemoveServerFromList(s);
-                            break;
-                        }
+                        ((FullScreenRemoteServerControl)win).RemoveServerFromList(s);
+                        break;
                     }
+                }
                 }
             }
             catch (Exception)
             {
                 //error retrieving current windows
                 return;
-            } 
+            }
         }
 
         private void ListBoxItem_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
@@ -483,12 +483,12 @@ namespace MainApp
             ModifyHotkeyWindow w = new ModifyHotkeyWindow();
             w.ShowDialog();
         }    
-    
+
         public void Forbidden(Server s)
-        {
+            {
             ComputerItem ci = null;
             try
-            {
+                {
                 ci = this.computerItemList.Where(x => x.Name == s.ComputerName).First<ComputerItem>();                
             }
             catch (ArgumentNullException)
@@ -498,9 +498,9 @@ namespace MainApp
             catch (InvalidOperationException)
             {
                 ci = null;
-            }
+        }    
             if (ci == null)
-            {
+        {            
                 return;
             }
             this.computerList.Dispatcher.Invoke(new Action(() =>
@@ -533,7 +533,7 @@ namespace MainApp
                 this.FocusedComputerItem.IsCheckboxChecked = true;
                 try
                 {
-                    this.computerItemList.Insert(index, FocusedComputerItem);
+                this.computerItemList.Insert(index, FocusedComputerItem);
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -546,28 +546,28 @@ namespace MainApp
         {
             Thread exit = new Thread(() => ExitFromApplication());
             exit.IsBackground = true;
-            exit.Start();            
+            exit.Start();
         }
 
         public void ExitFromApplication()
         {
             try
             {
-                if (channelMgr.GetCurrentServer() != null)
-                {
-                    channelMgr.EndConnectionToCurrentServer();
-                    channelMgr.SetCurrentServer(null);
-                }
-
-                Server[] toRemove = new Server[channelMgr.ConnectedServer.Count];
+            if (channelMgr.GetCurrentServer() != null)
+            {
+                channelMgr.EndConnectionToCurrentServer();
+                channelMgr.SetCurrentServer(null);
+            }
+            
+            Server[] toRemove = new Server[channelMgr.ConnectedServer.Count];
                 channelMgr.ConnectedServer.CopyTo(toRemove, 0);
 
-                foreach (Server s in toRemove)
-                {
-                    channelMgr.DeleteServer(s, System.Net.Sockets.SocketShutdown.Both);
-                }
-                this.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.Shutdown(); }));
+            foreach (Server s in toRemove)
+            {
+                channelMgr.DeleteServer(s, System.Net.Sockets.SocketShutdown.Both);
             }
+            this.Dispatcher.Invoke(new Action(() => { System.Windows.Application.Current.Shutdown(); }));
+        }
             catch (Exception)
             {
                 Environment.Exit(-1);
@@ -590,7 +590,7 @@ namespace MainApp
                 newComputerItem.IsCheckboxEnabled = false;
                 try
                 {
-                    this.computerItemList.Insert(index, newComputerItem);
+                this.computerItemList.Insert(index, newComputerItem);
                 }
                 catch (Exception)
                 {

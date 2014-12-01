@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Threading;
+using System.Windows.Interop;
+using System.Drawing;
 
 using ConnectionModule;
 using Switch;
 using Clipboard;
 using GenericDataStructure;
+using System.Windows.Media.Imaging;
 
 namespace Views
 {
@@ -24,6 +27,7 @@ namespace Views
         public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, SwitchOperator switchOp, ChannelManager channelMgr)
         {
             InitializeComponent();
+            img.Source = Imaging.CreateBitmapSourceFromHIcon(SystemIcons.Warning.Handle,Int32Rect.Empty,BitmapSizeOptions.FromEmptyOptions()); 
             this.computerID = computerID;
             this.clipboardMgr = clipboardMgr;
             this.channelMgr = channelMgr;

@@ -2,10 +2,10 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStartupLocation="CenterScreen"
-        Title="Modifica le shortcut" Height="414.926" Width="300" ResizeMode="NoResize">
+        Title="Modifica le shortcut" Height="414.926" Width="300" ResizeMode="NoResize" Icon="resources/images/logoAppIco.ico">
     <Grid>
 
-        <ComboBox Name="SwitchServeComboBox" HorizontalAlignment="Left" Margin="23,92,0,0" VerticalAlignment="Top" Width="120">
+        <ComboBox Name="SwitchServeComboBox" HorizontalAlignment="Left" Margin="23,92,0,0" VerticalAlignment="Top" Width="120" >
             <ComboBox.Background>
                 <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                     <GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -45,9 +45,19 @@
                     <Image Source="resources/images/rec.png" Height="17" Width="43" HorizontalAlignment="Center" VerticalAlignment="Center" RenderTransformOrigin="0.719,2.045"/>
                 </StackPanel>
             </Button.Content>
-        </Button>        
-        <Button Content="Cancel" Click="ButtonCancelClick" HorizontalAlignment="Left" Margin="210,325,0,0" VerticalAlignment="Top" Width="64"/>
-        <Button Content="Ok" Click="ButtonOkClick" HorizontalAlignment="Left" Margin="130,325,0,0" VerticalAlignment="Top" Width="64"/>
+        </Button>
+        <Button Content="Cancel" Click="ButtonCancelClick" HorizontalAlignment="Left" Margin="210,325,0,0" VerticalAlignment="Top" Width="60"/>
+        <Button Content="Ok" Click="ButtonOkClick" HorizontalAlignment="Left" Margin="133,325,0,0" VerticalAlignment="Top" Width="60"/>
         <Button Content="Default" Click="ButtonDefaultClick" HorizontalAlignment="Left" Margin="209,18,0,0" VerticalAlignment="Top" Width="64"/>
+        <Image HorizontalAlignment="Left" Height="97" Margin="8,274,0,0" VerticalAlignment="Top" Width="114" Source="resources/images/hotkey.png" RenderTransformOrigin="0.5,0.5">
+            <Image.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-19.126"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 </Window>
