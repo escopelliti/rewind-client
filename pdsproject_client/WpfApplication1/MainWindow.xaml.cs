@@ -221,7 +221,12 @@ namespace MainApp
             }
             catch (ArgumentNullException) {
                 newComputerItem = null;
-            }            
+            }
+            catch (Exception)
+            {
+                newComputerItem = null;
+            }
+            
             if (newComputerItem != null)
             {
                 SetServerActive(newComputerItem);
@@ -366,7 +371,10 @@ namespace MainApp
             {
                 try
                 {
-                    channelMgr.AssignCmdChannel(s);
+                    if (s.GetChannel().GetCmdSocket() == null)
+                    {
+                        channelMgr.AssignCmdChannel(s);
+                    }                    
                     channelMgr.AddServer(s);
                 }
                 catch (Exception)

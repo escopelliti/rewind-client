@@ -172,43 +172,39 @@ namespace Clipboard
             if (buffer != null)
             {
                 string type = null;
-                JObject contentJson = null;
-                Object content = null;
                 try
                 {
                     receivedJson = JObject.Parse(Encoding.Unicode.GetString(buffer));
                     type = receivedJson[ProtocolUtils.TYPE].ToString();
-                    contentJson = (JObject)receivedJson[ProtocolUtils.CONTENT];
-                    content = receivedJson[ProtocolUtils.CONTENT];
+                    switch (type)
+                    {
+                        case ProtocolUtils.SET_CLIPBOARD_FILES:
+                            NewClipboardFileToPaste((JObject)receivedJson[ProtocolUtils.CONTENT]);
+                            currentContent = ProtocolUtils.SET_CLIPBOARD_FILES;
+                            MoveByteToFiles();                        
+                            break;
+                        case ProtocolUtils.SET_CLIPBOARD_TEXT:
+                            this.Text = receivedJson[ProtocolUtils.CONTENT].ToString();
+                            currentContent = ProtocolUtils.SET_CLIPBOARD_TEXT;
+                            break;
+                        case ProtocolUtils.SET_CLIPBOARD_IMAGE:
+                            this.Data = new byte[(int)receivedJson[ProtocolUtils.CONTENT]];
+                            currentContent = ProtocolUtils.SET_CLIPBOARD_IMAGE;
+                            NewClipboardDataToPaste();
+                            break;
+                        case ProtocolUtils.SET_CLIPBOARD_AUDIO:
+                            this.Data = new byte[(int)receivedJson[ProtocolUtils.CONTENT]];
+                            currentContent = ProtocolUtils.SET_CLIPBOARD_AUDIO;
+                            NewClipboardDataToPaste();
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 catch (Exception ex)
                 {
                     throw ex;
-                }                
-                switch (type)
-                {
-                    case ProtocolUtils.SET_CLIPBOARD_FILES:
-                        NewClipboardFileToPaste(contentJson);
-                        currentContent = ProtocolUtils.SET_CLIPBOARD_FILES;
-                        MoveByteToFiles();                        
-                        break;
-                    case ProtocolUtils.SET_CLIPBOARD_TEXT:
-                        this.Text = content.ToString();
-                        currentContent = ProtocolUtils.SET_CLIPBOARD_TEXT;
-                        break;
-                    case ProtocolUtils.SET_CLIPBOARD_IMAGE:
-                        this.Data = new byte[(int)content];
-                        currentContent = ProtocolUtils.SET_CLIPBOARD_IMAGE;
-                        NewClipboardDataToPaste();
-                        break;
-                    case ProtocolUtils.SET_CLIPBOARD_AUDIO:
-                        this.Data = new byte[(int)content];
-                        currentContent = ProtocolUtils.SET_CLIPBOARD_AUDIO;
-                        NewClipboardDataToPaste();
-                        break;
-                    default:
-                        break;
-                }
+                } 
             }
         }
 
