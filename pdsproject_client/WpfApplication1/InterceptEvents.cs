@@ -95,7 +95,6 @@ namespace KeyboardMouseController.HookMgr
 
         public static void ResetKModifier()
         {
-
             INPUT inputToSend = inputFactory.CreateKeyUpInput(Keys.LControlKey);
             channelMgr.SendInputToSever(inputToSend);
             inputToSend = inputFactory.CreateKeyUpInput(Keys.LShiftKey);

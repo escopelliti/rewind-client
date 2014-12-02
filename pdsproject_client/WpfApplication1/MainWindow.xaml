@@ -6,34 +6,18 @@
         StateChanged="Window_StateChanged" Closing="Window_Closing">    
 
     <Window.Resources>
-
         <DataTemplate x:Key="SelectedTemplate">
             <TextBlock Text="{Binding}" Foreground="White" />
         </DataTemplate>
         <Style x:Key="listboxStyle" TargetType="{x:Type ListBoxItem}">
-
-            <Style.Triggers>
-                <Trigger Property="IsSelected" Value="true">
-                    <Setter Property="Foreground" Value="Red" />
-                    <Setter Property="Background" Value="Red" />
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="true">
-                    <Setter Property="Foreground" Value="Black" />
-                    
-                    <Setter Property="Background">
-                    
-                        <Setter.Value>
-                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="1,0">
-                                <GradientStop Color="#d3e7ff" Offset="0.986"/>
-                                <GradientStop Color="#b0d2fc" Offset="0.5"/>
-                                <GradientStop Color="#8ec1ff" Offset="0.51"/>
-                            </LinearGradientBrush>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
             <Style.Resources>
-                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="{DynamicResource {x:Static SystemColors.GradientActiveCaptionColorKey}}" />
+                
+                <LinearGradientBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Opacity="0.7">
+                    <GradientStop Color="#d3e7ff" Offset="0.986"/>
+                    <GradientStop Color="#b0d2fc" Offset="0.5"/>
+                    <GradientStop Color="#8ec1ff" Offset="0.51"/>
+                </LinearGradientBrush>
+                
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
             </Style.Resources>
             <EventSetter Event="MouseEnter" Handler="ListBoxItem_MouseEnter" />

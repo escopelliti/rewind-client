@@ -7,8 +7,8 @@
         <PasswordBox x:Name="pswBox" HorizontalAlignment="Left" Width="100" Height="21" Margin="20,58,0,59" VerticalAlignment="Center" Background="White" BorderBrush="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
         <Label x:Name="errorLabel" Content="Password errata!" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="10" Margin="21,89,0,0"/>
         <Button Content="Cancel" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="CancelButton_Click" Height="20" Width="60" Margin="0,0,17,8"/>
-        <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="OKButton_Click" Margin="0,0,101,8" Height="20" Width="60" />
-        <Image  Source="resources/images/key.png" HorizontalAlignment="Left" Height="69" Margin="174,30,0,0" VerticalAlignment="Top" Width="65"/>
+        <Button Content="OK" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="OKButton_Click" Margin="0,0,91,8" Height="20" Width="60" />
+        <Image  Source="resources/images/key.png" HorizontalAlignment="Left" Height="69" Margin="179,33,0,0" VerticalAlignment="Top" Width="65"/>
 
     </Grid>
 </Window>

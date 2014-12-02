@@ -132,7 +132,8 @@ namespace Views
 
         private void Block_Capture_Event_Handler(object sender, ExecutedRoutedEventArgs e)
         {
-            InterceptEvents.SwitchBlock();            
+            InterceptEvents.SwitchBlock();
+            InterceptEvents.ResetKModifier();
         }
 
         private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)
