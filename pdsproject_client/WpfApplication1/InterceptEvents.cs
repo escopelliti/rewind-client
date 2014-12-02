@@ -27,7 +27,7 @@ namespace KeyboardMouseController.HookMgr
 
         private static InputFactory inputFactory;
         private static ChannelManager channelMgr;
-
+ 
         public InterceptEvents(ChannelManager ChannelManager)
         {
             channelMgr = ChannelManager;
@@ -65,6 +65,7 @@ namespace KeyboardMouseController.HookMgr
                 if (nCode >= 0)
                 {
                     List<INPUT> inputToSendArray = inputFactory.CreateKeyboardInput((IntPtr)wParam, (IntPtr)lParam);
+                    
                     foreach (INPUT inputToSend in inputToSendArray)
                     {
                         channelMgr.SendInputToSever(inputToSend);
@@ -77,7 +78,7 @@ namespace KeyboardMouseController.HookMgr
             }
             return IntPtr.Zero;
         }
-        
+      
         private static IntPtr HookCallbackMouse(int nCode, IntPtr wParam, IntPtr lParam)
         {
             if (!block)
