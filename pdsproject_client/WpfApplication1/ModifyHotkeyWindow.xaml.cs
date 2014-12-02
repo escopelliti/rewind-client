@@ -40,6 +40,9 @@ namespace Views
                 h = config.hotkeyList.Find(x => x.Command == Hotkey.REMOTE_PAST_CMD);
                 RemotePasteKeyLabel.Content = h.Key;
                 RemotePasteComboBox.SelectedItem = h.KModifier;
+                h = config.hotkeyList.Find(x => x.Command == Hotkey.BLOCK_CAPTURE);
+                BlockCaptureKeyLabel.Content = h.Key;
+                BlockCaptureComboBox.SelectedItem = h.KModifier;
             }
             catch (Exception)
             {
@@ -59,6 +62,7 @@ namespace Views
             SwitchServeComboBox.ItemsSource = ModifierList;
             OpenPanelComboBox.ItemsSource = ModifierList;
             RemotePasteComboBox.ItemsSource = ModifierList;
+            BlockCaptureComboBox.ItemsSource = ModifierList;
         }
 
         private void ButtonChangeComputerClick(object sender, RoutedEventArgs e)
@@ -66,6 +70,7 @@ namespace Views
             this.KeyDown += ButtonChangeComputer_KeyDown;
             this.KeyDown -= ButtonOpenPanel_KeyDown;
             this.KeyDown -= ButtonRemotePaste_KeyDown;
+            this.KeyDown -= ButtonBlockCapture_KeyDown;
         }
 
         private void ButtonChangeComputer_KeyDown(object sender, KeyEventArgs e)
@@ -87,6 +92,7 @@ namespace Views
             this.KeyDown += ButtonOpenPanel_KeyDown;
             this.KeyDown -= ButtonChangeComputer_KeyDown;
             this.KeyDown -= ButtonRemotePaste_KeyDown;
+            this.KeyDown -= ButtonBlockCapture_KeyDown;
         }
 
         private void ButtonOpenPanel_KeyDown(object sender, KeyEventArgs e)
@@ -108,6 +114,7 @@ namespace Views
             this.KeyDown += ButtonRemotePaste_KeyDown;
             this.KeyDown -= ButtonChangeComputer_KeyDown;
             this.KeyDown -= ButtonOpenPanel_KeyDown;
+            this.KeyDown -= ButtonBlockCapture_KeyDown;
         }
 
         private void ButtonRemotePaste_KeyDown(object sender, KeyEventArgs e)
@@ -116,6 +123,28 @@ namespace Views
             {
                 this.KeyDown -= ButtonRemotePaste_KeyDown;
                 RemotePasteKeyLabel.Content = e.Key;
+            }
+            else
+            {
+                System.Windows.MessageBox.Show
+                    ("Carattere non consentito, premi un altro tasto", "Attenzione!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            }
+        }
+
+        private void ButtonBlockCaptureClick(object sender, RoutedEventArgs e)
+        {
+            this.KeyDown += ButtonBlockCapture_KeyDown;
+            this.KeyDown -= ButtonChangeComputer_KeyDown;
+            this.KeyDown -= ButtonOpenPanel_KeyDown;
+            this.KeyDown -= ButtonRemotePaste_KeyDown;
+        }
+
+        private void ButtonBlockCapture_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (IsValidCharacheter(e.Key))
+            {
+                this.KeyDown -= ButtonBlockCapture_KeyDown;
+                BlockCaptureKeyLabel.Content = e.Key;
             }
             else
             {
@@ -155,6 +184,9 @@ namespace Views
                 h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.REMOTE_PAST_CMD);
                 RemotePasteKeyLabel.Content = h.Key;
                 RemotePasteComboBox.SelectedItem = h.KModifier;
+                h = stdConfig.hotkeyList.Find(x => x.Command == Hotkey.BLOCK_CAPTURE);
+                BlockCaptureKeyLabel.Content = h.Key;
+                BlockCaptureComboBox.SelectedItem = h.KModifier;
             }
             catch (Exception)
             {
@@ -178,10 +210,14 @@ namespace Views
                 Hotkey newRemotePasteHotkey = new Hotkey
                     ((ModifierKeys)RemotePasteComboBox.SelectedItem, (Key)RemotePasteKeyLabel.Content, Hotkey.REMOTE_PAST_CMD);
 
+                Hotkey newBlockCaptureHotkey = new Hotkey
+                    ((ModifierKeys)BlockCaptureComboBox.SelectedItem, (Key)BlockCaptureKeyLabel.Content, Hotkey.BLOCK_CAPTURE);
+
                 Configuration newConf = new Configuration();
                 newConf.hotkeyList.Add(newSwitchServerHotkey);
                 newConf.hotkeyList.Add(newOpenPanelHotkey);
                 newConf.hotkeyList.Add(newRemotePasteHotkey);
+                newConf.hotkeyList.Add(newBlockCaptureHotkey);
                 ConfigurationManager confMgr = new ConfigurationManager();
                 confMgr.WriteConfigFile(newConf);
 
@@ -192,17 +228,23 @@ namespace Views
 
         private bool IsValidConfiguration()
         {
-            if (SwitchServeComboBox.SelectedItem.Equals(OpenPanelComboBox.SelectedItem) &&
-                SwitchServeComboBox.SelectedItem.Equals(RemotePasteComboBox.SelectedItem) &&
-                OpenPanelComboBox.SelectedItem.Equals(RemotePasteComboBox.SelectedItem) &&
-                SwitchServerKeyLabel.Content.Equals(OpenPanelKeyLabel.Content) &&
-                SwitchServerKeyLabel.Content.Equals(RemotePasteKeyLabel) &&
-                OpenPanelKeyLabel.Content.Equals(RemotePasteKeyLabel))
+            if ((SwitchServeComboBox.SelectedItem.Equals(OpenPanelComboBox.SelectedItem) &&
+                SwitchServerKeyLabel.Content.Equals(OpenPanelKeyLabel.Content)) ||
+                (SwitchServeComboBox.SelectedItem.Equals(RemotePasteComboBox.SelectedItem) &&
+                SwitchServerKeyLabel.Content.Equals(RemotePasteKeyLabel.Content)) ||
+                (SwitchServeComboBox.SelectedItem.Equals(BlockCaptureComboBox.SelectedItem) &&
+                SwitchServerKeyLabel.Content.Equals(BlockCaptureKeyLabel.Content)) ||
+                (OpenPanelComboBox.SelectedItem.Equals(RemotePasteComboBox.SelectedItem) &&
+                OpenPanelKeyLabel.Content.Equals(RemotePasteKeyLabel.Content)) ||
+                (OpenPanelComboBox.SelectedItem.Equals(BlockCaptureComboBox.SelectedItem) &&
+                OpenPanelKeyLabel.Content.Equals(BlockCaptureKeyLabel.Content)) ||
+                (RemotePasteComboBox.SelectedItem.Equals(BlockCaptureComboBox.SelectedItem) &&
+                RemotePasteKeyLabel.Content.Equals(BlockCaptureKeyLabel.Content)))
             {
-                System.Windows.MessageBox.Show ("Non puoi scegliere due shortcut uguali", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Stop);
+                System.Windows.MessageBox.Show("Non puoi scegliere due shortcut uguali", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Stop);
                 return false;
-            }
-            return true;
+            }            
+            return true;    
         }
     }
 }

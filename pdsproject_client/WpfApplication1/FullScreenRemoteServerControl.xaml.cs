@@ -66,6 +66,15 @@ namespace Views
                             RemotePasteCmdBinding = new CommandBinding(settings, Send_Remote_Past_Request);
                             CommandBindings.Add(RemotePasteCmdBinding);
                             break;
+
+                        case Hotkey.BLOCK_CAPTURE:
+                            CommandBindings.Add(new CommandBinding(settings, Block_Capture_Event_Handler));
+                            break;
+
+                        default:
+                            break;
+
+                            
                     }
                 }
                 catch (Exception)
@@ -73,7 +82,7 @@ namespace Views
                     MessageBox.Show("Scorciatoie non disponibili per la sessione attuale!", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
-        }
+        }       
        
         private void InitGUI()
         {
@@ -89,6 +98,11 @@ namespace Views
                         break;
                     case Hotkey.REMOTE_PAST_CMD:
                         this.remotePasteShortcutLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                    case Hotkey.BLOCK_CAPTURE:
+                        this.blockCaptureLabel.Content = hotkey.KModifier + " + " + hotkey.Key;
+                        break;
+                    default:
                         break;
                 }
             }
@@ -114,6 +128,11 @@ namespace Views
         {
             MainWin.channelMgr.SendRequest(Protocol.ProtocolUtils.REMOTE_PASTE, string.Empty);
             InterceptEvents.ResetKModifier();
+        }
+
+        private void Block_Capture_Event_Handler(object sender, ExecutedRoutedEventArgs e)
+        {
+            InterceptEvents.SwitchBlock();            
         }
 
         private void Open_Panel_Event_Handler(object sender, RoutedEventArgs e)

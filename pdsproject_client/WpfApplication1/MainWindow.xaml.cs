@@ -257,22 +257,22 @@ namespace MainApp
                 }
                 try
                 {
-                foreach (Window win in System.Windows.Application.Current.Windows)
-                {
-                    if (win is FullScreenRemoteServerControl)
+                    foreach (Window win in System.Windows.Application.Current.Windows)
                     {
-                        if (win.IsVisible)
+                        if (win is FullScreenRemoteServerControl)
                         {
-                            ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
-                            break;
+                            if (win.IsVisible)
+                            {
+                                ((FullScreenRemoteServerControl)win).RemoveServerFromList(server);
+                                break;
+                            }
                         }
                     }
                 }
-            }
                 catch (Exception)
                 {
                     //nothing to do; error on retrieving current opened windows;
-        }
+                }
             }
         }
 

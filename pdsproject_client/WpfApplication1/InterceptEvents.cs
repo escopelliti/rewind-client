@@ -42,7 +42,12 @@ namespace KeyboardMouseController.HookMgr
             keyboardHookHandle = SetWindowsHookEx(WH_KEYBOARD_LL, keyboardProc, IntPtr.Zero, 0);
             mouseHookHandle = SetWindowsHookEx(WH_MOUSE_LL, mouseProc, IntPtr.Zero, 0);   
         }
-
+        
+        public static void SwitchBlock()
+        {
+            block = !block;
+        }
+        
         public static void RestartCapture()
         {
             block = false;       
@@ -102,7 +107,7 @@ namespace KeyboardMouseController.HookMgr
         {
             RestartCapture();
         }
-       
+
         [DllImport("user32.dll", CharSet=CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         private static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
 
@@ -114,6 +119,5 @@ namespace KeyboardMouseController.HookMgr
 
         [DllImport("user32.dll")]
         private static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
-
     }
 }

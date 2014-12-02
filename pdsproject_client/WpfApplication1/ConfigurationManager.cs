@@ -29,6 +29,8 @@ namespace ClientConfiguration
                 new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.Enter, Hotkey.OPEN_PANEL_CMD));
             stdConfiguration.hotkeyList.Add(
                 new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.P, Hotkey.REMOTE_PAST_CMD));
+            stdConfiguration.hotkeyList.Add(
+                new Hotkey(System.Windows.Input.ModifierKeys.Control, System.Windows.Input.Key.B, Hotkey.BLOCK_CAPTURE));
             return stdConfiguration;
         }
 

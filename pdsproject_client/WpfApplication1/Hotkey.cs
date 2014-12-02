@@ -12,6 +12,7 @@ namespace KeyboardMouseController
         public const string SWITCH_SERVER_CMD = "SWITCH_SERVER";
         public const string OPEN_PANEL_CMD = "OPEN_PANEL";
         public const string REMOTE_PAST_CMD = "REMOTE_PAST";
+        public const string BLOCK_CAPTURE = "BLOCK_CAPTURE";
 
         public Hotkey(ModifierKeys km, Key k, string c)
         {

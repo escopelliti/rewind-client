@@ -4,16 +4,18 @@
         Title="FullScreenRemoteServerControl" WindowState="Maximized" WindowStyle="None" x:Name="fullScreenRemoteServerControl" Icon="resources/images/logoAppIco.ico">
     <Grid>
         <Canvas HorizontalAlignment="Left" Height="Auto" Margin="10,23,0,0" VerticalAlignment="Top" Width="362">
-            <Label Content="Apri il pannello di controllo:" Canvas.Left="10" Canvas.Top="82" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label x:Name="controlPanelShortcutLabel" Canvas.Left="256" Canvas.Top="82" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label Content="Cambia computer:" Canvas.Left="10" Canvas.Top="125" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label x:Name="switchServerShortcutLabel" Canvas.Left="256" Canvas.Top="126" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label Content="Incolla remoto:" Canvas.Left="10" Canvas.Top="35" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label x:Name="remotePasteShortcutLabel" Canvas.Left="256" Canvas.Top="35" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label Content="Sei attivo su:" Canvas.Left="10" Canvas.Top="167" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label x:Name="currentServerNameLabel" Canvas.Left="256" Canvas.Top="174" Height="Auto" Width="Auto" FontSize="18"/>
-            <Label Content="Computer connessi:" Canvas.Left="10" Canvas.Top="205" Height="Auto" Width="Auto" FontSize="18"/>
-            <ListView Name="connectedComputerList" Canvas.Left="256" Canvas.Top="213" IsEnabled="False" SelectionMode="Single" ItemsSource="{Binding ElementName=fullScreenRemoteServerControl, Path=computerList}">
+            <Label Content="Blocca cattura:" Canvas.Left="10" Canvas.Top="22" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label x:Name="blockCaptureLabel" Canvas.Left="256" Canvas.Top="22" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label Content="Apri il pannello di controllo:" Canvas.Left="10" Canvas.Top="116" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label x:Name="controlPanelShortcutLabel" Canvas.Left="256" Canvas.Top="116" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label Content="Cambia computer:" Canvas.Left="10" Canvas.Top="159" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label x:Name="switchServerShortcutLabel" Canvas.Left="256" Canvas.Top="160" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label Content="Incolla remoto:" Canvas.Left="10" Canvas.Top="69" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label x:Name="remotePasteShortcutLabel" Canvas.Left="256" Canvas.Top="69" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label Content="Sei attivo su:" Canvas.Left="10" Canvas.Top="201" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label x:Name="currentServerNameLabel" Canvas.Left="256" Canvas.Top="208" Height="Auto" Width="Auto" FontSize="18"/>
+            <Label Content="Computer connessi:" Canvas.Left="10" Canvas.Top="239" Height="Auto" Width="Auto" FontSize="18"/>
+            <ListView Name="connectedComputerList" Canvas.Left="256" Canvas.Top="247" IsEnabled="False" SelectionMode="Single" ItemsSource="{Binding ElementName=fullScreenRemoteServerControl, Path=computerList}">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="140" Header="Nome del Computer" />
