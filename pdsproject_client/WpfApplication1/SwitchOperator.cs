@@ -44,6 +44,7 @@ namespace Switch
                 channelMgr.EndConnectionToCurrentServer();
                 channelMgr.StartNewConnection(computerID);
                 OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
+                CloseProgressBar();
                 channelMgr.ResetTokenGen();
                 return;
             }
@@ -58,6 +59,10 @@ namespace Switch
                 catch (Exception)
                 {
                     CloseProgressBar();
+                    OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
+                    channelMgr.EndConnectionToCurrentServer();
+                    channelMgr.StartNewConnection(computerID);
+                    OnSetNewServer(new ServerEventArgs(channelMgr.GetCurrentServer())); 
                 }
                 OnEndConnectionToServer(new ServerEventArgs(channelMgr.GetCurrentServer()));
                 channelMgr.EndConnectionToCurrentServer();

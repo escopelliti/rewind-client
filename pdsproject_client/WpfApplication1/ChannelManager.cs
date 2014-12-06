@@ -163,12 +163,13 @@ namespace ConnectionModule
         {
             string json = JsonConvert.SerializeObject(inputToSend);
             byte[] toSend = Encoding.Unicode.GetBytes(json);
-            ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
-            if (ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket()) <= 0)
+            try
             {
-                DeleteServer(currentServer, SocketShutdown.Both);
-                try
+                ccm.Send(toSend, currentServer.GetChannel().GetDataSocket());
+                if (ccm.Receive(new byte[5], currentServer.GetChannel().GetDataSocket()) <= 0)
                 {
+                    DeleteServer(currentServer, SocketShutdown.Both);
+
                     foreach (Window win in System.Windows.Application.Current.Windows)
                     {
                         if (win is FullScreenRemoteServerControl)
@@ -177,15 +178,15 @@ namespace ConnectionModule
                             ((FullScreenRemoteServerControl)win).Close();
                         }
                     }
-                }
-                catch (Exception)
-                {
                     currentServer = null;
                     InterceptEvents.StopCapture();
-                    return;
-                }                
+                }
+            }
+            catch (Exception)
+            {
                 currentServer = null;
                 InterceptEvents.StopCapture();
+                return;
             }
         }
 
@@ -302,13 +303,26 @@ namespace ConnectionModule
             }
         }
 
+        public List<Server> GetAuthenticatedServer()
+        {
+            List<Server> serverList = new List<Server>();
+            foreach (Server s in ConnectedServer)
+            {
+                if (s.Authenticated)
+                {
+                    serverList.Add(s);
+                }
+            }
+            return serverList;
+        }
+
         public ObservableCollection<ComputerItem> GetComputerItemList()
         {
             ObservableCollection<ComputerItem> connectedComputers = new ObservableCollection<ComputerItem>();
             ushort idItem = 0;
             foreach (Server s in ConnectedServer)
             {
-                if (s != currentServer)
+                if (s != currentServer && s.Authenticated)
                 {
                     connectedComputers.Add(new ComputerItem()
                     { Name = s.ComputerName, ComputerStateImage = @"resources/images/connComputer.png", ComputerNum = idItem, ComputerID = s.ServerID });
@@ -341,15 +355,23 @@ namespace ConnectionModule
             StandardRequest stdReq = new StandardRequest();
             stdReq.type = requestType;
             stdReq.content = content;
-            string jsonTosend = JsonConvert.SerializeObject(stdReq);
-            byte[] requestToSend = Encoding.Unicode.GetBytes(jsonTosend);
-            byte[] toSend = new byte[requestToSend.Length + TokenGenerator.TOKEN_DIM];
-            CurrentToken = tokenGen.GetNewToken();
-            System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
-            System.Buffer.BlockCopy(requestToSend, 0, toSend, TokenGenerator.TOKEN_DIM, requestToSend.Length);
-            ccm.Send(toSend, socket);
+            try
+            {
+                string jsonTosend = JsonConvert.SerializeObject(stdReq);
+                byte[] requestToSend = Encoding.Unicode.GetBytes(jsonTosend);
+                byte[] toSend = new byte[requestToSend.Length + TokenGenerator.TOKEN_DIM];
+                CurrentToken = tokenGen.GetNewToken();
+                System.Buffer.BlockCopy(CurrentToken, 0, toSend, 0, TokenGenerator.TOKEN_DIM);
+                System.Buffer.BlockCopy(requestToSend, 0, toSend, TokenGenerator.TOKEN_DIM, requestToSend.Length);
+                ccm.Send(toSend, socket);
+            }
+            catch(Exception)
+            {
+                ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
+                ccm.Close(currentServer.GetChannel().GetCmdSocket());
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
-
         public void SendRequest(string requestType, Object content)
         {
             StandardRequest stdReq = new StandardRequest();

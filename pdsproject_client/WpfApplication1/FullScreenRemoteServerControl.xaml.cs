@@ -151,7 +151,7 @@ namespace Views
             }
             catch (Exception)
             {
-                MessageBox.Show("C'è stato un problema. Prova a riavviare l'applicazione. ", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //MessageBox.Show("C'è stato un problema. Prova a riavviare l'applicazione. ", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 //nothing to do
                 return;
             }
@@ -160,6 +160,11 @@ namespace Views
 
         public void AddServerToList(Server s)
         {
+            if (!s.Authenticated) 
+            { 
+                return; 
+            }
+
             this.connectedComputerList.Dispatcher.Invoke(new Action(() =>
             {
                 this.computerList.Add(s.ComputerName);

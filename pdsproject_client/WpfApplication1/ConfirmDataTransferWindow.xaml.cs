@@ -23,6 +23,7 @@ namespace Views
         private ChannelManager channelMgr;
         private int computerID;
         private ClipboardMgr clipboardMgr;
+        private bool exit;
 
         public ConfirmDataTransferWindow(int computerID, ClipboardMgr clipboardMgr, SwitchOperator switchOp, ChannelManager channelMgr)
         {
@@ -32,6 +33,7 @@ namespace Views
             this.clipboardMgr = clipboardMgr;
             this.channelMgr = channelMgr;
             this.switchOp = switchOp;
+            exit = true;
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
@@ -40,6 +42,7 @@ namespace Views
             startConnection.SetApartmentState(ApartmentState.STA);
             startConnection.IsBackground = true;
             startConnection.Start();
+            exit = false;
             this.Close();
         }
 
@@ -52,6 +55,10 @@ namespace Views
             catch (Exception)
             {
                 CloseProgressBar();
+                switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
+                this.channelMgr.EndConnectionToCurrentServer();
+                this.channelMgr.StartNewConnection(computerID);
+                switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             }            
             switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
@@ -72,16 +79,35 @@ namespace Views
             {
                 switchOp.mainWin.fullScreenWin.clipboardTransferProgressBar.Visibility = System.Windows.Visibility.Hidden;
             }));
+            switchOp.mainWin.fullScreenWin.Dispatcher.Invoke(new Action(() =>
+            {
+                switchOp.mainWin.fullScreenWin.CommandBindings.Add(switchOp.mainWin.fullScreenWin.SwitchCmdBinding);
+                switchOp.mainWin.fullScreenWin.CommandBindings.Add(switchOp.mainWin.fullScreenWin.RemotePasteCmdBinding);
+            }));
+            switchOp.mainWin.Dispatcher.Invoke(new Action(() =>
+            {
+                switchOp.mainWin.computerList.IsEnabled = true;
+            }));
         }        
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             CloseProgressBar();
+            exit = false;
             this.Close();
             switchOp.OnEndConnectionToServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
             this.channelMgr.EndConnectionToCurrentServer();
             this.channelMgr.StartNewConnection(computerID);
             switchOp.OnSetNewServer(new ServerEventArgs(this.channelMgr.GetCurrentServer()));
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            if (exit)
+            {
+                CloseProgressBar();
+            }
+            
         }
     }
 }

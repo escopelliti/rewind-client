@@ -22,6 +22,7 @@ namespace Views
         private ChannelManager channelMgr;
         private Authentication.AuthenticationMgr authMgr;
         private MainWindow mainWin;
+        private bool exit;
 
         public AuthenticationWindow(Server toAuthenticate, ChannelManager channelMgr, MainWindow mainWin)
         {
@@ -30,6 +31,8 @@ namespace Views
             this.toAuthenticate = toAuthenticate;
             this.channelMgr = channelMgr;
             this.mainWin = mainWin;
+            exit = false;
+
             authMgr = new Authentication.AuthenticationMgr(channelMgr, mainWin);
         }
 
@@ -47,10 +50,12 @@ namespace Views
                    catch (Exception)
                    {
                        MessageBox.Show("C'è stato un problema nella rimozione di " + mainWin.FocusedComputerItem.Name + ".", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                       exit = true;
                        this.Close();
                    }
                    
                }));
+            exit = true;
             this.Close();
         }        
 
@@ -73,7 +78,14 @@ namespace Views
                 }));
                 return;
             }
+            exit = true;
             this.Dispatcher.Invoke(new Action(() => this.Close()));
+            
+            FullScreenRemoteServerControl fullScreen = mainWin.GetFullScreenHandle();
+            if (fullScreen != null) 
+            {
+                fullScreen.AddServerToList(toAuthenticate);
+            }
         }
 
         private void OKButton_Click(object sender, RoutedEventArgs e)
@@ -108,6 +120,29 @@ namespace Views
             {                
                 BrushConverter bc = new BrushConverter();
                 this.pswBox.Background = (Brush) bc.ConvertFrom("#FFFF7F7F");                
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!exit)
+            {
+
+                mainWin.Dispatcher.Invoke(new Action(() =>
+                {
+                    try
+                    {
+                        int index = mainWin.computerItemList.IndexOf(mainWin.FocusedComputerItem);
+                        mainWin.computerItemList.Remove(mainWin.FocusedComputerItem);
+                        mainWin.FocusedComputerItem.IsCheckboxChecked = false;
+                        mainWin.computerItemList.Insert(index, mainWin.FocusedComputerItem);
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("C'è stato un problema nella rimozione di " + mainWin.FocusedComputerItem.Name + ".", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+
+                }));
             }
         }
     }

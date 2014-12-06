@@ -106,13 +106,21 @@ namespace Discovery
                 Server server = this.serverList.Find(x => serviceName.Contains(x.ComputerName));
                 if (server != null)
                 {
-                    this.serverList.Remove(server);                
-                    server.GetChannel().GetCmdSocket().Shutdown(System.Net.Sockets.SocketShutdown.Both);
-                    server.GetChannel().GetCmdSocket().Close();                                   
-                    server.GetChannel().GetDataSocket().Shutdown(System.Net.Sockets.SocketShutdown.Both);
-                    server.GetChannel().GetDataSocket().Close();
-                }
-                OnDisconnettedComputerService(server);
+                    this.serverList.Remove(server);
+                    System.Net.Sockets.Socket cmdSocket = server.GetChannel().GetCmdSocket();
+                    if (cmdSocket != null)
+                    {
+                        server.GetChannel().GetCmdSocket().Shutdown(System.Net.Sockets.SocketShutdown.Both);
+                        server.GetChannel().GetCmdSocket().Close();
+                    }
+                    System.Net.Sockets.Socket dataSocket = server.GetChannel().GetDataSocket();
+                    if (dataSocket != null)
+                    {
+                        dataSocket.Shutdown(System.Net.Sockets.SocketShutdown.Both);
+                        server.GetChannel().GetDataSocket().Close();
+                    }
+                    OnDisconnettedComputerService(server);
+                }                
             }
             catch (NullReferenceException)
             {
@@ -121,7 +129,7 @@ namespace Discovery
             catch (Exception)
             {
                 //nothing to do
-            }          
+            }        
         }
 
         private void OnDisconnettedComputerService(Server server)

@@ -128,7 +128,7 @@ namespace MainApp
         
         private void OpenWorkareaWindow()
         {
-            if (channelMgr.ConnectedServer.Count >= 2)
+            if (this.channelMgr.GetAuthenticatedServer().Count >= 2)
             {
                 WorkareaWindow wk = new WorkareaWindow(channelMgr, this);
                 wk.ShowDialog();
@@ -136,6 +136,7 @@ namespace MainApp
             else
             {
                 System.Windows.MessageBox.Show("Connetti un altro computer dal pannello di controllo!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                InterceptEvents.RestartCapture();
             }
         }
 
@@ -412,26 +413,9 @@ namespace MainApp
             
             AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
             a.ShowDialog();
-                                
-            try
-            {
-            foreach (Window win in System.Windows.Application.Current.Windows)
-            {
-                if (win is FullScreenRemoteServerControl)
-                {
-                    if (win.IsVisible)
-                    {
-                        ((FullScreenRemoteServerControl)win).AddServerToList(s);
-                        break;
-                    }
-                }
-                }
-            }
-            catch (Exception)
-            {
-                //error retrieving current windows
-                return;
-            }  
+
+          
+                                            
         }
 
         private void connectCheckbox_Unchecked(object sender, RoutedEventArgs e)
@@ -452,6 +436,7 @@ namespace MainApp
             }));   
             
             Server s = serverList.Find(x => x.ComputerName == FocusedComputerItem.Name);
+            s.Authenticated = false;
             channelMgr.DeleteServer(s, System.Net.Sockets.SocketShutdown.Send);
 
             try
@@ -599,6 +584,11 @@ namespace MainApp
                     this.computerItemList.Insert(0, newComputerItem);
                 }
             }));
+        }
+
+        public FullScreenRemoteServerControl GetFullScreenHandle() 
+        {
+            return fullScreenWin;
         }
     }
 }

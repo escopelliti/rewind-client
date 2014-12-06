@@ -18,6 +18,7 @@ namespace Clipboard
         public byte[] Data { get; set; }
         public Stream audio { get; set; }
         public List<ProtocolUtils.FileStruct> filesToReceive { get; set; }
+        public List<ProtocolUtils.FileStruct> filesToSend { get; set; }
         public String Text { get; set; }
         public JObject receivedJson { get; set; }
 
@@ -29,6 +30,7 @@ namespace Clipboard
         {            
             currentContent = String.Empty;
             filesToReceive = new List<ProtocolUtils.FileStruct>();
+            filesToSend = new List<ProtocolUtils.FileStruct>();
         }        
 
         private void MoveByteToFiles()
@@ -50,7 +52,21 @@ namespace Clipboard
             
             while (currentFileNum < filesToReceive.Count)
             {
-
+                if (currentFile.size == 0)
+                {
+                    File.Create(ProtocolUtils.TMP_DIR + currentFile.dir + currentFile.name);
+                    currentFileNum++;
+                    dim = 0;
+                    if (currentFileNum == filesToReceive.Count)
+                    {
+                        this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
+                        break;
+                    }
+                    this.ChannelMgr.ReceiveAck();
+                    this.ChannelMgr.SendRequest(ProtocolUtils.GET_CLIPBOARD_FILES, String.Empty);
+                    currentFile = filesToReceive.ElementAt(currentFileNum);
+                    continue;
+                }
                 byte[] bufferData = this.ChannelMgr.ReceiveData();
                 if (bufferData == null)
                 {
@@ -352,13 +368,20 @@ namespace Clipboard
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
             this.ChannelMgr.ReceiveAck();
             byte[] token = this.ChannelMgr.CurrentToken;
-            foreach (ProtocolUtils.FileStruct fileStruct in filesToReceive)
+            foreach (ProtocolUtils.FileStruct fileStruct in filesToSend)
             {
                 string currenFilePath = ProtocolUtils.TMP_DIR + fileStruct.dir + "\\" + fileStruct.name;
-                byte[] bytesFileToSend = new byte[4096];
+                byte[] bytesFileToSend = new byte[1024];
                 if (File.Exists(currenFilePath))
                 {
-                    byte[] bytesFile = new byte[4096 - TokenGenerator.TOKEN_DIM];
+                    if (new FileInfo(currenFilePath).Length == 0) 
+                    {
+                        this.ChannelMgr.SendBytes(new byte[0]);
+                        this.ChannelMgr.ReceiveAck();
+                        continue;
+                    }
+
+                    byte[] bytesFile = new byte[1024 - TokenGenerator.TOKEN_DIM];
                     try
                     {
                         using (var stream = new FileStream(currenFilePath, FileMode.Open))
@@ -366,14 +389,11 @@ namespace Clipboard
                             int bytesRead;
                             while ((bytesRead = stream.Read(bytesFile, 0, bytesFile.Length)) > 0)
                             {
-                                byte[] byteToSend = new byte[bytesRead + TokenGenerator.TOKEN_DIM];
-                                System.Buffer.BlockCopy(token, 0, byteToSend, 0, TokenGenerator.TOKEN_DIM);
-                                System.Buffer.BlockCopy(bytesFile, 0, byteToSend, TokenGenerator.TOKEN_DIM, bytesRead);
-
+                                byte[] byteToSend = new byte[bytesRead];
+                                System.Buffer.BlockCopy(bytesFile, 0, byteToSend, 0, bytesRead);
                                 this.ChannelMgr.SendBytes(byteToSend);
                                 this.ChannelMgr.ReceiveAck();
                             }
-
                         }
                     }
                     catch (Exception)
@@ -387,11 +407,11 @@ namespace Clipboard
         }
 
         public void ResetClassValues()
-        {
-            this.currentContent = "NONE";
+        {            
             this.receivedJson = null;
             this.Data = null;
             this.filesToReceive.Clear();
+            this.filesToSend.Clear();
             this.audio = null;
         }
 
@@ -404,8 +424,16 @@ namespace Clipboard
                 foreach (String fullNameFiles in Directory.GetFiles(ProtocolUtils.TMP_DIR))
                 {
                     strColl.Add(fullNameFiles);
+                    ProtocolUtils.FileStruct fileStruct = this.filesToReceive.Find(x => fullNameFiles.Contains(x.name));
+                    this.filesToSend.Add(fileStruct);
                 }
-                foreach (String fullNameDir in Directory.GetDirectories(ProtocolUtils.TMP_DIR))
+
+                string[] dirToSend = Directory.GetDirectories(ProtocolUtils.TMP_DIR);
+                if(dirToSend.Length > 0)
+                {
+                    this.filesToSend = this.filesToSend.Union(filesToReceive).ToList();
+                }
+                foreach (String fullNameDir in dirToSend)
                 {
                     strColl.Add(fullNameDir);
                 }
