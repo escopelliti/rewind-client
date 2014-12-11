@@ -46,7 +46,7 @@ namespace Clipboard
             catch (Exception)
             {
                 this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             
@@ -100,7 +100,7 @@ namespace Clipboard
                 catch (Exception)
                 {
                     this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }    
             }
@@ -243,7 +243,7 @@ namespace Clipboard
                 catch (Exception)
                 {
                     this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }                
                 offset += bufferData.Length;                    
@@ -300,7 +300,7 @@ namespace Clipboard
             if (toSend == null)
             {
                 this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
@@ -321,7 +321,7 @@ namespace Clipboard
                 catch (Exception)
                 {
                     this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
                 
@@ -341,7 +341,7 @@ namespace Clipboard
             if (toSend == null)
             {
                 this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
@@ -354,7 +354,7 @@ namespace Clipboard
             if (fileDropListArray == null)
             {
                 this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;            
             }
             this.ChannelMgr.AssignNewToken();
@@ -362,7 +362,7 @@ namespace Clipboard
             if (toSend == null)
             {
                 this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
             this.ChannelMgr.SendBytes(Encoding.Unicode.GetBytes(toSend));
@@ -399,7 +399,7 @@ namespace Clipboard
                     catch (Exception)
                     {
                         this.ChannelMgr.DeleteServer(this.ChannelMgr.GetCurrentServer(), System.Net.Sockets.SocketShutdown.Both);
-                        MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;                           
                     }
                 }

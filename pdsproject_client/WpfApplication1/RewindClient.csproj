@@ -7,8 +7,8 @@
     <ProjectGuid>{C2CC5C63-1F6B-47C9-AA98-2F6653652163}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WpfApplication1</RootNamespace>
-    <AssemblyName>WpfApplication1</AssemblyName>
+    <RootNamespace>RewindClient</RootNamespace>
+    <AssemblyName>RewindClient</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -48,6 +48,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>logoApp.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -181,16 +185,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="resources\config.json" />
+    <None Include="resources\images\Thumbs.db" />
+    <None Include="resources\Thumbs.db" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="resources\images\off.png" />
-    <Resource Include="resources\images\plus.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="resources\images\Computers.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -221,31 +221,21 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="resources\images\rec.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="resources\images\hotkey.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="resources\images\exit.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="resources\images\info.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="resources\images\Computers.ico" />
     <Resource Include="resources\images\connComputer.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="resources\images\exit.png" />
+    <Resource Include="resources\images\hotkey.png" />
+    <Resource Include="resources\images\info.png" />
+    <Resource Include="resources\images\key.png" />
     <Resource Include="resources\images\logoApp.png" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="resources\images\logoAppIco.ico" />
+    <Resource Include="resources\images\off.png" />
+    <Resource Include="resources\images\plus.png" />
+    <Resource Include="resources\images\rec.png" />
     <Resource Include="resources\logoApp.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="resources\images\logoAppIco.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="resources\images\key.png" />
+    <Resource Include="logoApp.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

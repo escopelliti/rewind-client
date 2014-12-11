@@ -71,7 +71,7 @@ namespace Discovery
             }
             catch
             {
-                System.Windows.MessageBox.Show("Si è riscontrato un grave problema. Prova a riavviare l'applicazione.", "Ops..", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                System.Windows.MessageBox.Show("Si è riscontrato un grave problema. Prova a riavviare l'applicazione.", "Ops..", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                 Environment.Exit(-1);
             }
         }
@@ -95,7 +95,7 @@ namespace Discovery
 
         public void OperationFailed(DNSSDService service, DNSSDError error)
         {
-            System.Windows.MessageBox.Show("Si è riscontrato un grave problema. Prova a riavviare l'applicazione.", "Ops..", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            System.Windows.MessageBox.Show("Si è riscontrato un grave problema. Prova a riavviare l'applicazione.", "Ops..", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
             Environment.Exit(-1);
         }
 
@@ -174,7 +174,7 @@ namespace Discovery
                 }
                 catch
                 {
-                    System.Windows.MessageBox.Show("QueryRecord Failed", "Error");
+                    return;
                 }
             }
         }

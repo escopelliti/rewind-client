@@ -12,7 +12,7 @@ namespace ClientConfiguration
         
         public ConfigurationManager() 
         {
-            path = @"../../resources/config.json";
+            path = @"resources/config.json";
             
             if (!File.Exists(path))
             {

@@ -39,7 +39,7 @@ namespace ConnectionModule
             serverSocket = scm.Listen(Dns.GetHostName(), 40000, serverSocket);
             if (serverSocket == null)
             {
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {
@@ -369,7 +369,7 @@ namespace ConnectionModule
             {
                 ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
                 ccm.Close(currentServer.GetChannel().GetCmdSocket());
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
         public void SendRequest(string requestType, Object content)
@@ -391,7 +391,7 @@ namespace ConnectionModule
             {                
                 ccm.Shutdown(currentServer.GetChannel().GetCmdSocket(), SocketShutdown.Both);
                 ccm.Close(currentServer.GetChannel().GetCmdSocket());
-                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("C'è stato un problema! Prova a riavviare l'applicazione appena possibile.", "Ops...", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

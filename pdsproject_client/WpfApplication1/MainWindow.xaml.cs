@@ -56,7 +56,16 @@ namespace MainApp
             serverList = new List<Server>();
             configurationMgr = new ConfigurationManager();
             channelMgr = new ChannelManager();
+            CreateTmpDir();
             StartDiscovery();                      
+        }
+
+        private void CreateTmpDir()
+        {
+            if (!System.IO.Directory.Exists(Protocol.ProtocolUtils.TMP_DIR))
+            {
+                System.IO.Directory.CreateDirectory(Protocol.ProtocolUtils.TMP_DIR);
+            }
         }
 
         private void InitTrayIcon()
@@ -71,7 +80,7 @@ namespace MainApp
             this.menuItem.Click += new System.EventHandler(this.menuItem_Click);
             
             trayIcon = new System.Windows.Forms.NotifyIcon();
-            trayIcon.Icon = new System.Drawing.Icon(@"../../resources/images/LogoAppIco.ico");
+            trayIcon.Icon = new System.Drawing.Icon(@"resources/images/LogoAppIco.ico");
             trayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(MyNotifyIcon_MouseDoubleClick);
             trayIcon.ContextMenu = this.menu;
         }
@@ -559,6 +568,7 @@ namespace MainApp
             {
                 Environment.Exit(-1);
             }
+            Environment.Exit(0);
         }
 
         private void ButtonInfoClick(object sender, RoutedEventArgs e)

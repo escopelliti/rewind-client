@@ -32,8 +32,7 @@ namespace Protocol
         public const string TRY_AUTHENTICATE = "TRY_AUTHENTICATE";
         public const string REMOTE_PASTE = "REMOTE_PASTE";
 
-        public const string TMP_IMAGE_FILE = ".\\tmp.jpg";
-        public const string TMP_DIR = ".\\tmp\\";
+        public const string TMP_DIR = ".\\resources\\tmp\\";
 
         public const ushort TOKEN_DIM = 16;
 
