@@ -46,8 +46,8 @@ namespace ConnectionModule
                 while (true)
                 {
                     Socket clientSocket = scm.Accept(serverSocket);
-                    //Thread checkThread = new Thread(() => IsDstReacheable(clientSocket));
-                    //checkThread.Start();
+                    Thread checkThread = new Thread(() => IsDstReacheable(clientSocket));
+                    checkThread.Start();
                 }
             }
         }
