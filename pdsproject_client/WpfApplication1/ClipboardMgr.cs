@@ -151,6 +151,7 @@ namespace Clipboard
             }
         }
 
+        //creates data structure in order to receive file drop list from server
         private void NewClipboardFileToPaste(JObject contentJson)
         {
             //leggere il JSON e preparare il lavoro per i file e le cartelle che arrivano
@@ -224,6 +225,7 @@ namespace Clipboard
             }
         }
 
+        // receive which kind of data (image or audio) will be received
         private void NewClipboardDataToPaste()
         {           
             int offset = 0;
@@ -415,6 +417,7 @@ namespace Clipboard
             this.audio = null;
         }
 
+        // retrieve files as if they were in clipboard
         private string[] RetrieveFileDropListArray()
         {
             StringCollection strColl = new StringCollection();

@@ -91,6 +91,7 @@ namespace Views
             }
         }
 
+        //click on computer
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (focusedComputerItem != null) 

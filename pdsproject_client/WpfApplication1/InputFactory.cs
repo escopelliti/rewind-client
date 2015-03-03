@@ -83,7 +83,7 @@ namespace KeyboardMouseController.NativeInput
                         inputToSend.Add(CreateKeyDownInput(key));
                     }
 
-                    // send key up ?
+                    // send key up 
                     if (key != Keys.LControlKey && key != Keys.RControlKey)
                     {
                         inputToSend.Add(CreateKeyUpInput(key));
@@ -126,9 +126,9 @@ namespace KeyboardMouseController.NativeInput
                         inputToSend.Add(keyboard_input);
                     }
 
-                    // send Keydown using Virtualcode 
                     else
                     {
+                        // send Keydown using Virtualcode 
                         inputToSend.Add(CreateKeyDownInput(key));
                     }
                 }

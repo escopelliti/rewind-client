@@ -146,6 +146,7 @@ namespace MainApp
             {
                 System.Windows.MessageBox.Show("Connetti un altro computer dal pannello di controllo!", "Ops...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 InterceptEvents.RestartCapture();
+                InterceptEvents.ResetKModifier();
             }
         }
 
@@ -155,6 +156,7 @@ namespace MainApp
             OpenWorkareaWindow();
         }
         
+        //callback to open addcomputerwindow
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             AddComputerWindow w = new AddComputerWindow(this);
@@ -176,7 +178,7 @@ namespace MainApp
             }            
             this.sd.Stop();
         }
-
+        // right click and exit on tray icon
         private void menuItem_Click(object Sender, EventArgs e)
         {
             exit = true;
@@ -202,6 +204,7 @@ namespace MainApp
             }
         }
 
+        //called when current server has been disconnected
         public void OnEndConnectionToServer(Object obj, Object param)
         {
             ServerEventArgs sea = (ServerEventArgs)param;
@@ -220,6 +223,7 @@ namespace MainApp
             }
         }
 
+        //called when a new server has been connected
         public void OnSetNewServer(Object obj, Object ea)
         {
             ServerEventArgs sea = (ServerEventArgs)ea;
@@ -243,6 +247,7 @@ namespace MainApp
             }            
         }
 
+        //bonjour says to us that a computer is gone away
         public void OnLostComputerConnection(object sender, object param)
         {
             Server server = (Server)param;
@@ -285,7 +290,7 @@ namespace MainApp
                 }
             }
         }
-
+        
         private void SetActiveButton_Click(object sender, RoutedEventArgs e)
         {
             if (!FocusedComputerItem.IsCheckboxChecked)
@@ -307,8 +312,8 @@ namespace MainApp
                 startConnection.IsBackground = true;
                 startConnection.Start();
                 
-                Thread connectionControlThread = new Thread(() => channelMgr.OpenControlConnection());
-                connectionControlThread.Start();
+                //Thread connectionControlThread = new Thread(() => channelMgr.OpenControlConnection());
+                //connectionControlThread.Start();
 
             }
             else
@@ -367,6 +372,7 @@ namespace MainApp
             
         }
 
+        //send focus on to the new selected server
         private void StartNewConnection(int p)
         {
             channelMgr.StartNewConnection(FocusedComputerItem.ComputerID);
@@ -421,10 +427,7 @@ namespace MainApp
             }));
             
             AuthenticationWindow a = new AuthenticationWindow(s, channelMgr, this);
-            a.ShowDialog();
-
-          
-                                            
+            a.ShowDialog();                                                    
         }
 
         private void connectCheckbox_Unchecked(object sender, RoutedEventArgs e)
@@ -480,6 +483,7 @@ namespace MainApp
             w.ShowDialog();
         }    
 
+        //client authorization not accepted
         public void Forbidden(Server s)
             {
             ComputerItem ci = null;
@@ -514,7 +518,7 @@ namespace MainApp
                 }
             }));          
         }
-
+        //client authorization accepted
         public void Permitted(Server toAuthenticate)
         {
             Server s = this.serverList.Find(x => x.ComputerName == toAuthenticate.ComputerName);
@@ -595,7 +599,7 @@ namespace MainApp
                 }
             }));
         }
-
+        
         public FullScreenRemoteServerControl GetFullScreenHandle() 
         {
             return fullScreenWin;

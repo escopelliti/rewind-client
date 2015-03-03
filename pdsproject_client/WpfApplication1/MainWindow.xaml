@@ -10,8 +10,7 @@
             <TextBlock Text="{Binding}" Foreground="White" />
         </DataTemplate>
         <Style x:Key="listboxStyle" TargetType="{x:Type ListBoxItem}">
-            <Style.Resources>
-                
+            <Style.Resources>                
                 <LinearGradientBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Opacity="0.7">
                     <GradientStop Color="#d3e7ff" Offset="0.986"/>
                     <GradientStop Color="#b0d2fc" Offset="0.5"/>
@@ -20,8 +19,7 @@
                 
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
             </Style.Resources>
-            <EventSetter Event="MouseEnter" Handler="ListBoxItem_MouseEnter" />
-            
+            <EventSetter Event="MouseEnter" Handler="ListBoxItem_MouseEnter" />            
         </Style>
 
         <Style x:Key="CheckBoxStyle1" TargetType="{x:Type CheckBox}">

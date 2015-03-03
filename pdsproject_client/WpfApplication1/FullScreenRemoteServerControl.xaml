@@ -33,5 +33,6 @@
             <ProgressBar x:Name="clipboardTransferProgressBar" Visibility="Hidden" HorizontalAlignment="Center" Canvas.Left="10" Canvas.Top="401" Height="22" VerticalAlignment="Center" Width="358" IsIndeterminate="True"/>
         </Canvas>
         <Image Source="resources/images/logoApp.png" HorizontalAlignment="Center" VerticalAlignment="Center" Height="200" Opacity="1"/>
+        <Label Content="REmote Windows INput Data" Height="Auto" Width="Auto" FontSize="28" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="195,352,195,128" />
     </Grid>
 </Window>

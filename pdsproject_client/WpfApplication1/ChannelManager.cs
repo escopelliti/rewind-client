@@ -105,6 +105,7 @@ namespace ConnectionModule
             ccm.Close(clientSocket);
         }
         
+        //called by service discovery
         public void OnLostComputerConnection(object sender, object param)
         {
             Server server = (Server)param;
@@ -125,6 +126,7 @@ namespace ConnectionModule
             }
         }
 
+        //receive clipboard dimension
         public long GetClipboardDimension()
         {
             byte[] data = new byte[16];
@@ -332,6 +334,7 @@ namespace ConnectionModule
             return connectedComputers;
         }
 
+        //to receive data when switching (clipboard content)
         public byte[] ReceiveData()
         {
             byte[] buffer = new byte[64 * 1024];
